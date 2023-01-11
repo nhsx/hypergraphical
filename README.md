@@ -36,5 +36,5 @@ A detailed tutorial for installing manim can be found here:
 
 Please find a colab workbook here:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nhsx/hypergraphical/workbooks/hypergraph-animations.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nhsx/hypergraphical/blob/workbooks/hypergraph-animations.ipynb)
 
