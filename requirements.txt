@@ -1,0 +1,8 @@
+pytest
+wheel
+mypy
+tox
+flake8
+black
+networkx
+hypernetx
