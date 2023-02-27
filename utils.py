@@ -117,7 +117,7 @@ def N_max_hyperedges(n_diseases):
 
 
 ###############################################################################
-# GENERATE FAKE PATIENTS AND THEIR AGGREGATE PROGRESSIONS
+# GENERATE FAKE PATIENTS, THEIR AGGREGATE PROGRESSIONS & WORKLISTS
 ###############################################################################
 
 
@@ -157,7 +157,8 @@ def patient_maker(num_dis, num_patients, max_deg):
         max_deg (int): Maximum number of diseases a patient can have.
         #verbose (bool): If True print the final progression for each patient.
     Returns:
-        list, list: Patient disease progression list (edge list) and node list (dis_list).
+        list, list: Patient disease progression list (edge list) and node list
+            (dis_list).
     """
     # Set seed
     random.seed(1)
@@ -196,6 +197,49 @@ def patient_maker(num_dis, num_patients, max_deg):
     edge_list = [ii for i in all_progs for ii in i]  # format required for NetworkX
 
     return edge_list, dis_list, final_prog_df
+
+
+def create_worklists(num_dis, edge_list):
+    """_summary_
+
+    Args:
+        num_dis (int): Number of different possible diseases.
+        edge_list (list of tuples): Each tuple is an individuals trajectory of
+                    diseases where the first element in the tuple is the first
+                    disease, the second the second disease etc.
+    Returns:
+        numpy array: binmat, gives binary array for whether disease occur.
+        numpy array: conds_worklist, gives the order of diseases.
+        numpy array: idx_worklist, shows whether duplicates occurred (+int), or
+                whether only one disease occurred [1, -1, -1].
+    """
+    diseases = [*auc][:num_dis]
+
+    # binary matrix to show inclusion of a disease in a patients trajectory
+    binmat = np.zeros((len(edge_list), len(diseases)), dtype=int)
+    for row_index, row in enumerate(edge_list):
+        for disease in row:
+            binmat[row_index, diseases.index(disease)] = 1
+
+    # conds_worklist
+    conds_worklist = np.full((len(edge_list), len(diseases)), -1, dtype=int)
+    for row_index, row in enumerate(edge_list):
+        if len(set(row)) == 1:
+            conds_worklist[row_index, 0] = 1
+        else:
+            for col_index, disease in enumerate(row):
+                conds_worklist[row_index, diseases.index(disease)] = col_index
+
+    # idx_worklist
+    # Assume no duplicates to keep examples simple for Streamlit?
+    # If no duplicates just an array of -1's except when only one disease occurs
+    # when only one disease occurs the first column should be -2
+    idx_worklist = np.full((len(edge_list), num_dis), -1, dtype=np.int8)
+
+    for row_index, row in enumerate(edge_list):
+        if len(set(row)) == 1:
+            idx_worklist[row_index, 0] = -2
+    return binmat, conds_worklist, idx_worklist
 
 
 ###############################################################################
