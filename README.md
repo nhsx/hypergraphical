@@ -52,6 +52,8 @@ Users can input the number of fictious patients and diseases to randomly generat
 
 Users can follow through the examples to find out how the hypergraph-mm works by generating hyperedge and hyperarc weights for the population, followed by calculating centrality to show the importance of different diseases within the population. 
 
+![Hypergraphs for Multimoribidity Tool](/images/streamlit_screenshot.png "Hypergraphs for Multimoribidity Tool")
+
 ## Deployment (local) Instructions
 
  To deploy the streamlit app locally we advise using a virtual environment (venv for example) and following the instructions below:
