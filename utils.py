@@ -3,11 +3,21 @@ import hypernetx as hnx
 import matplotlib.pyplot as plt
 import random
 from string import ascii_uppercase as auc
-import streamlit as st
+
+# import streamlit as st
 import math
 import numpy as np
 import numba
 import pandas as pd
+
+
+###############################################################################
+# MARKDOWN IMPORT FROM .TXT FILE
+###############################################################################
+def display_markdown_from_file(file_path, tab):
+    with open(file_path, "r") as f:
+        text = f.read()
+        tab.markdown(text)
 
 
 ###############################################################################
@@ -110,8 +120,10 @@ def N_max_hyperedges(n_diseases):
     -----------------
         n_diseases (int) : Number of total nodes in hypergraph.
     """
+
     # Total number of hyperedges of n disease node undirected hypergraph
-    no_hyperedges = 2 ** (n_diseases)
+    # Ignores self-edges (hyperedges with only one node included)
+    no_hyperedges = (2**n_diseases) - n_diseases - 1
 
     return int(no_hyperedges)
 
@@ -141,8 +153,8 @@ def agg_prog(final_prog):
         aggregate_prog_list.append(tuple(aggregate_prog))
 
     if len(final_prog) == 1:  # to get self-loops for patients with one disease
-        aggregate_prog = [x for pair in zip(final_prog, final_prog) for x in pair]
-        aggregate_prog = tuple(aggregate_prog)
+        self_loop = [x for pair in zip(final_prog, final_prog) for x in pair]
+        aggregate_prog = tuple(self_loop)
         aggregate_prog_list = [aggregate_prog]
     return aggregate_prog_list
 
@@ -173,7 +185,8 @@ def patient_maker(num_dis, num_patients, max_deg):
     # if verbose:
     #     # Print the final progressions of the randomly generated patients
     #     print(
-    #         f"There are {num_patients} patient(s) and their final progressions are:\n"
+    #         f"There are {num_patients} patient(s) and their final /
+    # progressions are:\n"
     #     )
     final_prog_list = list()
     for patient in patient_list:
@@ -184,7 +197,7 @@ def patient_maker(num_dis, num_patients, max_deg):
             print(string)
             final_prog_list.append(string)
         else:
-            print(string[:last_comma_idx] + " -> " + string[last_comma_idx + 1 :])
+            # print(string[:last_comma_idx]+"->"+string[last_comma_idx + 1 :])
             final_prog_list.append(
                 string[:last_comma_idx] + " -> " + string[last_comma_idx + 1 :]
             )
@@ -194,7 +207,8 @@ def patient_maker(num_dis, num_patients, max_deg):
     all_progs = list()
     for patient in patient_list:
         all_progs.append(agg_prog(patient))
-    edge_list = [ii for i in all_progs for ii in i]  # format required for NetworkX
+    # format required for NetworkX
+    edge_list = [ii for i in all_progs for ii in i]
 
     return edge_list, dis_list, final_prog_df
 
@@ -232,7 +246,7 @@ def create_worklists(num_dis, edge_list):
 
     # idx_worklist
     # Assume no duplicates to keep examples simple for Streamlit?
-    # If no duplicates just an array of -1's except when only one disease occurs
+    # If no duplicates just an array of -1's
     # when only one disease occurs the first column should be -2
     idx_worklist = np.full((len(edge_list), num_dis), -1, dtype=np.int8)
 

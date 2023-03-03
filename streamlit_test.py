@@ -21,8 +21,7 @@ from utils import *
 
 st.set_page_config(
     page_title="Multimorbidity Calculations",
-    page_icon="https://www.england.nhs.uk/w\
-        p-content/themes/nhsengland/static/img/favicon.ico",
+    page_icon="https://www.england.nhs.uk/wp-content/themes/nhsengland/static/img/favicon.ico",
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
@@ -148,23 +147,7 @@ if view_choice == "Population hypergraph calculations":
 
     # TODO: Explain multimorbidity and hypergraphs in this section
     motivation_tab.subheader("Multimorbidity")
-    motivation_tab.markdown(
-        """Multimorbidity is defined as having 2 or more long term chronic
-        health conditions simultaneously. Multimorbidity is 
-        associated with increased health service utilisation 
-        \cite{casselle2018epidemiology}.
-
-People are living longer and so the population is ageing. This is due to 
-improvements in lifestyle through things such as having healthier diets, exercising and not smoking. Treatment improvements mean that more people are surviving acute conditions. The number of hospitals and other healthcare services are not increasing fast enough to keep up with this rising ageing population and increased health service utilisation required by patients with multimorbidity, so healthcare services are being burdened. 
-
-Frameworks and policies in healthcare management are designed for individual conditions, rather than multiple. Patients with multiple long-term conditions can be difficult to treat as medications may interact and conditions require different management strategies. If departments could be placed more optimally distally when multimorbidity occurs, access for patients could be easier and quicker. Which is especially important for those with frailties. Additionally, having departments closer together allows them to communicate to better integrate treatment plans for their in common patients.
-
-Approximately 1 in 4 patients in primary care within the UK had multiple chronic conditions in 2018 \cite{casselle2018epidemiology}. Unfortunately these multimoribidities reduce quality of life and can increase mortality. Even more concerning is that in 2015 54\% of people over 65 years old had multimorbidity, and in just 20 years this is expected to rise to 67.8\% \cite{kingston2018projections}.
-
-One study using data from around 14 million patients in 2012 found that hypertension, depression/anxiety and then chronic pain were the most prevalent multimorbidity conditions. They also found than females (30\%) were more likely to have multimorbidity than males (24.4\%). And those with a low socioeconomic status had 4.2\% more people with multimorbidity than the highest socioeconomic status group. Additionally, around half of GP consultations and hospital admissions were for multimorbidity. 78.7\% of prescriptions were for multimorbidity \cite{casselle2018epidemiology}.
-
-As multimorbidity becomes more prevalent its important that research in multimorbidity develops so that strategies can be backed up to change health frameworks and policies, to prevent accumulation of conditions, better manage those with multiple condition and reduce the burden on healthcare."""
-    )
+    display_markdown_from_file("markdown_text/mm_description.txt", motivation_tab)
 
     motivation_tab.subheader("Graphs and Hypergraphs")
     motivation_tab.latex(
@@ -173,6 +156,7 @@ As multimorbidity becomes more prevalent its important that research in multimor
         
     """
     )
+    display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
 
     ###########################################################################
     # TAB1 = UNDIRECTED HYPERGRAPH
