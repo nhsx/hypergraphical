@@ -38,3 +38,53 @@ Please find a colab workbook here:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nhsx/hypergraphical/blob/workbooks/hypergraph-animations.ipynb)
 
+----------------------
+
+_The section below probably needs integrating in better with the animation stuff, but I've kept it seperate for now_
+
+# Hypergraphs for Multimorbidity
+
+This tool has been built using Streamlit, a Python app framework that can be used to create web apps. This Streamlit app allows users to explore hypergraphs in the context of multimoribidity. 
+
+The Streamlit app explains what multimorbidity is, what hypergraphs are and why hypergraphs are useful for modelling multimoribidity.
+
+Users can input the number of fictious patients and diseases to randomly generate hypergraphs (undirected and directed) to represent the population.
+
+Users can follow through the examples to find out how the hypergraph-mm works by generating hyperedge and hyperarc weights for the population, followed by calculating centrality to show the importance of different diseases within the population. 
+
+## Deployment (local) Instructions
+
+ To deploy the streamlit app locally we advise using a virtual environment (venv for example) and following the instructions below:
+
+The project virtual environment can be activated in bash using the following command
+
+```bash
+python3 -m venv <path to virtual env>
+source <path to virtual env>/bin/activate
+```
+
+To activate the virtual environment in Windows the following command can be used
+
+```shell
+<path to virtual env>\Scripts\activate
+```
+
+To install all the prerequisite packages to run the tool, in the terminal run the following command:
+
+```shell
+pip install -r requirements.txt
+```
+
+To run the tool locally, open a terminal whilst in the directory containing the app and run
+
+```bash
+streamlit run streamlit_test.py
+```
+
+Streamlit will then render the tool and display it in your default web browser at
+
+```bash
+http://localhost:8501/
+```
+
+_In the future we could deploy this app so that GitHub isn't required_
