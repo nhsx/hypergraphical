@@ -214,7 +214,8 @@ def patient_maker(num_dis, num_patients, max_deg):
 
 
 def create_worklists(num_dis, edge_list):
-    """_summary_
+    """Create binmat, conds_worklist and idx_worklist using an edge list from
+        each patient.
 
     Args:
         num_dis (int): Number of different possible diseases.
@@ -230,13 +231,13 @@ def create_worklists(num_dis, edge_list):
     diseases = [*auc][:num_dis]
 
     # binary matrix to show inclusion of a disease in a patients trajectory
-    binmat = np.zeros((len(edge_list), len(diseases)), dtype=int)
+    binmat = np.zeros((len(edge_list), len(diseases)), dtype=np.int8)
     for row_index, row in enumerate(edge_list):
         for disease in row:
             binmat[row_index, diseases.index(disease)] = 1
 
     # conds_worklist
-    conds_worklist = np.full((len(edge_list), len(diseases)), -1, dtype=int)
+    conds_worklist = np.full((len(edge_list), len(diseases)), -1, dtype=np.int8)
     for row_index, row in enumerate(edge_list):
         if len(set(row)) == 1:
             conds_worklist[row_index, 0] = 1
