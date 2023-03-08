@@ -240,10 +240,11 @@ def create_worklists(num_dis, edge_list):
     conds_worklist = np.full((len(edge_list), len(diseases)), -1, dtype=np.int8)
     for row_index, row in enumerate(edge_list):
         if len(set(row)) == 1:
-            conds_worklist[row_index, 0] = 1
+            for disease in set(row):
+                conds_worklist[row_index, 0] = diseases.index(disease)
         else:
             for col_index, disease in enumerate(row):
-                conds_worklist[row_index, diseases.index(disease)] = col_index
+                conds_worklist[row_index, col_index] = diseases.index(disease)
 
     # idx_worklist
     # Assume no duplicates to keep examples simple for Streamlit?
