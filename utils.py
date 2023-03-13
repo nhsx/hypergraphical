@@ -437,7 +437,7 @@ def draw_b_hypergraph(nodes, edges, tab):
     # Draw labels only for true nodes
     labels = {node: str(node) for node in nodes}
     nx.draw_networkx_labels(g, pos, labels, font_size=10)
-
+    plt.axis("off")
     tab.pyplot()
 
 
