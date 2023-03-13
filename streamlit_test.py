@@ -96,7 +96,12 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
     max_edges = num_dis * (num_dis - 1)
     st.sidebar.write(
         max_edges,
-        "edges in a standard directed graph",
+        "edges in a standard directed graph (without self-loops)",
+    )
+
+    st.sidebar.write(
+        max_edges + num_dis,
+        "edges in a standard directed graph (with self-loops)",
     )
 
     # Calculate the number of possible undirected hyperedges
@@ -104,7 +109,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
     max_hyperedges = N_max_hyperedges(n_diseases=num_dis)
     st.sidebar.write(
         max_hyperedges,
-        "hyperedges in an undirected hypergraph",
+        "hyperedges in an undirected hypergraph (without self-loops)",
     )
 
     # Calculate the number of possible directed hyperedges (b-hypergraphs)
@@ -112,7 +117,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
     max_hyperarcs = N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
     st.sidebar.write(
         max_hyperarcs,
-        "hyperarcs in a b-hypergraph",
+        "hyperarcs in a b-hypergraph (with self-loops)",
     )
 
 edge_list, dis_list, final_prog_df = patient_maker(
@@ -128,7 +133,7 @@ binmat, conds_worklist, idx_worklist = create_worklists(len(dis_list), edge_list
 if view_choice == "Population hypergraph calculations":
 
     st.title("Hypergraphs for Multimorbidity")
-    st.markdown("Last Updated 24th February 2023")
+    st.markdown("Last Updated 13th March 2023")
     st.markdown(
         "_This applet is a prototype which generates fictious patient data to show how hypergraphs can be used to explore multimorbidity._"
     )
@@ -146,16 +151,67 @@ if view_choice == "Population hypergraph calculations":
     ###############################################################################
 
     # TODO: Explain multimorbidity and hypergraphs in this section
-    motivation_tab.subheader("Multimorbidity")
+    # motivation_tab.subheader("Multimorbidity")
     display_markdown_from_file("markdown_text/mm_description.txt", motivation_tab)
 
-    motivation_tab.subheader("Graphs and Hypergraphs")
-    motivation_tab.latex(
-        r"""
-        \mathcal{G}
-        
-    """
+    display_markdown_from_file("markdown_text/graphs.txt", motivation_tab)
+    col1, col2, col3 = motivation_tab.columns(3)  # to centre image
+    dir_graph_image_labelled = add_image(
+        image_path="images/graph_labelled.png", width=300, height=300
     )
+    col2.image(
+        dir_graph_image_labelled,
+        caption="Directed graph showing edge and node labelling.",
+    )
+
+    col1, col2 = motivation_tab.columns(2)  # to centre image
+    undir_graph_image = add_image(
+        image_path="images/undirected_graph.png", width=300, height=300
+    )
+    dir_graph_image = add_image(
+        image_path="images/directed_graph.png", width=300, height=300
+    )
+    col1.image(undir_graph_image, caption="Undirected graph")
+    col2.image(dir_graph_image, caption="Directed graph")
+
+    display_markdown_from_file("markdown_text/undir_hypergraphs.txt", motivation_tab)
+
+    col1, col2 = motivation_tab.columns(2)  # to centre image
+    elastic = add_image(
+        image_path="images/undirected_hyper_elastic.png", width=400, height=400
+    )
+    col1.image(
+        elastic,
+        caption="Undirected hypergraph with 'elastic band' hyperedges.",
+    )
+
+    non_elastic = add_image(
+        image_path="images/undirected_hyper_nonelastic.png", width=400, height=400
+    )
+    col2.image(
+        non_elastic,
+        caption="Undirected hypergraph with hyperedges.",
+    )
+
+    display_markdown_from_file("markdown_text/dir_hypergraphs.txt", motivation_tab)
+
+    col1, col2 = motivation_tab.columns(2)  # to centre image
+    hyperarc = add_image(
+        image_path="images/hyperarc_example.png", width=400, height=400
+    )
+    col1.image(
+        hyperarc,
+        caption="Labelled directed hypergraph with only one hyperarc.",
+    )
+
+    parents_sibs = add_image(
+        image_path="images/siblings_parents.png", width=500, height=300
+    )
+    col2.image(
+        parents_sibs,
+        caption="",
+    )
+
     display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
 
     ###########################################################################
@@ -169,6 +225,11 @@ if view_choice == "Population hypergraph calculations":
 
     tab1.subheader("Visual representation:")
     tab1.write("Note: Self-connections are not considered with undirected.")
+    if num_dis == 1:
+        tab1.write(
+            "There are no possible undirected hypergraphs with only one node/disease present"
+        )
+
     draw_undirected_hypergraph(edge_list, tab1)
 
     tab1.subheader("Hyperedge weight calculation:")
