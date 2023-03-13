@@ -3,6 +3,7 @@ import hypernetx as hnx
 import matplotlib.pyplot as plt
 import random
 from string import ascii_uppercase as auc
+from PIL import Image
 
 # import streamlit as st
 import math
@@ -12,12 +13,25 @@ import pandas as pd
 
 
 ###############################################################################
-# MARKDOWN IMPORT FROM .TXT FILE
+# IMPORT .TXT FILES AND IMAGES
 ###############################################################################
 def display_markdown_from_file(file_path, tab):
+    """Import markdown from .txt file
+
+    Args:
+        file_path (str): file path where .txt file is
+        tab (var): variable name of the tab this is to be viewed in
+    """
     with open(file_path, "r") as f:
         text = f.read()
         tab.markdown(text)
+
+
+def add_image(image_path, width, height):
+    """Read and return a resized image"""
+    image = Image.open(image_path)
+    modified_image = image.resize((width, height))
+    return modified_image
 
 
 ###############################################################################
