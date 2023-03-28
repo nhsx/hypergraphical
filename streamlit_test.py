@@ -1,19 +1,27 @@
 ###############################################################################
-# Libraries
+# Libraries and Imports
 ###############################################################################
+import os
 import streamlit as st
 import base64
 
-# import networkx as nx
-# import hypernetx as hnx
-# import matplotlib.pyplot as plt
+# print(os.getcwd())
+os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
+# print(os.getcwd())
+
 # import random
-# import numpy as np
+# import time as t
+# from importlib import reload
+
+# import matplotlib
+# import matplotlib.pyplot as plt
 # import numba
+# import numpy as np
 # import pandas as pd
+# import seaborn as sns
 
 # local
-from utils import *
+from src import build_model, centrality, centrality_utils, weight_functions, utils
 
 ###############################################################################
 # Configure Page and Format
@@ -107,7 +115,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
 
     # Calculate the number of possible undirected hyperedges
     st.sidebar.subheader("Hyperedges (Undirected Hypergraph)")
-    max_hyperedges = N_max_hyperedges(n_diseases=num_dis)
+    max_hyperedges = utils.N_max_hyperedges(n_diseases=num_dis)
     st.sidebar.write(
         max_hyperedges,
         "hyperedges in an undirected hypergraph (without self-loops)",
@@ -115,17 +123,17 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
 
     # Calculate the number of possible directed hyperedges (b-hypergraphs)
     st.sidebar.subheader("Hyperarcs (Directed Hypergraph)")
-    max_hyperarcs = N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
+    max_hyperarcs = utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
     st.sidebar.write(
         max_hyperarcs,
         "hyperarcs in a B-hypergraph (with self-loops)",
     )
 
-edge_list, dis_list, final_prog_df = patient_maker(
+edge_list, dis_list, final_prog_df = utils.patient_maker(
     num_dis=num_dis, num_patients=num_patients, max_deg=num_dis
 )
 
-binmat, conds_worklist, idx_worklist = create_worklists(len(dis_list), edge_list)
+binmat, conds_worklist, idx_worklist = utils.create_worklists(len(dis_list), edge_list)
 
 ###############################################################################
 # POPULATION HYPERGRAPH CALCULATIONS
@@ -152,77 +160,81 @@ if view_choice == "Population hypergraph calculations":
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
     ###########################################################################
 
-    # motivation_tab.subheader("Multimorbidity")
-    display_markdown_from_file("markdown_text/mm_description.txt", motivation_tab)
+    utils.display_markdown_from_file("markdown_text/project_aims.txt", motivation_tab)
+    with motivation_tab.expander("What Can You Use This Dashboard For?"):
+        utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
-    display_markdown_from_file("markdown_text/graphs.txt", motivation_tab)
-    col1, col2, col3 = motivation_tab.columns(3)  # to centre image
-    dir_graph_image_labelled = add_image(
-        image_path="images/graph_labelled.png", width=300, height=300
-    )
-    col2.image(
-        dir_graph_image_labelled,
-        caption="Directed graph showing edge and node labelling.",
-    )
+        summary = utils.add_image(
+            image_path="images/summary.png", width=700, height=260
+        )
+        st.image(
+            summary,
+            caption="Module summary",
+        )
+    with motivation_tab.expander("What is Multimorbidity?"):
+        utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
 
-    col1, col2 = motivation_tab.columns(2)  # to centre image
-    undir_graph_image = add_image(
-        image_path="images/undirected_graph.png", width=300, height=300
-    )
-    dir_graph_image = add_image(
-        image_path="images/directed_graph.png", width=300, height=300
-    )
-    col1.image(undir_graph_image, caption="Undirected graph")
-    col2.image(dir_graph_image, caption="Directed graph")
+    with motivation_tab.expander("Graphs Explained"):
+        utils.display_markdown_from_file("markdown_text/graphs.txt", st)
+        col1, col2, col3 = st.columns(3)  # to centre image
+        dir_graph_image_labelled = utils.add_image(
+            image_path="images/graph_labelled.png", width=300, height=300
+        )
+        col2.image(
+            dir_graph_image_labelled,
+            caption="Directed graph showing edge and node labelling.",
+        )
 
-    display_markdown_from_file("markdown_text/undir_hypergraphs.txt", motivation_tab)
+        col1, col2 = st.columns(2)  # to centre image
+        undir_graph_image = utils.add_image(
+            image_path="images/undirected_graph.png", width=300, height=300
+        )
+        dir_graph_image = utils.add_image(
+            image_path="images/directed_graph.png", width=300, height=300
+        )
+        col1.image(undir_graph_image, caption="Undirected graph")
+        col2.image(dir_graph_image, caption="Directed graph")
 
-    col1, col2 = motivation_tab.columns(2)  # to centre image
-    elastic = add_image(
-        image_path="images/undirected_hyper_elastic.png", width=400, height=400
-    )
-    col1.image(
-        elastic,
-        caption="Undirected hypergraph with 'elastic band' hyperedges.",
-    )
+        utils.display_markdown_from_file("markdown_text/undir_hypergraphs.txt", st)
 
-    non_elastic = add_image(
-        image_path="images/undirected_hyper_nonelastic.png", width=400, height=400
-    )
-    col2.image(
-        non_elastic,
-        caption="Undirected hypergraph with hyperedges.",
-    )
+        col1, col2 = st.columns(2)  # to centre image
+        elastic = utils.add_image(
+            image_path="images/undirected_hyper_elastic.png", width=400, height=400
+        )
+        col1.image(
+            elastic,
+            caption="Undirected hypergraph with 'elastic band' hyperedges.",
+        )
 
-    display_markdown_from_file("markdown_text/dir_hypergraphs.txt", motivation_tab)
+        non_elastic = utils.add_image(
+            image_path="images/undirected_hyper_nonelastic.png", width=400, height=400
+        )
+        col2.image(
+            non_elastic,
+            caption="Undirected hypergraph with hyperedges.",
+        )
 
-    col1, col2 = motivation_tab.columns(2)  # to centre image
-    hyperarc = add_image(
-        image_path="images/hyperarc_example.png", width=400, height=400
-    )
-    col1.image(
-        hyperarc,
-        caption="Labelled directed hypergraph with only one hyperarc.",
-    )
+        utils.display_markdown_from_file("markdown_text/dir_hypergraphs.txt", st)
 
-    parents_sibs = add_image(
-        image_path="images/siblings_parents.png", width=500, height=300
-    )
-    col2.image(
-        parents_sibs,
-        caption="Example hyperarc and corresponding sibling hyperarcs"
-        " and parent hyperedge.",
-    )
+        col1, col2 = st.columns(2)  # to centre image
+        hyperarc = utils.add_image(
+            image_path="images/hyperarc_example.png", width=400, height=400
+        )
+        col1.image(
+            hyperarc,
+            caption="Labelled directed hypergraph with only one hyperarc.",
+        )
 
-    display_markdown_from_file("markdown_text/purpose.txt", motivation_tab)
+        parents_sibs = utils.add_image(
+            image_path="images/siblings_parents.png", width=500, height=300
+        )
+        col2.image(
+            parents_sibs,
+            caption="Example hyperarc and corresponding sibling hyperarcs"
+            " and parent hyperedge.",
+        )
 
-    summary = add_image(image_path="images/summary.png", width=700, height=260)
-    motivation_tab.image(
-        summary,
-        caption="Module summary",
-    )
-
-    display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
+    utils.display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
 
     ###########################################################################
     # TAB1 = UNDIRECTED HYPERGRAPH
@@ -234,19 +246,29 @@ if view_choice == "Population hypergraph calculations":
     tab1.header("Undirected Hypergraph")
 
     tab1.subheader("Visual population representation:")
-    tab1.markdown("_Note: Self-edges are not considered with undirected._")
+    tab1.markdown(
+        "_Note: Self-edges are not considered with undirected"
+        " hypergraphs in this case._"
+    )
 
     if num_dis == 1:
         tab1.markdown(
             "**:red[There are no possible undirected hypergraphs with only"
-            " one node/disease present]**"
+            " one node/disease present. Try changing the `Number of diseases"
+            " to generate` slider on the sidebar.]**"
         )
 
     if num_dis > 1:
-        draw_undirected_hypergraph(edge_list, tab1)
+        utils.draw_undirected_hypergraph(edge_list, tab1)
 
-    eigenvector_cent_image = add_image(
-        image_path="images/eigenvector_centrality.png", width=700, height=240
+    tab1.subheader("Individual Disease Importance")
+    tab1.markdown(
+        "Here we will go through how to calculate individual"
+        " disease importance to the population using Eigenvector centrality"
+        " on the undirected hypergraph. See overview image below."
+    )
+    eigenvector_cent_image = utils.add_image(
+        image_path="images/eigenvector_centrality.png", width=700, height=230
     )
     tab1.image(
         eigenvector_cent_image,
@@ -254,6 +276,32 @@ if view_choice == "Population hypergraph calculations":
     )
 
     tab1.subheader("Hyperedge weight calculation:")
+
+    tab1.markdown("1. Create an adjacency matrix for the hypergraph")
+    tab1.latex("A = MM^{T} + D_n")
+    tab1.markdown(
+        "Where $M$ in the incidence matrix, and $D_n$ is the"
+        " diagonal matrix of the node degree."
+    )
+
+    tab1.markdown("* Construct an incidence matrix $M$ for the hypergraph")
+    with tab1.expander("What is an incidence matrix?"):
+        st.markdown(
+            "An incidence matrix is a matrix, which in the context"
+            " graphs, shows which nodes $v$ connect to which edge $e$. The"
+            " rows index the nodes and the columns index the edges. Where the"
+            " element is $1$ if edge $e$ is incident to node $v$, otherwise"
+            " the element is equal to 0.\nFor this set of randomly"
+            " generated, fictious patients the incidence matrix is:"
+        )
+
+        inc_mat = utils.pandas_inc_mat(edge_list, dis_list)
+        st.write(inc_mat)
+
+    tab1.markdown(
+        "* Construct the diagonal node degree matrix $D_n$ for the" " hypergraph"
+    )
+    # binmat, conds_worklist, idx_worklist
 
     tab1.subheader("Eigenvector Centrality:")
 
@@ -269,9 +317,11 @@ if view_choice == "Population hypergraph calculations":
     tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
-    draw_b_hypergraph(dis_list, edge_list, tab2)
+    utils.draw_b_hypergraph(dis_list, edge_list, tab2)
 
-    pagerank_image = add_image(image_path="images/PageRank.png", width=700, height=380)
+    pagerank_image = utils.add_image(
+        image_path="images/PageRank.png", width=700, height=380
+    )
     tab2.image(
         pagerank_image,
         caption="PageRank overview for hypergraphs.",

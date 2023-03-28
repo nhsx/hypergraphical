@@ -477,3 +477,22 @@ def draw_undirected_hypergraph(edges, tab):
     H = hnx.Hypergraph(hnx_edge_dict)
     hnx.draw(H)
     tab.pyplot()
+
+
+###############################################################################
+# UNDIRECTED INCIDENCE MATRICES
+###############################################################################
+
+
+def pandas_inc_mat(edge_list, dis_list):
+    unique_edges = set(edge_list)
+    num_edges = len(unique_edges)
+    inc_mat_shape = np.full((len(dis_list), num_edges), 0)
+    df = pd.DataFrame(inc_mat_shape, columns=list(unique_edges))
+    df = df.set_index(pd.Index(dis_list))
+
+    for row_num, row_name in enumerate(df.index):
+        for col_num, col_name in enumerate(df):
+            if row_name in col_name:
+                df.iloc[row_num, col_num] = 1
+    return df
