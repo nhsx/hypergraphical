@@ -1,0 +1,16 @@
+### Project aims
+
+This project has various overarching objectives which we are aiming to achieve. Mainly we want to see if we can find salient patterns in multimorbidity pathways and multimorbidity disease sets which can be used to:
+
+* Identify contributory relationships between diseases.
+
+* Identify important multimorbidity sets within different population demographics.
+
+* Find patient characteristics and demographics with high multimorbidity risk.
+
+* Prevent multimorbidity development.
+
+* Help prioritise care services.
+
+* Optimise treatment and management to improve pain and reduce healthcare costs.
+

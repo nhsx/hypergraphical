@@ -1,0 +1,23 @@
+### Hypergraphs
+
+Hypergraphs $\mathcal{H}(v,e)$ can connect 2 or more nodes per edge.
+
+Hypergraphs were defined by Berge 1976, Berge defined hypergraphs to be an extension of graphs which enable relationships between
+ many nodes, rather than just pairwise relationships. 
+
+Hypergraphs enable multimorbidity edge connections between diseases to be established rather than only co-morbidity. Where the nodes 
+are the diseases and the hyperedges are the multimorbidity sets.
+
+Both graphs and hypergraphs can be undirected or directed. The key difference when directionality is involved is that the hypergraph 
+edges (hyperedges), become hyperarcs due to their directionality, and can have different numbers of inputs and outputs (heads and 
+tails).
+
+#### Undirected Hypergraphs
+
+The edges connecting nodes in undirected hypergraphs are called hyperedges. These hyperedges can be visualised as 'elastic bands' or
+ with line connections (shown below).
+Similar to the example given for standard graphs, the nodes in undirected hypergraphs can be diseases and the hyperedges represent 
+relationships between these diseases. For example, showing that a person with disease $x$ will likely have disease $y$. 
+
+The hyperedges can also store additonal information about the connection, such as how common/prevalent the relationship is between 
+nodes/diseases. 
