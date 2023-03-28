@@ -42,6 +42,7 @@ st.markdown(
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
 
+
 # render svg image
 def render_svg(svg):
     """Renders the given svg string."""
@@ -70,7 +71,7 @@ view_choice = st.sidebar.selectbox(
     "What would you like to view?",
     (
         "Population hypergraph calculations",
-        "Future disease prediction",
+        "Most likely next disease",
         "Most likely cause(s) of disease",
     ),
 )
@@ -117,7 +118,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
     max_hyperarcs = N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
     st.sidebar.write(
         max_hyperarcs,
-        "hyperarcs in a b-hypergraph (with self-loops)",
+        "hyperarcs in a B-hypergraph (with self-loops)",
     )
 
 edge_list, dis_list, final_prog_df = patient_maker(
@@ -133,9 +134,10 @@ binmat, conds_worklist, idx_worklist = create_worklists(len(dis_list), edge_list
 if view_choice == "Population hypergraph calculations":
 
     st.title("Hypergraphs for Multimorbidity")
-    st.markdown("Last Updated 13th March 2023")
+    st.markdown("Last Updated 28th March 2023")
     st.markdown(
-        "_This applet is a prototype which generates fictious patient data to show how hypergraphs can be used to explore multimorbidity._"
+        "_This applet is a prototype which generates fictious patient data to"
+        " show how hypergraphs can be used to explore multimorbidity._"
     )
 
     motivation_tab, tab1, tab2 = st.tabs(
@@ -146,11 +148,10 @@ if view_choice == "Population hypergraph calculations":
         ]
     )
 
-    ###############################################################################
+    ###########################################################################
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
-    ###############################################################################
+    ###########################################################################
 
-    # TODO: Explain multimorbidity and hypergraphs in this section
     # motivation_tab.subheader("Multimorbidity")
     display_markdown_from_file("markdown_text/mm_description.txt", motivation_tab)
 
@@ -209,7 +210,16 @@ if view_choice == "Population hypergraph calculations":
     )
     col2.image(
         parents_sibs,
-        caption="",
+        caption="Example hyperarc and corresponding sibling hyperarcs"
+        " and parent hyperedge.",
+    )
+
+    display_markdown_from_file("markdown_text/purpose.txt", motivation_tab)
+
+    summary = add_image(image_path="images/summary.png", width=700, height=260)
+    motivation_tab.image(
+        summary,
+        caption="Module summary",
     )
 
     display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
@@ -223,14 +233,25 @@ if view_choice == "Population hypergraph calculations":
 
     tab1.header("Undirected Hypergraph")
 
-    tab1.subheader("Visual representation:")
-    tab1.write("Note: Self-connections are not considered with undirected.")
+    tab1.subheader("Visual population representation:")
+    tab1.markdown("_Note: Self-edges are not considered with undirected._")
+
     if num_dis == 1:
-        tab1.write(
-            "There are no possible undirected hypergraphs with only one node/disease present"
+        tab1.markdown(
+            "**:red[There are no possible undirected hypergraphs with only"
+            " one node/disease present]**"
         )
 
-    draw_undirected_hypergraph(edge_list, tab1)
+    if num_dis > 1:
+        draw_undirected_hypergraph(edge_list, tab1)
+
+    eigenvector_cent_image = add_image(
+        image_path="images/eigenvector_centrality.png", width=700, height=240
+    )
+    tab1.image(
+        eigenvector_cent_image,
+        caption="Eigenvector centrality overview for hypergraphs.",
+    )
 
     tab1.subheader("Hyperedge weight calculation:")
 
@@ -245,10 +266,16 @@ if view_choice == "Population hypergraph calculations":
     tab2.header("Directed Hypergraph")
     if tab2.checkbox("Show the list of each patient's final hyperarc"):
         tab2.write(final_prog_df)
-    tab2.subheader("Visual representation:")
+    tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
     draw_b_hypergraph(dis_list, edge_list, tab2)
+
+    pagerank_image = add_image(image_path="images/PageRank.png", width=700, height=380)
+    tab2.image(
+        pagerank_image,
+        caption="PageRank overview for hypergraphs.",
+    )
 
     tab2.subheader("Hyperarc weight calcuations:")
     tab2.markdown(
@@ -279,11 +306,11 @@ if view_choice == "Population hypergraph calculations":
     # tab3.text("Most important sets of diseases...")
 
 
-elif view_choice == "Future disease prediction":
+elif view_choice == "Most likely next disease":
     st.markdown("_Page under construction_ 👷")
     # TODO: Implement
 
 
-elif view_choice == "Cause(s) of disease":
+elif view_choice == "Most likely cause(s) of disease":
     st.markdown("_Page under construction_ 👷")
     # TODO: Implement
