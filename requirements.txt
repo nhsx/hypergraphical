@@ -1,4 +1,5 @@
 pytest
+ipykernel
 wheel
 mypy
 tox
@@ -12,3 +13,4 @@ math
 numpy
 numba
 pandas
+seaborn
