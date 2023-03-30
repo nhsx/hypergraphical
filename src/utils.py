@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import random
 from string import ascii_uppercase as auc
 from PIL import Image
+from itertools import chain, combinations
+from ast import literal_eval
 
 # import streamlit as st
 import math
@@ -452,7 +454,7 @@ def remove_dup_tuples(lst):
         list: Edge list with duplicate hyperedges removed.
     """
     unique_sets = set(frozenset(t) for t in lst)
-    unique_lst = [tuple(s) for s in unique_sets]
+    unique_lst = [tuple(sorted(s)) for s in unique_sets]
     return unique_lst
 
 
@@ -480,19 +482,198 @@ def draw_undirected_hypergraph(edges, tab):
 
 
 ###############################################################################
-# UNDIRECTED INCIDENCE MATRICES
+# UNDIRECTED MATRICES AND EIGENVECTOR CALCULATIONS
 ###############################################################################
 
 
 def pandas_inc_mat(edge_list, dis_list):
-    unique_edges = set(edge_list)
-    num_edges = len(unique_edges)
+    """Create an incidence matrix for an undirected hypergraph.
+
+    Args:
+        edge_list (list of tuples): List of edges from the population.
+        dis_list (list of strings): List of nodes includes.
+
+    Returns:
+        dataframe: Index is the node, the column names are the edges.
+    """
+    dups_removed = remove_dup_tuples(edge_list)
+    selfs_removed = [t for t in dups_removed if len(t) != 1]
+
+    num_edges = len(selfs_removed)
+
     inc_mat_shape = np.full((len(dis_list), num_edges), 0)
-    df = pd.DataFrame(inc_mat_shape, columns=list(unique_edges))
+    df = pd.DataFrame(inc_mat_shape, columns=list(selfs_removed))
     df = df.set_index(pd.Index(dis_list))
+    df
 
     for row_num, row_name in enumerate(df.index):
         for col_num, col_name in enumerate(df):
             if row_name in col_name:
                 df.iloc[row_num, col_num] = 1
+    return df
+
+
+def node_deg_mat(edge_list, dis_list):
+    """Create node degree matrix
+
+    Args:
+        edge_list (list of tuples): List of edges from the population.
+        dis_list (list of strings): List of nodes includes.
+
+    Returns:
+        np.array: Diagonal matrix of node degrees (number of edges that are
+        connected to the node)
+    """
+    # start empty dict with all nodes
+    node_counts_dict = dict.fromkeys(dis_list, 0)
+    dups_removed = remove_dup_tuples(edge_list)
+    selfs_removed = [t for t in dups_removed if len(t) != 1]
+    for ele in selfs_removed:
+        for dis in ele:
+            node_counts_dict[dis] = node_counts_dict.get(dis, 0) + 1
+
+    # turn values to list
+    node_counts_list = list(node_counts_dict.values())
+
+    # turn list into diagonal matrix
+    node_deg_mat = np.diag(np.array(node_counts_list))
+    return node_deg_mat
+
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+
+
+def superset(dis_list, dis_set):
+    """Get the super set of a disease set/ hyperedge.
+
+    Args:
+        dis_list (list): List of disease/node strings.
+        dis_set (tuple): Disease set, tuple containing disease/node names.
+
+    Returns:
+        super_set: Super set of the disease tuple, list of tuples.
+    """
+    all_sets_higher_deg = []
+    for i in range(len(dis_set) + 1, len(dis_list) + 1):
+        combos = list(combinations(dis_list, i))
+        all_sets_higher_deg.append(combos)
+
+    super_set = list()
+    not_super_set = list()
+    for deg in all_sets_higher_deg:
+        for tup in deg:
+            super_set.append(tup)
+    for item in super_set:
+        count = 0
+        for dis in dis_set:
+            if dis in item:
+                count += 1
+        if count != len(dis_set):
+            not_super_set.append(item)
+
+    super_set = list(set(super_set) - set(not_super_set))
+    return super_set
+
+
+def create_powsupset_tab(edge_list, dis_list):
+    # Create hyperedge, power set and super set table.
+    # All the hyperedges:
+    dups_removed = remove_dup_tuples(edge_list)
+    all_hyperedges = [t for t in dups_removed if len(t) != 1]
+
+    # column one of the df should be all_hyperedges
+    pow_sup_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
+
+    # column two powerset of the column to the left
+    # column three = superset of the furthest left column
+    pow_sup_df["Power Set"] = ""
+    pow_sup_df["Super Set"] = ""
+
+    for row_num, row_name in enumerate(pow_sup_df.index):
+        for col_num, col_name in enumerate(pow_sup_df):
+            if col_num == 1:
+                pow_set = powerset(pow_sup_df.iloc[row_num, 0])
+                # power set as list
+                pow_set = list(pow_set)
+                # remove first empty tuple and last tuple as this is the same
+                pow_set = pow_set[1:-1]
+                pow_sup_df.iloc[row_num, 1] = str(pow_set)
+            if col_num == 2:
+                sup_set = superset(
+                    dis_set=pow_sup_df.iloc[row_num, 0], dis_list=dis_list
+                )
+                pow_sup_df.iloc[row_num, 2] = str(sup_set)
+    return pow_sup_df
+
+
+def soren_dice_create_df(edge_list, dis_list):
+    # Weight calculation UNDIRECTED hypergraph
+    # list of all patients progressive trajectories (INCLUDING SELFEDGES)
+    edge_list_with_self_edge = list()
+    for tup in edge_list:
+        tup = [i for i in set(tup)]
+        edge_list_with_self_edge.append(tuple(sorted(tup)))
+
+    dups_removed = remove_dup_tuples(edge_list)
+    # ignoring selfloop hyperedges
+    all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
+
+    # create dataframe for: hyperedge | C(e_i) | Sum C(e_j) | Sum C(e_k)
+    edge_weight_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
+
+    edge_weight_df["C(e_i)"] = ""
+    edge_weight_df["Sum C(e_j)"] = ""
+    edge_weight_df["Sum C(e_k)"] = ""
+    edge_weight_df["W_e"] = ""
+
+    # get the power set and super set table
+    pow_sup_df = create_powsupset_tab(edge_list, dis_list)
+
+    for row_num, row in enumerate(edge_weight_df.iterrows()):
+        edge = edge_weight_df.iloc[row_num, 0]
+        # how often does the edge appear in the list of all patient hyperedges
+        C_e = edge_list_with_self_edge.count(edge)
+        edge_weight_df.iloc[row_num, 1] = C_e
+
+        # ! Sum C(e_j)
+        power_set = pow_sup_df.iloc[row_num, 1]
+        power_set = literal_eval(power_set)
+        power_count = 0
+        for power in power_set:
+            power_count += edge_list_with_self_edge.count(power)
+        edge_weight_df.iloc[row_num, 2] = power_count
+
+        # ! Sum C(e_k)
+        super_set = pow_sup_df.iloc[row_num, 2]
+        super_set = literal_eval(super_set)
+        super_count = 0
+        for super in super_set:
+            super_count += edge_list_with_self_edge.count(super)
+        edge_weight_df.iloc[row_num, 3] = super_count
+
+        edge_numer = C_e
+        edge_denom = C_e + power_count + super_count
+        soren_dice = edge_numer / edge_denom
+        edge_weight_df.iloc[row_num, 4] = soren_dice
+
+    return edge_weight_df
+
+
+def create_hyperedge_weight_df(edge_list, dis_list):
+    soren_dice_df = soren_dice_create_df(edge_list, dis_list)
+    # W_e matrix
+    dups_removed = remove_dup_tuples(edge_list)
+    # ignoring selfloop hyperedges
+    all_hyperedges = [str(tuple(t)) for t in dups_removed if len(t) != 1]
+
+    num_edges = len(all_hyperedges)
+    W_e_shape = np.full((num_edges, num_edges), 0)
+    df = pd.DataFrame(W_e_shape, columns=list(all_hyperedges))
+    df = df.set_index(pd.Index(all_hyperedges))
+
+    for i in range(len(df)):
+        df.iloc[i, i] = soren_dice_df.iloc[i, 4]
     return df
