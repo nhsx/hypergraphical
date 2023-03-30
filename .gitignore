@@ -5,3 +5,4 @@ src/hypergraphs/weighting.py
 .tox/
 .DS_STORE
 venv/
+__pycache__/
