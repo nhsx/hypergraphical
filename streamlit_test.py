@@ -7,7 +7,8 @@ import base64
 import pandas as pd
 import numpy as np
 from scipy import linalg
-from sklearn import preprocessing
+
+# from sklearn import preprocessing
 from string import ascii_uppercase as auc
 
 # print(os.getcwd())
@@ -26,7 +27,8 @@ os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 # import seaborn as sns
 
 # local
-from src import build_model, centrality, centrality_utils, weight_functions, utils
+from src import build_model, centrality, centrality_utils, weight_functions
+from src import utils
 
 ###############################################################################
 # Configure Page and Format
@@ -147,13 +149,12 @@ binmat, conds_worklist, idx_worklist = utils.create_worklists(len(dis_list), edg
 if view_choice == "Population hypergraph calculations":
 
     st.title("Hypergraphs for Multimorbidity")
-    st.markdown("Last Updated 28th March 2023")
     st.markdown(
         "_This applet is a prototype which generates fictious patient data to"
         " show how hypergraphs can be used to explore multimorbidity._"
     )
 
-    motivation_tab, tab1, tab2 = st.tabs(
+    mot_tab, tab1, tab2 = st.tabs(
         [
             "Why Hypergraphs for Multimorbidity",
             "Undirected Hypergraph",
@@ -165,8 +166,8 @@ if view_choice == "Population hypergraph calculations":
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
     ###########################################################################
 
-    utils.display_markdown_from_file("markdown_text/project_aims.txt", motivation_tab)
-    with motivation_tab.expander("What Can You Use This Dashboard For?"):
+    utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
+    with mot_tab.expander("What Can You Use This Dashboard For?"):
         utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
         summary = utils.add_image(
@@ -176,10 +177,10 @@ if view_choice == "Population hypergraph calculations":
             summary,
             caption="Module summary",
         )
-    with motivation_tab.expander("What is Multimorbidity?"):
+    with mot_tab.expander("What is Multimorbidity?"):
         utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
 
-    with motivation_tab.expander("Graphs Explained"):
+    with mot_tab.expander("Graphs Explained"):
         utils.display_markdown_from_file("markdown_text/graphs.txt", st)
         col1, col2, col3 = st.columns(3)  # to centre image
         dir_graph_image_labelled = utils.add_image(
@@ -239,7 +240,7 @@ if view_choice == "Population hypergraph calculations":
             " and parent hyperedge.",
         )
 
-    utils.display_markdown_from_file("markdown_text/ref_list.txt", motivation_tab)
+    utils.display_markdown_from_file("markdown_text/ref_list.txt", mot_tab)
 
     ###########################################################################
     # TAB1 = UNDIRECTED HYPERGRAPH
@@ -264,7 +265,7 @@ if view_choice == "Population hypergraph calculations":
         )
 
     if num_dis > 1:
-        utils.draw_undirected_hypergraph(edge_list, tab1)
+        utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=False)
 
     tab1.subheader("Individual Disease Importance")
     tab1.markdown(
@@ -345,6 +346,7 @@ if view_choice == "Population hypergraph calculations":
         " weights. In this example we calculate $W_e$"
         " using the Complete Modified Sorensen-Dice coefficient:"
     )
+
     with tab1.expander(
         "What is the Complete Modified Sorensen-Dice"
         " coefficient and how do we calculate it?"
@@ -424,6 +426,9 @@ if view_choice == "Population hypergraph calculations":
         " the incidence matrix) with"
         " the diagonal numbers supplying the edge weights."
     )
+
+    utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=True)
+
     tab1.markdown("$W_e:$")
 
     we_df = utils.create_hyperedge_weight_df(edge_list, dis_list)
@@ -437,7 +442,7 @@ if view_choice == "Population hypergraph calculations":
     MWe = np.matmul(inc_mat.to_numpy(), we_df.to_numpy())
     MWeMT = np.matmul(MWe, (inc_mat.to_numpy().transpose()))
     weighted_adj_mat = MWeMT - node_deg_mat
-    np.fill_diagonal(weighted_adj_mat, 0.00001)
+    np.fill_diagonal(weighted_adj_mat, 0.0001)
     tab1.write(weighted_adj_mat)
 
     tab1.subheader("Eigenvector Centrality:")
@@ -460,7 +465,7 @@ if view_choice == "Population hypergraph calculations":
             " values are denoted as:"
         )
         st.latex(f"\lambda_1, ..., \lambda_{len(weighted_adj_mat)}")
-        st.markdown("From the adjacency matrix above we get Eigenv values:")
+        st.markdown("From the adjacency matrix above we get Eigen values:")
         eigen_vals = linalg.eigvals(a=weighted_adj_mat)
         for i, value in enumerate(eigen_vals):
             st.latex(f"\lambda_{i} = {value}")
@@ -472,26 +477,39 @@ if view_choice == "Population hypergraph calculations":
             " done by substituting $\lambda$ into the equation below:"
         )
         st.latex("X^T A = X^T \lambda")
-        st.markdown("Where $X$ is:")
-        # TODO: Why is this not rendering as a table?
+        st.markdown("Where $X$ is the vector:")
         X = [*auc][:num_dis]
-        st.write(X)
+        st.write(pd.DataFrame(X))
 
         maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0])
 
-        st.markdown("From this we get the left Eigenvector:")
+        st.markdown("From this we get the Eigenvector:")
         left_eigvec = linalg.eig(weighted_adj_mat, left=True, right=False)[1][
             int(maxvalue_idx)
         ]
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
         norm_eigenvec = [v / sum(n) for n in [list(left_eigvec)] for v in n]
-        # TODO: Why isn't this normalised?
-        st.write(norm_eigenvec)
+        norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
+        st.write(norm_eigenvec_vec)
 
-    # TODO: look into hypernetx graphs with edge weights?
-    # TODO: Convert the eigenvector to a df, colour cells and explain
-    tab1.text("Most important diseases...")
+    tab1.write("Therefore the most central/important diseases are:")
+    norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
+    tab1.dataframe(norm_eig_df.style.highlight_max(axis=0, color="red"))
+    max_idx = max(norm_eig_df.idxmax())
+    min_idx = min(norm_eig_df.idxmin())
+
+    tab1.markdown(
+        f":red[{max_idx}] is the most central disease"
+        f" with the most connections and {min_idx} is the least central."
+    )
+
+    tab1.markdown(
+        "Whilst it is useful to see disease connectivity, we may"
+        " find more use in looking at which diseases progress to"
+        " other diseases. For more on this visit the tab"
+        "`Directed Hypergraph` at the top of this page."
+    )
 
     ###########################################################################
     # TAB2 = DIRECTED HYPERGRAPH
@@ -550,3 +568,6 @@ elif view_choice == "Most likely next disease":
 elif view_choice == "Most likely cause(s) of disease":
     st.markdown("_Page under construction_ 👷")
     # TODO: Implement
+
+st.markdown("-" * 50)
+st.text("Last Updated 31st March 2023 \t\t\t\t\t Version 1.0")
