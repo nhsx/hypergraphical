@@ -172,7 +172,7 @@ if view_choice == "Population hypergraph calculations":
         summary,
         caption="Module summary",
     )
-    with mot_tab.expander("What Can You Use This Dashboard For?"):
+    with mot_tab.expander("What Can You Use This Applet For?"):
         utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
     with mot_tab.expander("What is Multimorbidity?"):
