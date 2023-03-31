@@ -468,6 +468,7 @@ if view_choice == "Population hypergraph calculations":
         st.latex(f"\lambda_1, ..., \lambda_{len(weighted_adj_mat)}")
         st.markdown("From the adjacency matrix above we get Eigen values:")
         eigen_vals = linalg.eigvals(a=weighted_adj_mat)
+        eigen_vals = np.round(eigen_vals, 3)
         for i, value in enumerate(eigen_vals):
             st.latex(f"\lambda_{i} = {value}")
 
@@ -488,9 +489,10 @@ if view_choice == "Population hypergraph calculations":
         left_eigvec = linalg.eig(weighted_adj_mat, left=True, right=False)[1][
             int(maxvalue_idx)
         ]
+        left_eigvec = np.round(left_eigvec, 3)
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
-        norm_eigenvec = [v / sum(n) for n in [list(left_eigvec)] for v in n]
+        norm_eigenvec = [round((v / sum(n)), 3) for n in [list(left_eigvec)] for v in n]
         norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
         st.write(norm_eigenvec_vec)
 
@@ -569,6 +571,8 @@ elif view_choice == "Most likely next disease":
 elif view_choice == "Most likely cause(s) of disease":
     st.markdown("_Page under construction_ 👷")
     # TODO: Implement
+
+# TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
 st.text("Last Updated 31st March 2023 \t\t\t\t\t Version 1.0")
