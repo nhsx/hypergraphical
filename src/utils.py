@@ -458,29 +458,6 @@ def remove_dup_tuples(lst):
     return unique_lst
 
 
-# Undirected Hypergraphs Drawing
-def draw_undirected_hypergraph(edges, tab):
-    """Draw Undirected Hypergraphs using HypernetX.
-       NOTE: This doesn't currently consider duplicates.
-
-    Args:
-        edges (list): Edges to include in the graph.
-        tab (variable): Variable name of tab the graph should be produced in.
-    Returns:
-        pyplot: Undirected hypergraph showing the fictious patients graph.
-    """
-    hnx_edge_list = remove_dup_tuples(edges)
-
-    # Remove tuples with length == 1 to prevent self-connections
-    hnx_edge_list = [t for t in hnx_edge_list if len(t) != 1]
-
-    hnx_edge_dict = {v: k for v, k in enumerate(hnx_edge_list)}
-
-    H = hnx.Hypergraph(hnx_edge_dict)
-    hnx.draw(H)
-    tab.pyplot()
-
-
 ###############################################################################
 # UNDIRECTED MATRICES AND EIGENVECTOR CALCULATIONS
 ###############################################################################
@@ -677,3 +654,46 @@ def create_hyperedge_weight_df(edge_list, dis_list):
     for i in range(len(df)):
         df.iloc[i, i] = soren_dice_df.iloc[i, 4]
     return df
+
+
+def hnx_visual(edge_list, dis_list, tab, weight_labels=False):
+    """Create a HypernetX visual representation of the undirected hypergraph
+    which includes edge labels.
+
+    Args:
+        edge_list (list): List of edges in population hypergraph.
+        dis_list (list): List of nodes/diseases in population hypergraph.
+        tab (streamlit tab): Name of streamlit tab to display the output in.
+
+    Returns:
+        HypernetX undirected graph visualisation with weights.
+    """
+
+    if weight_labels:
+        # create hypernetx graph with edges labelled with the weights
+        soren_dice_df = soren_dice_create_df(edge_list, dis_list)
+
+        dict = {}
+        # get the node list (edge) and weights for each edge
+        for row_num, row in soren_dice_df.iterrows():
+            tup = soren_dice_df.iloc[row_num, 0]
+            node_list = list(tup)
+            weight = soren_dice_df.iloc[row_num, 4]
+            weight = round(weight, 3)
+            edge_label = str(tup) + " : " + str(weight)
+            dict[edge_label] = node_list
+
+        H = hnx.Hypergraph(dict)
+
+    else:
+
+        hnx_edge_list = remove_dup_tuples(edge_list)
+
+        # Remove tuples with length == 1 to prevent self-connections
+        hnx_edge_list = [t for t in hnx_edge_list if len(t) != 1]
+
+        hnx_edge_dict = {v: k for v, k in enumerate(hnx_edge_list)}
+        H = hnx.Hypergraph(hnx_edge_dict)
+
+    hnx.draw(H)
+    tab.pyplot()
