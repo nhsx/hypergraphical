@@ -164,6 +164,8 @@ if view_choice == "Population hypergraph calculations":
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
     ###########################################################################
 
+    utils.display_markdown_from_file("markdown_text/overview.txt", mot_tab)
+
     with mot_tab.expander("What Can You Use This Applet For?"):
         utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 

@@ -1,0 +1,10 @@
+### Overview
+
+We wish to demonstrate how hypergraphs can be used to capture relationships between multiple diseases 
+rather than relationships between pairs of diseases. For example, looking at multimorbidity 
+patterns instead of just comorbidities, which standard graphs tend to do. More people are suffering 
+from multiple chronic diseases at the same time, so it's important to think about how we can find 
+patterns in the uptake of multimoribidities, to see if prevention techniques or treatments could 
+be put in place sooner to improve the quality of life in patients. 
+
+
