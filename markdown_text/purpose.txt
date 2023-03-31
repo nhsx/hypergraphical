@@ -7,5 +7,3 @@ It aims to explain graphs and hypergraphs in a health setting. It can be used to
 graphs (left sidebar 'Show Maximum Number of Edges').
 It demonstrates a method to draw B-hypergraphs using the NetworkX package, where psuedonodes are used for hyperarc tails to 
 transition to hyperarc heads.
-
-The image below shows a summary of the different modules currently available and what insights they provide us about the population.
