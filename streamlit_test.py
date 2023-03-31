@@ -42,8 +42,8 @@ st.set_page_config(
     menu_items={
         # "Get Help": "https://www.england.nhs.uk/allocations/",
         # "Report a bug": "<github url>",
-        # "About": "[https://www.england.nhs.uk/allocations/]\
-        # (https://www.england.nhs.uk/allocations/)",
+        # "About": "[https://www.england.nhs.uk/]\
+        # (https://www.england.nhs.uk/)",
     },
 )
 padding = 1
@@ -149,10 +149,8 @@ binmat, conds_worklist, idx_worklist = utils.create_worklists(len(dis_list), edg
 if view_choice == "Population hypergraph calculations":
 
     st.title("Hypergraphs for Multimorbidity")
-    st.markdown(
-        "_This applet is a prototype which generates fictious patient data to"
-        " show how hypergraphs can be used to explore multimorbidity._"
-    )
+
+    utils.display_markdown_from_file("markdown_text/prototype.txt", st)
 
     mot_tab, tab1, tab2 = st.tabs(
         [
@@ -166,14 +164,17 @@ if view_choice == "Population hypergraph calculations":
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
     ###########################################################################
 
+    with mot_tab.expander("What Can You Use This Applet For?"):
+        utils.display_markdown_from_file("markdown_text/purpose.txt", st)
+
     utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
     summary = utils.add_image(image_path="images/summary.png", width=700, height=260)
     mot_tab.image(
         summary,
-        caption="Module summary",
+        caption="A summary of the different modules currently available"
+        " from this work and what insights they provide"
+        " us about the population.",
     )
-    with mot_tab.expander("What Can You Use This Applet For?"):
-        utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
     with mot_tab.expander("What is Multimorbidity?"):
         utils.display_markdown_from_file("markdown_text/mm_description.txt", st)

@@ -1,0 +1,15 @@
+:blue[Prototype]
+
+_This is not an official NHS England product or service but instead is an interactive applet prototype containing ongoing work.
+This prototype aims only to demonstrate work that may be of interest to others.
+Opinions expressed in this applet are not representative of the views of NHS England
+and any content here should __not__ be regarded as official output in any form.
+For more information about NHS England please visit our official 
+[website](https://www.england.nhs.uk/)._
+
+This applet randomly generates a set of __fictious__ 'patients' and their pathways to 
+demonstrate the use of how hypergraphs can be used to explore multimorbidity. The 
+sidebar on the left of this page can be used to change the number of 'patients' to 
+generate and the maximum number of diseases to include in their pathways.
+In changing the number of patients and diseases, the outputs will change 
+and this is purposeful to enable you to observe how population alterations result in different outcomes.
