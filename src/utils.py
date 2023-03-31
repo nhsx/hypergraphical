@@ -248,13 +248,13 @@ def create_worklists(num_dis, edge_list):
     diseases = [*auc][:num_dis]
 
     # binary matrix to show inclusion of a disease in a patients trajectory
-    binmat = np.zeros((len(edge_list), len(diseases)), dtype=np.int8)
+    binmat = np.zeros((len(edge_list), num_dis), dtype=np.int8)
     for row_index, row in enumerate(edge_list):
         for disease in row:
             binmat[row_index, diseases.index(disease)] = 1
 
     # conds_worklist
-    conds_worklist = np.full((len(edge_list), len(diseases)), -1, dtype=np.int8)
+    conds_worklist = np.full((len(edge_list), num_dis), -1, dtype=np.int8)
     for row_index, row in enumerate(edge_list):
         if len(set(row)) == 1:
             for disease in set(row):
@@ -379,8 +379,8 @@ def draw_b_hypergraph(nodes, edges, tab):
 
     pos = pos_dict
 
-    # Plot true nodes in orange
-    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes, node_color="#f77f00")
+    # Plot true nodes
+    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
 
     # Draw pariwise hyperarcs
     nx.draw_networkx_edges(
