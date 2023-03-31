@@ -167,16 +167,14 @@ if view_choice == "Population hypergraph calculations":
     ###########################################################################
 
     utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
+    summary = utils.add_image(image_path="images/summary.png", width=700, height=260)
+    mot_tab.image(
+        summary,
+        caption="Module summary",
+    )
     with mot_tab.expander("What Can You Use This Dashboard For?"):
         utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
-        summary = utils.add_image(
-            image_path="images/summary.png", width=700, height=260
-        )
-        st.image(
-            summary,
-            caption="Module summary",
-        )
     with mot_tab.expander("What is Multimorbidity?"):
         utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
 
@@ -508,7 +506,7 @@ if view_choice == "Population hypergraph calculations":
         "Whilst it is useful to see disease connectivity, we may"
         " find more use in looking at which diseases progress to"
         " other diseases. For more on this visit the tab"
-        "`Directed Hypergraph` at the top of this page."
+        " `Directed Hypergraph` at the top of this page."
     )
 
     ###########################################################################
