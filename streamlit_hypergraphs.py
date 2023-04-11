@@ -15,16 +15,6 @@ from string import ascii_uppercase as auc
 os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 # print(os.getcwd())
 
-# import random
-# import time as t
-# from importlib import reload
-
-# import matplotlib
-# import matplotlib.pyplot as plt
-# import numba
-
-
-# import seaborn as sns
 
 # local
 from src import build_model, centrality, centrality_utils, weight_functions
@@ -489,6 +479,7 @@ if view_choice == "Population hypergraph calculations":
         left_eigvec = linalg.eig(weighted_adj_mat, left=True, right=False)[1][
             :, int(maxvalue_idx)
         ]
+
         left_eigvec = np.round(left_eigvec, 3)
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
