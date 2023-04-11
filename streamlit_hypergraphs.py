@@ -18,7 +18,7 @@ os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 
 # local
 from src import build_model, centrality, centrality_utils, weight_functions
-from src import utils
+from src import numpy_utils
 
 ###############################################################################
 # Configure Page and Format
@@ -112,7 +112,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
 
     # Calculate the number of possible undirected hyperedges
     st.sidebar.subheader("Hyperedges (Undirected Hypergraph)")
-    max_hyperedges = utils.N_max_hyperedges(n_diseases=num_dis)
+    max_hyperedges = numpy_utils.N_max_hyperedges(n_diseases=num_dis)
     st.sidebar.write(
         max_hyperedges,
         "hyperedges in an undirected hypergraph (without self-loops)",
@@ -120,17 +120,19 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
 
     # Calculate the number of possible directed hyperedges (b-hypergraphs)
     st.sidebar.subheader("Hyperarcs (Directed Hypergraph)")
-    max_hyperarcs = utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
+    max_hyperarcs = numpy_utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
     st.sidebar.write(
         max_hyperarcs,
         "hyperarcs in a B-hypergraph (with self-loops)",
     )
 
-edge_list, dis_list, final_prog_df = utils.patient_maker(
+edge_list, dis_list, final_prog_df = numpy_utils.patient_maker(
     num_dis=num_dis, num_patients=num_patients, max_deg=num_dis
 )
 
-binmat, conds_worklist, idx_worklist = utils.create_worklists(len(dis_list), edge_list)
+binmat, conds_worklist, idx_worklist = numpy_utils.create_worklists(
+    len(dis_list), edge_list
+)
 
 ###############################################################################
 # POPULATION HYPERGRAPH CALCULATIONS
@@ -140,7 +142,7 @@ if view_choice == "Population hypergraph calculations":
 
     st.title("Hypergraphs for Multimorbidity")
 
-    utils.display_markdown_from_file("markdown_text/prototype.txt", st)
+    numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
 
     mot_tab, tab1, tab2 = st.tabs(
         [
@@ -154,13 +156,15 @@ if view_choice == "Population hypergraph calculations":
     # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
     ###########################################################################
 
-    utils.display_markdown_from_file("markdown_text/overview.txt", mot_tab)
+    numpy_utils.display_markdown_from_file("markdown_text/overview.txt", mot_tab)
 
     with mot_tab.expander("What Can You Use This Applet For?"):
-        utils.display_markdown_from_file("markdown_text/purpose.txt", st)
+        numpy_utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
-    utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
-    summary = utils.add_image(image_path="images/summary.png", width=700, height=260)
+    numpy_utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
+    summary = numpy_utils.add_image(
+        image_path="images/summary.png", width=700, height=260
+    )
     mot_tab.image(
         summary,
         caption="A summary of the different modules currently available"
@@ -169,12 +173,12 @@ if view_choice == "Population hypergraph calculations":
     )
 
     with mot_tab.expander("What is Multimorbidity?"):
-        utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
+        numpy_utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
 
     with mot_tab.expander("Graphs Explained"):
-        utils.display_markdown_from_file("markdown_text/graphs.txt", st)
+        numpy_utils.display_markdown_from_file("markdown_text/graphs.txt", st)
         col1, col2, col3 = st.columns(3)  # to centre image
-        dir_graph_image_labelled = utils.add_image(
+        dir_graph_image_labelled = numpy_utils.add_image(
             image_path="images/graph_labelled.png", width=300, height=300
         )
         col2.image(
@@ -183,19 +187,21 @@ if view_choice == "Population hypergraph calculations":
         )
 
         col1, col2 = st.columns(2)  # to centre image
-        undir_graph_image = utils.add_image(
+        undir_graph_image = numpy_utils.add_image(
             image_path="images/undirected_graph.png", width=300, height=300
         )
-        dir_graph_image = utils.add_image(
+        dir_graph_image = numpy_utils.add_image(
             image_path="images/directed_graph.png", width=300, height=300
         )
         col1.image(undir_graph_image, caption="Undirected graph")
         col2.image(dir_graph_image, caption="Directed graph")
 
-        utils.display_markdown_from_file("markdown_text/undir_hypergraphs.txt", st)
+        numpy_utils.display_markdown_from_file(
+            "markdown_text/undir_hypergraphs.txt", st
+        )
 
         col1, col2 = st.columns(2)  # to centre image
-        elastic = utils.add_image(
+        elastic = numpy_utils.add_image(
             image_path="images/undirected_hyper_elastic.png", width=400, height=400
         )
         col1.image(
@@ -203,7 +209,7 @@ if view_choice == "Population hypergraph calculations":
             caption="Undirected hypergraph with 'elastic band' hyperedges.",
         )
 
-        non_elastic = utils.add_image(
+        non_elastic = numpy_utils.add_image(
             image_path="images/undirected_hyper_nonelastic.png", width=400, height=400
         )
         col2.image(
@@ -211,10 +217,10 @@ if view_choice == "Population hypergraph calculations":
             caption="Undirected hypergraph with hyperedges.",
         )
 
-        utils.display_markdown_from_file("markdown_text/dir_hypergraphs.txt", st)
+        numpy_utils.display_markdown_from_file("markdown_text/dir_hypergraphs.txt", st)
 
         col1, col2 = st.columns(2)  # to centre image
-        hyperarc = utils.add_image(
+        hyperarc = numpy_utils.add_image(
             image_path="images/hyperarc_example.png", width=400, height=400
         )
         col1.image(
@@ -222,7 +228,7 @@ if view_choice == "Population hypergraph calculations":
             caption="Labelled directed hypergraph with only one hyperarc.",
         )
 
-        parents_sibs = utils.add_image(
+        parents_sibs = numpy_utils.add_image(
             image_path="images/siblings_parents.png", width=500, height=300
         )
         col2.image(
@@ -231,7 +237,7 @@ if view_choice == "Population hypergraph calculations":
             " and parent hyperedge.",
         )
 
-    utils.display_markdown_from_file("markdown_text/ref_list.txt", mot_tab)
+    numpy_utils.display_markdown_from_file("markdown_text/ref_list.txt", mot_tab)
 
     ###########################################################################
     # TAB1 = UNDIRECTED HYPERGRAPH
@@ -256,7 +262,7 @@ if view_choice == "Population hypergraph calculations":
         )
 
     if num_dis > 1:
-        utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=False)
+        numpy_utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=False)
 
     tab1.subheader("Individual Disease Importance")
     tab1.markdown(
@@ -264,7 +270,7 @@ if view_choice == "Population hypergraph calculations":
         " disease importance to the population using Eigenvector centrality"
         " on the undirected hypergraph. See overview image below."
     )
-    eigenvector_cent_image = utils.add_image(
+    eigenvector_cent_image = numpy_utils.add_image(
         image_path="images/eigenvector_centrality.png", width=700, height=230
     )
     tab1.image(
@@ -291,7 +297,7 @@ if view_choice == "Population hypergraph calculations":
             " generated, fictious patients the incidence matrix is:"
         )
 
-        inc_mat = utils.pandas_inc_mat(edge_list, dis_list)
+        inc_mat = numpy_utils.pandas_inc_mat(edge_list, dis_list)
         st.write(inc_mat)
         st.markdown("_Note that we don't include self edges e.g. ($A, A$_)")
 
@@ -305,7 +311,7 @@ if view_choice == "Population hypergraph calculations":
             " each node and create the diagonal matrix from them as"
             " as follows:"
         )
-        node_deg_mat = utils.node_deg_mat(edge_list, dis_list)
+        node_deg_mat = numpy_utils.node_deg_mat(edge_list, dis_list)
         st.write(
             pd.DataFrame(node_deg_mat, columns=dis_list).set_index(pd.Index(dis_list))
         )
@@ -395,7 +401,7 @@ if view_choice == "Population hypergraph calculations":
         )
 
         # Table with the hyperedges, power set and super set as column.
-        powsupset_tab = utils.create_powsupset_tab(edge_list, dis_list)
+        powsupset_tab = numpy_utils.create_powsupset_tab(edge_list, dis_list)
         st.dataframe(powsupset_tab)
 
         st.markdown(
@@ -409,7 +415,7 @@ if view_choice == "Population hypergraph calculations":
         # NOTE: the undirected hypergraph hyperedge calcs don't include
         # single/selfedges however the directed hypergraph hyperedge calcs do
         # but this we'll use the build_model etc files for these instead?
-        soren_dice_df = utils.soren_dice_create_df(edge_list, dis_list)
+        soren_dice_df = numpy_utils.soren_dice_create_df(edge_list, dis_list)
         st.dataframe(soren_dice_df)
 
     tab1.markdown(
@@ -418,11 +424,11 @@ if view_choice == "Population hypergraph calculations":
         " the diagonal numbers supplying the edge weights."
     )
 
-    utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=True)
+    numpy_utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=True)
 
     tab1.markdown("$W_e:$")
 
-    we_df = utils.create_hyperedge_weight_df(edge_list, dis_list)
+    we_df = numpy_utils.create_hyperedge_weight_df(edge_list, dis_list)
     tab1.dataframe(we_df.style.highlight_max(axis=0, color="grey"))
 
     tab1.markdown(
@@ -515,9 +521,9 @@ if view_choice == "Population hypergraph calculations":
     tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
-    utils.draw_b_hypergraph(dis_list, edge_list, tab2)
+    numpy_utils.draw_b_hypergraph(dis_list, edge_list, tab2)
 
-    pagerank_image = utils.add_image(
+    pagerank_image = numpy_utils.add_image(
         image_path="images/PageRank.png", width=700, height=380
     )
     tab2.image(
