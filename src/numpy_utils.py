@@ -41,7 +41,8 @@ def add_image(image_path, width, height):
 
 # def N_deg_hyperarcs(n, d, b_hyperarcs=True):
 #     """
-#     Given an n-node directed hypergraph, how many d-degree hyperarcs are there?
+#     Given an n-node directed hypergraph, how many d-degree hyperarcs are
+#     there?
 
 #     INPUTS:
 #     -----------------
