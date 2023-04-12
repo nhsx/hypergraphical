@@ -10,7 +10,6 @@ from ast import literal_eval
 # import streamlit as st
 import math
 import numpy as np
-import numba
 import pandas as pd
 
 
@@ -39,60 +38,54 @@ def add_image(image_path, width, height):
 ###############################################################################
 # CALCULATE MAXIMUM HYPEREDGES AND HYPERARCS
 ###############################################################################
+# def N_choose_k(n, k):
+#     """
+#     Number of ways to choose k items
+#     from n items without repetition and without order.
+#     n choose k = n! / (k! * (n - k)!)
+
+#     INPUTS:
+#     -------------------
+#         n (int) : Total number of items.
+
+#         k (int) : Number of items to choose.
+#     """
+#     # n factorial as numerator divided by k factorial multiplied by n-k
+#     # factorial as denominator
+#     # Note that n! ~ \gamma(n+1) where \gamma is the gamma function.
+#     numerator = math.gamma(n + 1)
+#     denom = math.gamma(k + 1) * math.gamma(n - k + 1)
+
+#     return numerator / denom
 
 
-@numba.njit(fastmath=True, nogil=True)
-def N_choose_k(n, k):
-    """
-    Numba-compiled combinatorial calculator - number of ways to choose k items
-    from n items without repetition and without order.
+# def N_deg_hyperarcs(n, d, b_hyperarcs=True):
+#     """
+#     Given an n-node directed hypergraph, how many d-degree hyperarcs are there?
 
-    INPUTS:
-    -------------------
-        n (int) : Total number of items.
+#     INPUTS:
+#     -----------------
+#         n (int) : Number of total nodes in directed hypergraph.
 
-        k (int) : Number of items to choose.
-    """
-    # n factorial as numerator divided by k factorial multiplied by n-k
-    # factorial as denominator
-    # Note that n! ~ \gamma(n+1) where \gamma is the gamma function.
-    numerator = math.gamma(n + 1)
-    denom = math.gamma(k + 1) * math.gamma(n - k + 1)
+#         d (int) : Degree of hyperarcs to count
 
-    return numerator / denom
+#         b_hyperarcs (bool) : Flag to tell function whether to only count
+#         B-hyperarcs or all hyperarc variants (B-, BF- and F-hyperarcs).
+#     """
+#     # Estimate n choose k
+#     no_hyperedges = int(N_choose_k(n, d))
+#     if b_hyperarcs:
+#         no_hyperarcs = d
+#     else:
+#         no_hyperarcs = 0
+#         for i in range(1, d):
+#             # no_i_hyp = int(d! / (i! * (d - i)!))
+#             no_i_hyp = int(N_choose_k(d, i))
+#             no_hyperarcs += no_i_hyp
 
-
-@numba.njit(fastmath=True, nogil=True)
-def N_deg_hyperarcs(n, d, b_hyperarcs=True):
-    """
-    Given an n-node directed hypergraph, how many d-degree hyperarcs are there?
-
-    INPUTS:
-    -----------------
-        n (int) : Number of total nodes in directed hypergraph.
-
-        d (int) : Degree of hyperarcs to count
-
-        b_hyperarcs (bool) : Flag to tell function whether to only count
-        B-hyperarcs or all hyperarc variants (B-, BF- and F-hyperarcs).
-    """
-    # Estimate n choose k using math.gamma supported by numba
-    no_hyperedges = int(N_choose_k(n, d))
-    if b_hyperarcs:
-        no_hyperarcs = d
-    else:
-        no_hyperarcs = 0
-        for i in range(1, d):
-            # numerator = int(math.gamma(d+1))
-            # denom = int(math.gamma(i+1)) * int(math.gamma(d-i+1))
-            # no_i_hyp = int(numerator / denom)
-            no_i_hyp = int(N_choose_k(d, i))
-            no_hyperarcs += no_i_hyp
-
-    return no_hyperedges * no_hyperarcs
+#     return no_hyperedges * no_hyperarcs
 
 
-@numba.njit(fastmath=True, nogil=True)
 def N_max_hyperarcs(n_diseases, b_hyp=True):
     """
     Compute the maximum possible number of hyperarcs
@@ -113,9 +106,9 @@ def N_max_hyperarcs(n_diseases, b_hyp=True):
     # Loop over hyperedge degrees
     for k in range(2, n_diseases + 1):
 
-        # Estimate n choose k using math.gamma supported by numba
-        comb = N_choose_k(n_diseases, k)
-        # comb = math.comb(n_diseases, k) NOT IMPLEMENTED IN NUMBA
+        # Estimate n choose k
+        #comb = N_choose_k(n_diseases, k)
+        comb = math.comb(n_diseases, k)
 
         # Count possible hyperarcs of hyperedge degree, depending on
         # if we only count B-hyperarcs or not
@@ -127,7 +120,6 @@ def N_max_hyperarcs(n_diseases, b_hyp=True):
     return int(hyperarc_sum)
 
 
-@numba.njit(fastmath=True, nogil=True)
 def N_max_hyperedges(n_diseases):
     """
     Given an n-node hypergraph, how many edges of degree 2 or more are there?
