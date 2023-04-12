@@ -1,10 +1,10 @@
-import pytest
 import os
-import math
 
 os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
-from src import numpy_utils, utils
+from src import numpy_utils
 
+# import pytest
+# import math
 
 # def test_n_choose_k():
 #     """given some values for n and k ensure the numpy_utils.N_choose_k
