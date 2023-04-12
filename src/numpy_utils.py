@@ -38,26 +38,6 @@ def add_image(image_path, width, height):
 ###############################################################################
 # CALCULATE MAXIMUM HYPEREDGES AND HYPERARCS
 ###############################################################################
-# def N_choose_k(n, k):
-#     """
-#     Number of ways to choose k items
-#     from n items without repetition and without order.
-#     n choose k = n! / (k! * (n - k)!)
-
-#     INPUTS:
-#     -------------------
-#         n (int) : Total number of items.
-
-#         k (int) : Number of items to choose.
-#     """
-#     # n factorial as numerator divided by k factorial multiplied by n-k
-#     # factorial as denominator
-#     # Note that n! ~ \gamma(n+1) where \gamma is the gamma function.
-#     numerator = math.gamma(n + 1)
-#     denom = math.gamma(k + 1) * math.gamma(n - k + 1)
-
-#     return numerator / denom
-
 
 # def N_deg_hyperarcs(n, d, b_hyperarcs=True):
 #     """
@@ -107,7 +87,7 @@ def N_max_hyperarcs(n_diseases, b_hyp=True):
     for k in range(2, n_diseases + 1):
 
         # Estimate n choose k
-        #comb = N_choose_k(n_diseases, k)
+        # comb = N_choose_k(n_diseases, k)
         comb = math.comb(n_diseases, k)
 
         # Count possible hyperarcs of hyperedge degree, depending on
