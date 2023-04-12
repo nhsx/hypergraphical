@@ -48,3 +48,21 @@ def test_max_b_hyperarcs():
     numpy_ans = numpy_utils.N_max_hyperarcs(n_dis, b_hyp=True)
     exp_ans = 4
     assert numpy_ans == exp_ans
+
+
+def test_max_hyperedges():
+    """Testing the N_max_hyperedges function to ensure it calculates
+    the maximum number of hyperedges correctly.
+
+    This does not include self-edges, as it's looking at undirected
+    hypergraphs.
+    """
+    n_dis = 3
+    numpy_ans = numpy_utils.N_max_hyperedges(n_dis)
+    exp_ans = 4
+    assert numpy_ans == exp_ans
+
+    n_dis = 4
+    numpy_ans = numpy_utils.N_max_hyperedges(n_dis)
+    exp_ans = 11
+    assert numpy_ans == exp_ans
