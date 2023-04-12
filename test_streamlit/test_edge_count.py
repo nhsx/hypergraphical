@@ -66,3 +66,15 @@ def test_max_hyperedges():
     numpy_ans = numpy_utils.N_max_hyperedges(n_dis)
     exp_ans = 11
     assert numpy_ans == exp_ans
+
+
+def test_max_bf_hyperarcs():
+    """Testing the calculation of the maximum number of BF-hyperarcs is
+    correct.
+
+    Hand calculated answer versus numpy calculated.
+    """
+    n_dis = 3
+    exp_ans = 15
+    numpy_ans = numpy_utils.N_max_hyperarcs(n_dis, b_hyp=False)
+    assert numpy_ans == exp_ans
