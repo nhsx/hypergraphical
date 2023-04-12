@@ -70,7 +70,7 @@ render_svg(svg)
 # SIDEBAR
 ###############################################################################
 
-st.sidebar.subheader("Random Patient Generator")
+# st.sidebar.subheader("Random Patient Generator")
 
 view_choice = st.sidebar.selectbox(
     "What would you like to view?",
@@ -118,12 +118,20 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
         "hyperedges in an undirected hypergraph (without self-loops)",
     )
 
-    # Calculate the number of possible directed hyperedges (b-hypergraphs)
-    st.sidebar.subheader("Hyperarcs (Directed Hypergraph)")
+    # Calculate the number of possible directed hyperedges (b-hyperarcs)
+    st.sidebar.subheader("B-Hyperarcs (Directed Hypergraph)")
     max_hyperarcs = numpy_utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=True)
     st.sidebar.write(
         max_hyperarcs,
-        "hyperarcs in a B-hypergraph (with self-loops)",
+        "B-hyperarcs in a hypergraph (with self-loops)",
+    )
+
+    # Calculate the number of possible bf-hyperarcs
+    st.sidebar.subheader("BF-Hyperarcs (Directed Hypergraph)")
+    max_bf_hyperarcs = numpy_utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=False)
+    st.sidebar.write(
+        max_bf_hyperarcs,
+        "BF-hyperarcs in a hypergraph (with self-loops)",
     )
 
 edge_list, dis_list, final_prog_df = numpy_utils.patient_maker(
@@ -572,4 +580,4 @@ elif view_choice == "Most likely cause(s) of disease":
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
-st.text("Last Updated 31st March 2023 \t\t\t\t\t Version 1.0")
+st.text("Last Updated 12th April 2023 \t\t\t\t\t Version 1.0")
