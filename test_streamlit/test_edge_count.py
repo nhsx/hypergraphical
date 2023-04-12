@@ -1,8 +1,7 @@
 import pytest
 import os
-
-os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 import math
+os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 from src import numpy_utils, utils
 
 
@@ -30,3 +29,21 @@ def test_n_choose_k():
 
     assert math.isclose(numpy_ans, exp_ans, rel_tol=tol, abs_tol=tol)
     assert math.isclose(numba_ans, exp_ans, rel_tol=tol, abs_tol=tol)
+
+
+def test_max_b_hyperarcs():
+    """Testing the N_max_hyperarcs function to ensure it calculates
+    the maximum number of B-hyperarcs correctly.
+
+    This includes self-edges, as it's looking at directed hypergraphs.
+    """
+
+    n_dis = 3
+    numpy_ans = numpy_utils.N_max_hyperarcs(n_dis, b_hyp=True)
+    exp_ans = 12
+    assert numpy_ans == exp_ans
+
+    n_dis = 2
+    numpy_ans = numpy_utils.N_max_hyperarcs(n_dis, b_hyp=True)
+    exp_ans = 4
+    assert numpy_ans == exp_ans
