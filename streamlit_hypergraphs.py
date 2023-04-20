@@ -83,9 +83,9 @@ view_choice = st.sidebar.selectbox(
 
 
 num_patients = st.sidebar.slider(
-    "Number of patients to generate", min_value=1, max_value=20
+    "Number of patients to generate", min_value=5, max_value=20
 )
-num_dis = st.sidebar.slider("Number of diseases to generate", min_value=1, max_value=5)
+num_dis = st.sidebar.slider("Number of diseases to generate", min_value=2, max_value=5)
 
 if st.sidebar.checkbox("Show Maximum Number of Edges"):
     st.sidebar.write(
@@ -251,7 +251,7 @@ if view_choice == "Population hypergraph calculations":
     # TAB1 = UNDIRECTED HYPERGRAPH
     ###########################################################################
 
-    if tab1.checkbox("Show patients individually as undirected"):
+    if tab1.checkbox("Show patients individual trajectories"):
         tab1.write(final_prog_df)
 
     tab1.header("Undirected Hypergraph")
@@ -580,4 +580,4 @@ elif view_choice == "Most likely cause(s) of disease":
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
-st.text("Last Updated 12th April 2023 \t\t\t\t\t Version 1.0")
+st.text("Last Updated 20th April 2023 \t\t\t\t\t Version 0.1.0")
