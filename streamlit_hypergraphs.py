@@ -11,11 +11,6 @@ from scipy import linalg
 # from sklearn import preprocessing
 from string import ascii_uppercase as auc
 
-# print(os.getcwd())
-os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
-# print(os.getcwd())
-
-
 # local
 from src import build_model, centrality, centrality_utils, weight_functions
 from src import numpy_utils
@@ -147,7 +142,6 @@ binmat, conds_worklist, idx_worklist = numpy_utils.create_worklists(
 ###############################################################################
 
 if view_choice == "Population hypergraph calculations":
-
     st.title("Hypergraphs for Multimorbidity")
 
     numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
