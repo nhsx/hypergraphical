@@ -8,9 +8,8 @@ black
 networkx
 hypernetx
 matplotlib
-random
-math
 numpy
 numba
 pandas
 seaborn
+streamlit
