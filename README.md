@@ -56,26 +56,19 @@ Users can follow through the examples to find out how the hypergraph-mm works by
 
 ## Deployment (local) Instructions
 
- To deploy the streamlit app locally we advise using a virtual environment (venv for example) and following the instructions below:
+To deploy the streamlit app locally we advise following the instructions below:
 
-The project virtual environment can be activated in bash using the following command
+To clone the repository:
 
-```bash
-python3 -m venv <path to virtual env>
-source <path to virtual env>/bin/activate
-```
+`git clone https:github.com/nhsx/hypergraphical`
 
-To activate the virtual environment in Windows the following command can be used
+To create a suitable environment, in the terminal run the following command:
 
-```shell
-<path to virtual env>\Scripts\activate
-```
+* Build conda environment via `conda create --name hg-streamlit python=3.8`
 
-To install all the prerequisite packages to run the tool, in the terminal run the following command:
+* Activate environment `conda activate hg-streamlit`
 
-```shell
-pip install -r requirements.txt
-```
+* Install requirements via `python -m pip install -r ./requirements.txt`
 
 To run the tool locally, open a terminal whilst in the directory containing the app and run
 
