@@ -73,7 +73,7 @@ To create a suitable environment, in the terminal run the following command:
 To run the tool locally, open a terminal whilst in the directory containing the app and run
 
 ```bash
-streamlit run streamlit_test.py
+streamlit run streamlit_hypergraphs.py
 ```
 
 Streamlit will then render the tool and display it in your default web browser at
