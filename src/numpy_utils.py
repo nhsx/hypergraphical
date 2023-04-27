@@ -86,7 +86,6 @@ def N_max_hyperarcs(n_diseases, b_hyp=True):
 
     # Loop over hyperedge degrees
     for k in range(2, n_diseases + 1):
-
         # Estimate n choose k
         # comb = N_choose_k(n_diseases, k)
         comb = math.comb(n_diseases, k)
@@ -348,7 +347,7 @@ def draw_b_hypergraph(nodes, edges, tab):
     real_node_coords_dict = dict(zip(nodes, real_node_coords))
     extra_node_coords_dict = dict(zip(extra_nodes, extra_node_coords))
 
-    pos_dict = real_node_coords_dict | extra_node_coords_dict
+    pos_dict = {**real_node_coords_dict, **extra_node_coords_dict}
 
     pos = pos_dict
 
@@ -659,7 +658,6 @@ def hnx_visual(edge_list, dis_list, tab, weight_labels=False):
         H = hnx.Hypergraph(dict)
 
     else:
-
         hnx_edge_list = remove_dup_tuples(edge_list)
 
         # Remove tuples with length == 1 to prevent self-connections
