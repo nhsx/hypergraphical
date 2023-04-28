@@ -1,4 +1,4 @@
-# Hypergraphs
+# Hypergraphical
 
 A library of animations explaining hypergraphs using manim.
 
@@ -40,15 +40,24 @@ Please find a colab workbook here:
 
 ----------------------
 
-_The section below probably needs integrating in better with the animation stuff, but I've kept it seperate for now_
 
 # Hypergraphs for Multimorbidity
 
 This tool has been built using Streamlit, a Python app framework that can be used to create web apps. This Streamlit app allows users to explore hypergraphs in the context of multimoribidity. 
 
-The Streamlit app explains what multimorbidity is, what hypergraphs are and why hypergraphs are useful for modelling multimoribidity.
+_This is not an official NHS England product or service but instead is an interactive applet prototype containing ongoing work.
+This prototype aims only to demonstrate work that may be of interest to others.
+Opinions expressed in this applet are not representative of the views of NHS England
+and any content here should __not__ be regarded as official output in any form.
+For more information about NHS England please visit our official 
+[website](https://www.england.nhs.uk/)._
 
-Users can input the number of fictious patients and diseases to randomly generate hypergraphs (undirected and directed) to represent the population.
+The Streamlit applet explains what multimorbidity is, what hypergraphs are and why hypergraphs are useful for modelling multimoribidity. This applet randomly generates a set of __fictious__ 'patients' and their pathways to 
+demonstrate the use of how hypergraphs can be used to explore multimorbidity. The 
+sidebar on the left of this page can be used to change the number of 'patients' to 
+generate and the maximum number of diseases to include in their pathways.
+In changing the number of patients and diseases, the hypergraph outputs will change 
+and this is purposeful to enable you to observe how population alterations result in different outcomes.
 
 Users can follow through the examples to find out how the hypergraph-mm works by generating hyperedge and hyperarc weights for the population, followed by calculating centrality to show the importance of different diseases within the population. 
 
@@ -82,4 +91,6 @@ Streamlit will then render the tool and display it in your default web browser a
 http://localhost:8501/
 ```
 
-_In the future we could deploy this app so that GitHub isn't required_
+## Testing
+
+Run tests by using `pytest test_streamlit/test_edge_count.py`.

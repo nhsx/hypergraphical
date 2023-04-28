@@ -574,4 +574,4 @@ elif view_choice == "Most likely cause(s) of disease":
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
-st.text("Last Updated 20th April 2023 \t\t\t\t\t Version 0.1.0")
+st.text("Last Updated 28th April 2023 \t\t\t\t\t Version 0.1.0")
