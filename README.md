@@ -43,17 +43,16 @@ Please find a colab workbook here:
 
 # Hypergraphs for Multimorbidity
 
-This tool has been built using Streamlit, a Python app framework that can be used to create web apps. This Streamlit app allows users to explore hypergraphs in the context of multimoribidity. 
+This __prototype__ tool has been built using Streamlit, a Python app framework that can be used to create web apps. This Streamlit app allows users to explore hypergraphs in the context of multimoribidity. 
 
 _This is not an official NHS England product or service but instead is an interactive applet prototype containing ongoing work.
-This prototype aims only to demonstrate work that may be of interest to others.
+This __prototype__ aims only to demonstrate work that may be of interest to others.
 Opinions expressed in this applet are not representative of the views of NHS England
 and any content here should __not__ be regarded as official output in any form.
 For more information about NHS England please visit our official 
 [website](https://www.england.nhs.uk/)._
 
-The Streamlit applet explains what multimorbidity is, what hypergraphs are and why hypergraphs are useful for modelling multimoribidity. This applet randomly generates a set of __fictious__ 'patients' and their pathways to 
-demonstrate the use of how hypergraphs can be used to explore multimorbidity. The 
+The Streamlit applet explains what multimorbidity is, what hypergraphs are and why hypergraphs are useful for modelling multimoribidity. This applet randomly generates a set of _fictious_ 'patients' and their disease pathways to demonstrate the use of hypergraphs in understanding multimorbidity. The 
 sidebar on the left of this page can be used to change the number of 'patients' to 
 generate and the maximum number of diseases to include in their pathways.
 In changing the number of patients and diseases, the hypergraph outputs will change 
