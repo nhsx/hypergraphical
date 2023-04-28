@@ -497,7 +497,7 @@ if view_choice == "Population hypergraph calculations":
 
     tab1.write("Therefore the most central/important diseases are:")
     norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
-    tab1.dataframe(norm_eig_df.style.highlight_max(axis=0, color="red"))
+    tab1.dataframe(norm_eig_df.style.highlight_max(axis=0, color="pink"))
     max_idx = max(norm_eig_df.idxmax())
     min_idx = min(norm_eig_df.idxmin())
 
