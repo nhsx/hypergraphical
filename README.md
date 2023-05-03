@@ -1,5 +1,19 @@
 # Hypergraphical
 
+### About
+
+This repository contains two types of code, _Hypergraph Animations_ and _Hypergraphs for Multimorbidity_. As described below one part 
+contains the code to create hypergraph animations using manim, explaining how 
+hypergraphs are constructed. The second component is a streamlit applet which 
+provides an interactive walkthrough of calculating node centrality and 
+PageRank scores of hypergraphs. This code supports the Transforming Healthcare 
+Data with Graph-based Techniques Using SAIL DataBank project. A link to the 
+original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/).
+
+_**Note:** Only public or fake data are shared in this repository._
+
+# Hypergraph Animations
+
 A library of animations explaining hypergraphs using manim.
 
 
