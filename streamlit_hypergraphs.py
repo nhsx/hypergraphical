@@ -91,8 +91,26 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
         num_dis,
         "potential diseases there could be up to... ",
     )
+
     # Calculate the number of possible directed edges
-    st.sidebar.subheader("Standard Directed Graph")
+    st.sidebar.subheader("Standard Graph (Undirected)")
+
+    max_edges_undir = int((num_dis * (num_dis - 1)) / 2)
+    st.sidebar.write(
+        max_edges_undir,
+        "edges in a standard undirected graph",
+    )
+
+    # Calculate the number of possible undirected hyperedges
+    st.sidebar.subheader("Hyperedges (Undirected Hypergraph)")
+    max_hyperedges = numpy_utils.N_max_hyperedges(n_diseases=num_dis)
+    st.sidebar.write(
+        max_hyperedges,
+        "hyperedges in an undirected hypergraph",
+    )
+
+    # Calculate the number of possible directed edges
+    st.sidebar.subheader("Standard Graph (Directed)")
 
     max_edges = num_dis * (num_dis - 1)
     st.sidebar.write(
@@ -103,14 +121,6 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
     st.sidebar.write(
         max_edges + num_dis,
         "edges in a standard directed graph (with self-loops)",
-    )
-
-    # Calculate the number of possible undirected hyperedges
-    st.sidebar.subheader("Hyperedges (Undirected Hypergraph)")
-    max_hyperedges = numpy_utils.N_max_hyperedges(n_diseases=num_dis)
-    st.sidebar.write(
-        max_hyperedges,
-        "hyperedges in an undirected hypergraph (without self-loops)",
     )
 
     # Calculate the number of possible directed hyperedges (b-hyperarcs)
