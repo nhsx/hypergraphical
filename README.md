@@ -2,8 +2,10 @@
 
 ### About
 
-This repository contains two types of code, _Hypergraph Animations_ and _Hypergraphs for Multimorbidity_. As described below one part 
-contains the code to create hypergraph animations using manim, explaining how 
+This repository contains two types of code, _Hypergraph Animations_ and _Hypergraphs for Multimorbidity_. 
+
+As described below one part 
+contains the code to create hypergraph animations using `manim`, explaining how 
 hypergraphs are constructed. The second component is a streamlit applet which 
 provides an interactive walkthrough of calculating node centrality and 
 PageRank scores of hypergraphs. This code supports the Transforming Healthcare 
