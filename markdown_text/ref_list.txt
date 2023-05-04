@@ -1,0 +1,16 @@
+#### References
+
+Claude Berge. Graphs and Hypergraphs. Mathematical Studies. North Holland Publishing Company, 1976.
+
+Anna Cassell, Duncan Edwards, Amelia Harshfield, Kirsty Rhodes, James Brimicombe, Rupert Payne,
+and Simon Griffin. The epidemiology of multimorbidity in primary care: a retrospective cohort study.
+British Journal of General Practice, 68(669):245$-$251, 2018.
+
+Andrew Kingston, Louise Robinson, Heather Booth, Martin Knapp, Carol Jagger, and for the MO-
+DEM project. Projections of multi-morbidity in the older population in England to 2035: estimates from
+the Population Ageing and Care Simulation (PACSim) model. Age and Ageing, 47(3):374$–$380, 01 2018.
+
+James Rafferty, Alan Watkins, Jane Lyons, Ronan A Lyons, Ashley Akbari, Niels Peek, Farideh Jalali-
+Najafabadi, Thamer Ba Dhafari, Alexander Pate, Glen P Martin, et al. Ranking sets of morbidities using
+hypergraph centrality. Journal of Biomedical Informatics, 122:103916, 2021.
+

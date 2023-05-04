@@ -1,0 +1,9 @@
+### Purpose of This Applet
+
+The model shown in this applet builds upon the work carried out in Rafferty et al., 2021.
+This Streamlit applet can be used to learn about how the hypergraphs multimorbidity model works with fictitious patient data. 
+It provides test cases to allow users to understand the model and apply the `hypergraphs_mm` package to their own data.
+It aims to explain graphs and hypergraphs in a health setting. It can be used to demonstrate the complexity of different types of 
+graphs (left sidebar 'Show Maximum Number of Edges').
+It demonstrates a method to draw B-hypergraphs using the NetworkX package, where psuedonodes are used for hyperarc tails to 
+transition to hyperarc heads.

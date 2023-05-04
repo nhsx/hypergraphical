@@ -5,3 +5,7 @@ src/hypergraphs/weighting.py
 .tox/
 .DS_STORE
 venv/
+__pycache__/
+drawing_test.ipynb
+patient_converter_playground.ipynb
+remove_dead_end.ipynb

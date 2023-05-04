@@ -1,0 +1,32 @@
+You can explore and visualise how undirected population-based hypergraphs are built from multiple fictitious patients in the 
+`Undirected Hypergraph` tab at the top of this page.
+
+#### Directed B-Hypergraphs
+
+Directed hypergraphs expand on undirected hypergraphs, but have the advantage that they can represent directionality between 
+relationships i.e. the sequence in which conditions occur in patients.
+
+A directed hypergraph $\mathcal{H}_D(V, \mathcal{E})$ is a collection of nodes stored in $V = \{v_1, \dots, v_n\}$, and hyperarcs, 
+$\mathcal{E} = \{e_1, \dots,e_m\}$. Each hyperarc $e_i = \langle T(e_i), H(e_i)\rangle$ where $T(e_i), H(e_i) \subseteq V$ represents
+ a collection of nodes such that those $v_i \in T(e_i)$ are the tails of the hyperarc and those $v_j \in H(e_i)$ are the heads of 
+ the hyperarc. 
+
+There are various types of directed hypergraphs, B-hypergraphs, F-hypergraphs, and BF-hypergraphs to name a few.
+B-hypergraphs are restricted to have only one head node for each hyperarc, but can have unlimited tail nodes. For example, someone 
+might have disease $C$ and $A$ (tail nodes) and then gain disease $B$ (head node) (see visual below). In the opposite case, 
+F-hypergraphs can have only one tail node but unlimited head nodes. BF-hypergraphs have no restriction on the number of tail or head
+nodes.
+
+We chose to use B-hypergraphs due to the computational complexity being high in the  BF-hypergraph variation and because the 
+clinical way that conditions tend to aggregate can be well represented with B-hypergraphs. However, we do appreciate the 
+limitation here that someone may gain two diseases simultaneously, which could be better represented using BF-hypergraphs, but we 
+apply a workaround to this. This is out of the scope of this dashboard, but further information can be found in an upcoming
+publication and code base.
+
+Undirected, parent hyperedges give rise to children hyperarcs (directed hyperedges). Sibling hyperarcs are hyperarcs which have the
+same parent hyperedge and thus have the same set of nodes as the hyperarc in question. An example of a hyperarc with its siblings
+and parent hyperedge are shown in the image below. You can explore and visualise how directed hypergraphs are built from multiple 
+fictitious patients in the `Directed Hypergraph` tab at the top of this page.
+
+
+
