@@ -567,6 +567,7 @@ def soren_dice_create_df(edge_list, dis_list):
         edge_list_with_self_edge.append(tuple(sorted(tup)))
 
     dups_removed = remove_dup_tuples(edge_list)
+
     # ignoring selfloop hyperedges
     all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
 
@@ -608,7 +609,7 @@ def soren_dice_create_df(edge_list, dis_list):
         soren_dice = edge_numer / edge_denom
         edge_weight_df.iloc[row_num, 4] = soren_dice
 
-    return edge_weight_df
+    return edge_weight_df.sort_values(by=["W_e"], ascending=False)
 
 
 def create_hyperedge_weight_df(edge_list, dis_list):
