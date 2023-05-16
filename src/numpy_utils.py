@@ -609,7 +609,10 @@ def soren_dice_create_df(edge_list, dis_list):
         soren_dice = edge_numer / edge_denom
         edge_weight_df.iloc[row_num, 4] = soren_dice
 
-    return edge_weight_df.sort_values(by=["W_e"], ascending=False)
+    edge_weight_df = edge_weight_df.sort_values(by=["W_e"], ascending=False)
+    edge_weight_df = edge_weight_df.reset_index(drop=True)
+
+    return edge_weight_df
 
 
 def create_hyperedge_weight_df(edge_list, dis_list):
