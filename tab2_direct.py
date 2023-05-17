@@ -6,6 +6,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from scipy import linalg
+import itertools
 
 # from sklearn import preprocessing
 from string import ascii_uppercase as auc
@@ -112,8 +113,7 @@ def tab2_directed(
         st.markdown(f"$W(p({{{examp_hyperarc}}}))$ = {examp_hyperedge_we}.")
         st.markdown(
             "Then we need to count the number of times the hyperarc "
-            "occurs (the raw prevalence). The Table below shows the "
-            "prevalence for each hyperarc within the population."
+            "occurs (the raw prevalence)."
         )
 
         # Get a count for the number of times each of the hyperarcs appear
@@ -138,20 +138,98 @@ def tab2_directed(
 
         for i, row in hyperarc_count_df.iterrows():
             hyperarc_comma = hyperarc_count_df.iloc[i, 0]
-            hyperarc_comma = ", ".join(map(str, hyperarc_comma))
-            last_comma_idx = hyperarc_comma.rfind(",")
-            if last_comma_idx != -1:
-                hyperarc_comma = (
-                    hyperarc_comma[:last_comma_idx]
-                    + " -> "
-                    + hyperarc_comma[last_comma_idx + 1 :]
-                )
-            hyperarc_count_df.iloc[i, 0] = hyperarc_comma
+            hyperarc_count_df.iloc[i, 0] = numpy_utils.print_hyperarc_str(
+                hyperarc_comma
+            )
+
+        # st.dataframe(hyperarc_count_df)
+
+        # Find the number of times the example hyperarc occurs
+        hyperarc_count_row = hyperarc_count_df[
+            hyperarc_count_df["Hyperarc"] == examp_hyperarc
+        ]
+        examp_hyperarc_count = hyperarc_count_row.iloc[0, 1]
+
+        st.markdown(
+            f"The raw prevalence of hyperarc {{{examp_hyperarc}}} is {examp_hyperarc_count}."
+        )
+
+        st.markdown(f"$C({{{examp_hyperarc}}})$ = {examp_hyperarc_count}.")
+
+        st.markdown(
+            "Next we need to count the number of times the hyperarc "
+            "children of the parent hyperedge occurs. In other words we need "
+            "to find the siblings for the hyperarc and the number of "
+            "times they occur."
+        )
+
+        st.markdown("The sibling hyperarcs are:")
+        # Print of siblings
+        elems = examp_hyperedge.split(", ")
+        arc_siblings = list(itertools.permutations(elems, len(elems)))
+
+        sibs_list = list()
+        for hyp in arc_siblings:
+            sib = numpy_utils.print_hyperarc_str(hyp)
+            sibs_list.append(sib)
+
+            st.write(sib)
+
+        # Count of hyperarc siblings
+        hyperedge_par_list = list()
+        for i, hyp_edge in hyperarc_count_df.iterrows():
+            arc = hyperarc_count_df.iloc[i, 0]
+            par_edge = arc.replace("->", ",").replace(" ", "")
+            par_edge_list = par_edge.split(",")
+            par_edge_set = set(par_edge_list)
+            hyperedge_par_list.append(par_edge_set)
+
+        hyperarc_count_df["Parent Hyperedge"] = hyperedge_par_list
+        hyperarc_count_df["Siblings Count"] = [None] * len(hyperarc_count_df)
+        hyperarc_count_df["Parent Hyperedge Weight"] = [None] * len(hyperarc_count_df)
+        hyperarc_count_df["w(h_i)"] = [None] * len(hyperarc_count_df)
+
+        for i, row in hyperarc_count_df.iterrows():
+            # Count the sum of the parent edges
+            par_edge = hyperarc_count_df.iloc[i, 2]
+            matching_par_rows = hyperarc_count_df[
+                hyperarc_count_df["Parent Hyperedge"] == par_edge
+            ]
+            par_sum = matching_par_rows["Count"].sum()
+            hyperarc_count_df.iloc[i, 3] = par_sum
+
+            # Get the hyperedge weights from the soren_dice df
+            soren_row = soren_dice_df[
+                soren_dice_df["Hyperedge"] == tuple(sorted(par_edge))
+            ]
+            if len(soren_row) > 0:
+                hyperarc_count_df.iloc[i, 4] = soren_row.iloc[0, 4]
+
+        # This is the sibling count of the examp hyperarc
+        examp_sib_count = hyperarc_count_df[
+            hyperarc_count_df["Hyperarc"] == examp_hyperarc
+        ].iloc[0, 3]
+
+        st.markdown(f"These siblings occur {examp_sib_count} times.")
+
+        st.markdown(r"""$$\sum_{h_j \in \mathcal{K}(h_i)}C(h_j)$$ is equal to:""")
+        st.markdown(f"{examp_sib_count}")
+
+        st.markdown("We can then calculate this hyperarc weight $w(h_{i})$ as:")
+        st.markdown(
+            f"{examp_hyperedge_we}({examp_hyperarc_count}/{examp_sib_count})={examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count)}"
+        )
+
+        st.markdown(
+            "The Table below gives the counts and weight "
+            "values for all of the hyperarcs:"
+        )
+
+        hyperarc_count_df["w(h_i)"] = hyperarc_count_df["Parent Hyperedge Weight"] * (
+            hyperarc_count_df["Count"] / hyperarc_count_df["Siblings Count"]
+        )
 
         st.dataframe(hyperarc_count_df)
-
-        # Dataframe with hyperarc and occurence
-        # st.markdown(f"")
 
     tab2.subheader("RandomWalk Probability Transition Matrix:")
 
