@@ -148,6 +148,23 @@ def agg_prog(final_prog):
     return aggregate_prog_list
 
 
+def print_hyperarc_str(dis_tup):
+    """Convert a tuple of diseases and convert them to a string where the
+    last comma is a right arrow.
+
+    Args:
+        dis_tup (tuple): Tuple containing diseases.
+
+    Returns:
+        str: Hyperarc string.
+    """
+    string = ", ".join(map(str, dis_tup))
+    last_comma_idx = string.rfind(",")
+    if last_comma_idx != -1:
+        string = string[:last_comma_idx] + " -> " + string[last_comma_idx + 1 :]
+    return string
+
+
 def patient_maker(num_dis, num_patients, max_deg):
     """Create random fake patients directed disease trajectories for NetworkX
         visual directed hypergraph.
@@ -199,7 +216,7 @@ def patient_maker(num_dis, num_patients, max_deg):
     # format required for NetworkX
     edge_list = [ii for i in all_progs for ii in i]
 
-    return edge_list, dis_list, final_prog_df
+    return edge_list, dis_list, final_prog_df, all_progs
 
 
 def create_worklists(num_dis, edge_list):

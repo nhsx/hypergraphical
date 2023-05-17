@@ -143,7 +143,7 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
         "BF-hyperarcs in a hypergraph (with self-loops)",
     )
 
-edge_list, dis_list, final_prog_df = numpy_utils.patient_maker(
+edge_list, dis_list, final_prog_df, all_progs = numpy_utils.patient_maker(
     num_dis=num_dis, num_patients=num_patients, max_deg=num_dis
 )
 
@@ -186,7 +186,7 @@ if view_choice == "Population hypergraph calculations":
     ###########################################################################
 
     tab2_direct.tab2_directed(
-        tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist
+        tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs
     )
 
     ###########################################################################
