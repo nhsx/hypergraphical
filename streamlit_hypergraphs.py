@@ -151,6 +151,7 @@ binmat, conds_worklist, idx_worklist = numpy_utils.create_worklists(
     len(dis_list), edge_list
 )
 
+
 ###############################################################################
 # POPULATION HYPERGRAPH CALCULATIONS
 ###############################################################################
@@ -184,7 +185,9 @@ if view_choice == "Population hypergraph calculations":
     # TAB2 = DIRECTED HYPERGRAPH
     ###########################################################################
 
-    tab2_direct.tab2_directed(tab2, final_prog_df, dis_list, edge_list)
+    tab2_direct.tab2_directed(
+        tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist
+    )
 
     ###########################################################################
     # TODO: TAB3 = DUAL HYPERGRAPH
@@ -207,4 +210,4 @@ elif view_choice == "Most likely cause(s) of disease":
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
-st.text("Last Updated 28th April 2023 \t\t\t\t\t Version 0.1.0")
+st.text("Last Updated 16th May 2023 \t\t\t\t\t Version 0.1.0")
