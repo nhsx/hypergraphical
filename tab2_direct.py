@@ -58,7 +58,10 @@ def tab2_directed(
     # NOTE: the undirected hypergraph hyperedge calcs don't include
     # single/selfedges however the directed hypergraph hyperedge calcs do
     # but this we'll use the build_model etc files for these instead?
-    soren_dice_df = numpy_utils.soren_dice_create_df(edge_list, dis_list)
+    soren_dice_df = numpy_utils.soren_dice_create_df(
+        edge_list, dis_list, undirected=False
+    )
+
     tab2.dataframe(soren_dice_df)
 
     tab2.markdown(
@@ -364,7 +367,7 @@ def tab2_directed(
         st.markdown(
             f"The probability of transitioning from {all_dis_pairs[1][0]} to "
             f"{all_dis_pairs[1][1]} is the sum of the weights of these "
-            f"hyperarcs: {examp_succ_df['Weight'].sum()}."
+            f"hyperarcs: {round(examp_succ_df['Weight'].sum(), 2)}."
         )
 
         st.markdown("__All node pairs__")

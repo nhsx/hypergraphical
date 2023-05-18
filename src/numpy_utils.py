@@ -547,11 +547,20 @@ def superset(dis_list, dis_set):
     return super_set
 
 
-def create_powsupset_tab(edge_list, dis_list):
+def create_powsupset_tab(edge_list, dis_list, undirected=True):
     # Create hyperedge, power set and super set table.
     # All the hyperedges:
     dups_removed = remove_dup_tuples(edge_list)
-    all_hyperedges = [t for t in dups_removed if len(t) != 1]
+    if undirected:
+        all_hyperedges = [t for t in dups_removed if len(t) != 1]
+    else:
+        all_hyperedges = [t for t in dups_removed]
+        # for t in dups_removed:
+        #     if len(t) == 0:
+        #         t = t * 2
+        #         all_hyperedges.append(tuple(t))
+        #     else:
+        #         all_hyperedges.append(tuple(t))
 
     # column one of the df should be all_hyperedges
     pow_sup_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
@@ -578,7 +587,7 @@ def create_powsupset_tab(edge_list, dis_list):
     return pow_sup_df
 
 
-def soren_dice_create_df(edge_list, dis_list):
+def soren_dice_create_df(edge_list, dis_list, undirected=True):
     # Weight calculation UNDIRECTED hypergraph
     # list of all patients progressive trajectories (INCLUDING SELFEDGES)
     edge_list_with_self_edge = list()
@@ -588,8 +597,11 @@ def soren_dice_create_df(edge_list, dis_list):
 
     dups_removed = remove_dup_tuples(edge_list)
 
-    # ignoring selfloop hyperedges
-    all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
+    if undirected:
+        # ignoring selfloop hyperedges
+        all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
+    else:
+        all_hyperedges = [tuple(t) for t in dups_removed]
 
     # create dataframe for: hyperedge | C(e_i) | Sum C(e_j) | Sum C(e_k)
     edge_weight_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
@@ -600,7 +612,7 @@ def soren_dice_create_df(edge_list, dis_list):
     edge_weight_df["W_e"] = ""
 
     # get the power set and super set table
-    pow_sup_df = create_powsupset_tab(edge_list, dis_list)
+    pow_sup_df = create_powsupset_tab(edge_list, dis_list, undirected)
 
     for row_num, row in enumerate(edge_weight_df.iterrows()):
         edge = edge_weight_df.iloc[row_num, 0]
