@@ -320,6 +320,10 @@ def tab2_directed(
 
         # get a list of all possible pairs
         all_dis_pairs = list(itertools.permutations(dis_list, 2))
+
+        # Create self loop pairs
+        for node in dis_list:
+            all_dis_pairs.append([node] * 2)
         for pair in all_dis_pairs:
             for i, row in hyperarc_weights_df.iterrows():
                 tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
