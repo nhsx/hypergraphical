@@ -332,11 +332,22 @@ def tab2_directed(
                     # st.markdown(
                     #     f"{pair[0]} in tail: {{{tail}}} and {pair[1]} in head: {{{head}}}"
                     # )
-                    nn_succ_trans_df.loc[pair[0], pair[1]] = +hyperarc_weights_df.iloc[
+                    nn_succ_trans_df.loc[pair[0], pair[1]] += hyperarc_weights_df.iloc[
                         i, 1
                     ]
 
+        st.markdown(
+            "If we do this for all possible node combinations we get "
+            "the non-normalised successor transition matrix:"
+        )
         st.dataframe(nn_succ_trans_df)
+
+        st.markdown(
+            "And then we can obtain a normalised matrix (where each row sums to 1):"
+        )
+        succ_trans_df = nn_succ_trans_df.div(nn_succ_trans_df.sum(axis=1), axis=0)
+        st.dataframe(succ_trans_df)
+
     tab2.markdown("Following the steps above we get the successor transition matrix:")
 
     tab2.write("#### Predecessor Transition Matrix")
