@@ -107,10 +107,10 @@ def tab2_directed(
         )
 
         st.markdown(
-            f"The weight of the parent hyperedge {{{examp_hyperedge}}} of hyperarc {{{examp_hyperarc}}} is {examp_hyperedge_we}."
+            f"The weight of the parent hyperedge {{{examp_hyperedge}}} of hyperarc {{{examp_hyperarc}}} is {round(examp_hyperedge_we, 2)}."
         )
 
-        st.markdown(f"$W(p({{{examp_hyperarc}}}))$ = {examp_hyperedge_we}.")
+        st.markdown(f"$W(p({{{examp_hyperarc}}}))$ = {round(examp_hyperedge_we,2)}.")
         st.markdown(
             "Then we need to count the number of times the hyperarc "
             "occurs (the raw prevalence)."
@@ -217,7 +217,7 @@ def tab2_directed(
 
         st.markdown("We can then calculate this hyperarc weight $w(h_{i})$ as:")
         st.markdown(
-            f"{examp_hyperedge_we}({examp_hyperarc_count}/{examp_sib_count})={round(examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count),2)}"
+            f"{round(examp_hyperedge_we,2)}({examp_hyperarc_count}/{examp_sib_count})={round(examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count),2)}"
         )
 
         st.markdown(
@@ -309,11 +309,9 @@ def tab2_directed(
             r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""
         )
 
-        st.markdown("__EXAMPLE HERE__")
-
         # If a hyperarc has u in the tail and v in the head then get the sum of those hyperarc weights
         hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
-        st.dataframe(hyperarc_weights_df)
+        # st.dataframe(hyperarc_weights_df)
 
         nn_succ_trans_df = pd.DataFrame(columns=dis_list)
         nn_succ_trans_df["Node"] = dis_list
@@ -336,20 +334,51 @@ def tab2_directed(
                         i, 1
                     ]
 
+        st.markdown("__Example__")
+        st.markdown(
+            f"As an example let's calculate the probability of transitioning from node {all_dis_pairs[1][0]} to {all_dis_pairs[1][1]}."
+        )
+
+        st.markdown(
+            f"First we find all the hyperarcs that have {all_dis_pairs[1][0]} in their tail and {all_dis_pairs[1][1]} in their head component and their corresponding weights:"
+        )
+
+        examp_succ_hyps = list()
+        examp_succ_hyp_weights = list()
+        for i, row in hyperarc_weights_df.iterrows():
+            tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
+            head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
+            if all_dis_pairs[1][0] in tail and all_dis_pairs[1][1] in head:
+                examp_succ_hyps.append(hyperarc_weights_df.iloc[i, 0])
+                examp_succ_hyp_weights.append(hyperarc_weights_df.iloc[i, 1])
+
+        examp_succ_df = pd.DataFrame(
+            {"Hyperarc": examp_succ_hyps, "Weight": examp_succ_hyp_weights}
+        )
+        st.dataframe(examp_succ_df)
+
+        st.markdown(
+            f"The probability of transitioning from {all_dis_pairs[1][0]} to "
+            f"{all_dis_pairs[1][1]} is the sum of the weights of these "
+            f"hyperarcs: {examp_succ_df['Weight'].sum()}."
+        )
+
+        st.markdown("__All node pairs__")
         st.markdown(
             "If we do this for all possible node combinations we get "
             "the non-normalised successor transition matrix:"
         )
-        st.dataframe(nn_succ_trans_df)
+        st.dataframe(nn_succ_trans_df.round(2))
 
-        st.markdown(
-            "And then we can obtain a normalised matrix (where each row sums to 1):"
-        )
         succ_trans_df = nn_succ_trans_df.div(nn_succ_trans_df.sum(axis=1), axis=0)
-        st.dataframe(succ_trans_df)
+        succ_trans_df = succ_trans_df.round(2)
+        # st.dataframe(succ_trans_df)
 
-    tab2.markdown("Following the steps above we get the successor transition matrix:")
-
+    tab2.markdown(
+        "Following the steps above we get the normalised successor "
+        "transition matrix, where each row sums to 1:"
+    )
+    tab2.dataframe(succ_trans_df)  # .style.highlight_max(axis=0))
     tab2.write("#### Predecessor Transition Matrix")
 
     tab2.subheader("PageRank:")
