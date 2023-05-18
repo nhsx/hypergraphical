@@ -162,6 +162,9 @@ def print_hyperarc_str(dis_tup):
     last_comma_idx = string.rfind(",")
     if last_comma_idx != -1:
         string = string[:last_comma_idx] + " -> " + string[last_comma_idx + 1 :]
+        # string = (
+        #     string[:last_comma_idx] + r" \rightarrow " + string[last_comma_idx + 1 :]
+        # )
     return string
 
 

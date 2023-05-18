@@ -52,7 +52,7 @@ def tab2_directed(
     tab2.markdown(
         "Hyperarcs are calculated using the hyperedge calculations from the "
         "`Undirected Hypergraph` tab. From those calculations we get the "
-        "following hyperedge weights:"
+        "following hyperedge weights (undirected):"
     )
 
     # NOTE: the undirected hypergraph hyperedge calcs don't include
@@ -217,7 +217,7 @@ def tab2_directed(
 
         st.markdown("We can then calculate this hyperarc weight $w(h_{i})$ as:")
         st.markdown(
-            f"{examp_hyperedge_we}({examp_hyperarc_count}/{examp_sib_count})={examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count)}"
+            f"{examp_hyperedge_we}({examp_hyperarc_count}/{examp_sib_count})={round(examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count),2)}"
         )
 
         st.markdown(
@@ -233,7 +233,111 @@ def tab2_directed(
 
     tab2.subheader("RandomWalk Probability Transition Matrix:")
 
+    tab2.markdown(
+        "Random walks (a particular case of Markov random chain) "
+        "can be used in this application with random steps being "
+        "taken from one node to another, where each step is "
+        "completely independent for the last step. The behaviour "
+        "is determined by a transition probability matrix "
+        "$\mathcal{P}$, where the column defines the start node "
+        "and the row defines the end node. Here we can use random "
+        "walks to find the probability of transitioning to another "
+        "disease state based on a transition matrix e.g. "
+        "probability of B to follow A."
+    )
+
+    with tab2.expander(
+        "General equation for calculating the probability of transitioning "
+        "from one node to another"
+    ):
+        st.markdown(
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{h(u,e)}{d(u)} \frac{h(v,e)}{\delta(e)}$$"""
+        )
+
+        st.markdown("Where")
+        st.markdown("- $h(u,e) = 1$ if hyperedge $e \in E$ connects the nodes")
+        st.markdown("- $d$ is the node degree function")
+        st.markdown("- $\delta$ the edge degree function")
+
     tab2.write("#### Successor Transition Matrix")
+
+    tab2.markdown(
+        "We can find which disease is likely to be observed "
+        "following other diseases. This is done by calculating "
+        "the successor transition matrix. In the case of successor "
+        "detection we only consider the transition from a tail to "
+        "a head."
+    )
+
+    with tab2.expander("Successor Transition Matrix Equation"):
+        st.markdown(
+            "We can use the equation below to calculate the "
+            "probability of their being a transition from node $u$ to "
+            "node $v$ which can be formulated into a successor "
+            "transition matrix."
+        )
+
+        st.markdown(
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}.$$"""
+        )
+        st.markdown("Where")
+        st.markdown("- $u$ is the current node position")
+        st.markdown("- $v$ is the node to be transitioned to")
+        st.markdown(
+            "- $m_-(u,e)$ = 1 if node $u$ has a edge $e$ stemming from it "
+            "(a tail is connected to node $u$)"
+        )
+        st.markdown(
+            "- $m_+(v,e)$ = 1 if node $v$ has the head of an edge $e$ "
+            "connected to it"
+        )
+        st.markdown("- $d_-(u)$ = the sum of all possible contributions to $u$")
+        st.markdown(
+            "- $\delta_+ (e)$ = the number of nodes connected to the edge "
+            "$e$ via the edges head (this will always be 1 in b-hypergraphs)"
+        )
+        st.markdown(
+            r"""- $\frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}$ is the row normaliser"""
+        )
+
+    with tab2.expander("Example - calculate of the successor transition probability"):
+        st.markdown(
+            "First, we need to calculate the non-normalised "
+            "probability of transitioning from one node to another."
+        )
+        st.markdown(
+            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""
+        )
+
+        st.markdown("__EXAMPLE HERE__")
+
+        # If a hyperarc has u in the tail and v in the head then get the sum of those hyperarc weights
+        hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
+        st.dataframe(hyperarc_weights_df)
+
+        nn_succ_trans_df = pd.DataFrame(columns=dis_list)
+        nn_succ_trans_df["Node"] = dis_list
+        nn_succ_trans_df.set_index("Node", inplace=True)
+        nn_succ_trans_df = nn_succ_trans_df.fillna(0)
+
+        # get a list of all possible pairs
+        all_dis_pairs = list(itertools.permutations(dis_list, 2))
+        for pair in all_dis_pairs:
+            for i, row in hyperarc_weights_df.iterrows():
+                tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
+                head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
+                if pair[0] in tail and pair[1] in head:
+                    # if u in head and v in tail:
+                    # sum the hyperarc weights for this particular transition
+                    # st.markdown(
+                    #     f"{pair[0]} in tail: {{{tail}}} and {pair[1]} in head: {{{head}}}"
+                    # )
+                    nn_succ_trans_df.loc[pair[0], pair[1]] = +hyperarc_weights_df.iloc[
+                        i, 1
+                    ]
+
+        st.dataframe(nn_succ_trans_df)
+    tab2.markdown("Following the steps above we get the successor transition matrix:")
 
     tab2.write("#### Predecessor Transition Matrix")
 
