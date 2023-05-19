@@ -149,10 +149,13 @@ def tab2_directed(
         hyperarc_count_row = hyperarc_count_df[
             hyperarc_count_df["Hyperarc"] == examp_hyperarc
         ]
-        st.dataframe(hyperarc_count_df)
+        st.dataframe(hyperarc_count_row)
         if hyperarc_count_row.empty:
             examp_hyperarc_count = 0
-            new_row = {"Hyperarc": examp_hyperarc, "Count": examp_hyperarc_count}
+            new_row = {
+                "Hyperarc": examp_hyperarc,
+                "Count": examp_hyperarc_count,
+            }
             hyperarc_count_df = hyperarc_count_df.append(new_row, ignore_index=True)
         else:
             examp_hyperarc_count = hyperarc_count_row.iloc[0, 1]
@@ -332,16 +335,13 @@ def tab2_directed(
         # Create self loop pairs
         for node in dis_list:
             all_dis_pairs.append([node] * 2)
+        st.write(hyperarc_weights_df)
         for pair in all_dis_pairs:
             for i, row in hyperarc_weights_df.iterrows():
+                st.write(hyperarc_weights_df.iloc[i, 0])
                 tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
                 head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
                 if pair[0] in tail and pair[1] in head:
-                    # if u in head and v in tail:
-                    # sum the hyperarc weights for this particular transition
-                    # st.markdown(
-                    #     f"{pair[0]} in tail: {{{tail}}} and {pair[1]} in head: {{{head}}}"
-                    # )
                     nn_succ_trans_df.loc[pair[0], pair[1]] += hyperarc_weights_df.iloc[
                         i, 1
                     ]
@@ -405,40 +405,74 @@ def tab2_directed(
     tab2.write(succ_trans_ar)
     col1, col2 = tab2.columns(2)  # to centre image
     with col1:
-        # Create graph
-        succ_trans_G = nx.MultiDiGraph()
-
-        # Add nodes from the graph
-        num_nodes = succ_trans_ar.shape[0]
-        succ_trans_G.add_nodes_from(range(num_nodes))
-
         node_labels = [*auc][:num_dis]
+        numpy_utils.draw_trans_mat_graph(node_labels, all_dis_pairs, col1)
+        # # Create graph
+        # succ_trans_G = nx.MultiDiGraph()
 
-        # Add weighted edges to the graph
-        for i in range(num_nodes):
-            for j in range(i + 1, num_nodes):
-                weight = succ_trans_ar[i][j]
-                if weight > 0:
-                    if i == j:
-                        succ_trans_G.add_edge(i, j, weight=weight, selfloop=True)
-                    else:
-                        succ_trans_G.add_edge(i, j, weight=weight)
+        # for i, label in enumerate(node_labels):
+        #     succ_trans_G.add_node(i, label=label)
 
-        # Draw the graph
-        pos = nx.circular_layout(succ_trans_G)
-        edge_labels = nx.get_edge_attributes(succ_trans_G, "weight")
-        nx.draw_networkx_nodes(
-            succ_trans_G,
-            pos,
-            node_color="lightblue",
-            node_size=200,
-        )
-        nx.draw_networkx_labels(succ_trans_G, pos)
-        nx.draw_networkx_edges(succ_trans_G, pos, edge_color="red", arrows="True")
+        # # Add nodes from the graph
+        # num_nodes = succ_trans_ar.shape[0]
+        # # succ_trans_G.add_nodes_from(range(num_nodes))
 
-        nx.draw_networkx_edge_labels(succ_trans_G, pos, edge_labels=edge_labels)
-        plt.axis("off")
-        col1.pyplot()
+        # # Add weighted edges to the graph
+        # for i in range(num_nodes):
+        #     for j in range(num_nodes):
+        #         weight = succ_trans_ar[i, j]
+        #         if weight > 0:
+        #             if i == j:
+        #                 succ_trans_G.add_edge(i, j, weight=weight, selfloop=True)
+        #             else:
+        #                 succ_trans_G.add_edge(i, j, weight=weight)
+
+        # # Draw the graph
+        # pos = nx.circular_layout(succ_trans_G)
+
+        # # Draw nodes
+        # nx.draw_networkx_nodes(
+        #     succ_trans_G,
+        #     pos,
+        #     node_color="lightblue",
+        #     node_size=200,
+        # )
+
+        # # Draw edges
+        # nx.draw_networkx_edges(succ_trans_G, pos, edge_color="red", arrowstyle="->")
+
+        # # Draw labels for nodes
+        # labels = {node: data["label"] for node, data in succ_trans_G.nodes(data=True)}
+        # nx.draw_networkx_labels(
+        #     succ_trans_G, pos, labels=labels, font_size=12, font_color="black"
+        # )
+
+        # # Draw labels for edges
+        # edge_labels = {
+        #     (source, target, key): data["weight"]
+        #     for source, target, key, data in succ_trans_G.edges(keys=True, data=True)
+        #     if not data.get("self_loop")
+        # }
+        # nx.draw_networkx_edge_labels(
+        #     succ_trans_G, pos, edge_labels=edge_labels, font_size=10
+        # )
+
+        # # Draw labels for self-loop edge labels
+        # self_loop_edge_labels = {
+        #     (node, node): data["weight"]
+        #     for node, _, data in succ_trans_G.edges(data=True)
+        #     if data.get("self_loop")
+        # }
+        # nx.draw_networkx_edge_labels(
+        #     succ_trans_G,
+        #     pos,
+        #     edge_labels=self_loop_edge_labels,
+        #     font_size=10,
+        #     label_pos=0.3,
+        # )
+
+        # plt.axis("off")
+        # col1.pyplot()
 
     ##############################################################################
     # PREDECCESOR TRANSITION MATRIX

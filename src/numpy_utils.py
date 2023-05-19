@@ -158,13 +158,17 @@ def print_hyperarc_str(dis_tup):
     Returns:
         str: Hyperarc string.
     """
-    string = ", ".join(map(str, dis_tup))
-    last_comma_idx = string.rfind(",")
-    if last_comma_idx != -1:
-        string = string[:last_comma_idx] + " -> " + string[last_comma_idx + 1 :]
-        # string = (
-        #     string[:last_comma_idx] + r" \rightarrow " + string[last_comma_idx + 1 :]
-        # )
+    if len(dis_tup) > 1:
+        string = ", ".join(map(str, dis_tup))
+        last_comma_idx = string.rfind(",")
+        if last_comma_idx != -1:
+            string = string[:last_comma_idx] + " ->" + string[last_comma_idx + 1 :]
+            # string = (
+            #     string[:last_comma_idx] + r" \rightarrow " + string[last_comma_idx + 1 :]
+            # )
+    else:
+        string = ", ".join(map(str, dis_tup))
+        string = string + " -> " + string
     return string
 
 
@@ -374,7 +378,7 @@ def draw_b_hypergraph(nodes, edges, tab):
     # Plot true nodes
     nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
 
-    # Draw pariwise hyperarcs
+    # Draw pairwise hyperarcs
     nx.draw_networkx_edges(
         g,
         pos,
@@ -448,6 +452,45 @@ def remove_dup_tuples(lst):
     unique_sets = set(frozenset(t) for t in lst)
     unique_lst = [tuple(sorted(s)) for s in unique_sets]
     return unique_lst
+
+
+def draw_trans_mat_graph(nodes, all_dis_pairs, tab):
+    """Draw transition matrix graph using NetworkX.
+
+    Args:
+        nodes (list): Nodes to include in the graph.
+        all_dis_pairs (list): All possible edge to include in the graph,
+            where the last node is the head node.
+        tab (variable): Variable name of tab the graph should be produced in.
+    Returns:
+        pyplot: Undirected hypergraph showing the transition probability.
+    """
+    g = nx.DiGraph()
+    g.add_nodes_from(nodes)
+
+    for i in range(0, len(all_dis_pairs)):
+        g.add_edges_from([all_dis_pairs[i]])
+
+    pos = nx.circular_layout(g)
+
+    # Plot true nodes
+    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
+
+    # Draw pairwise hyperarcs
+    nx.draw_networkx_edges(
+        g,
+        pos,
+        edge_color="red",
+        connectionstyle="arc3,rad=0.1",
+        arrowstyle="-|>",
+        width=1,
+    )
+
+    # Draw labels only for true nodes
+    labels = {node: str(node) for node in nodes}
+    nx.draw_networkx_labels(g, pos, labels, font_size=10)
+    plt.axis("off")
+    tab.pyplot()
 
 
 ###############################################################################
