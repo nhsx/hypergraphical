@@ -284,8 +284,8 @@ def tab2_directed(
             r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}.$$"""
         )
         st.markdown("Where")
-        st.markdown("- $u$ is the current node position")
-        st.markdown("- $v$ is the node to be transitioned to")
+        st.markdown("- $u$ is the current node position (tail)")
+        st.markdown("- $v$ is the node to be transitioned to (head)")
         st.markdown(
             "- $m_-(u,e)$ = 1 if node $u$ has a edge $e$ stemming from it "
             "(a tail is connected to node $u$)"
@@ -379,14 +379,137 @@ def tab2_directed(
 
         succ_trans_df = nn_succ_trans_df.div(nn_succ_trans_df.sum(axis=1), axis=0)
         succ_trans_df = succ_trans_df.round(2)
-        # st.dataframe(succ_trans_df)
+        st.markdown(
+            "We can then use the following equation to get the "
+            "normalised transition matrix:"
+        )
+        st.markdown(r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$""")
 
     tab2.markdown(
         "Following the steps above we get the normalised successor "
         "transition matrix, where each row sums to 1:"
     )
     tab2.dataframe(succ_trans_df)  # .style.highlight_max(axis=0))
+    ##############################################################################
+    # PREDECCESOR TRANSITION MATRIX
+    ##############################################################################
     tab2.write("#### Predecessor Transition Matrix")
+
+    tab2.markdown(
+        "We can find which disease is likely to be observed "
+        "prior to other diseases. This is done by calculating "
+        "the predecessor transition matrix. In the case of predecessor "
+        "detection we only consider the transition from a head to "
+        "a tail."
+    )
+
+    with tab2.expander("Predecessor Transition Matrix Equation"):
+        st.markdown(
+            "We can use the equation below to calculate the "
+            "probability of their being a transition from node $u$ to "
+            "node $v$ which can be formulated into a predecessor "
+            "transition matrix. The equation for the predecessor probability "
+            " transitions is similar to the successor equation, except the "
+            "operation sign is flipped i.e. $+$ becomes $-$ and vice versa."
+        )
+
+        st.markdown(
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}.$$"""
+        )
+        st.markdown("Where")
+        st.markdown("- $u$ is the current node position (head)")
+        st.markdown("- $v$ is the node to be transitioned to (tail)")
+        st.markdown(
+            "- $m_+(u,e)$ = 1 if node $u$ has a edge $e$ stemming from it (a "
+            " tail is connected to node $u$))"
+        )
+        st.markdown(
+            "- $m_-(v,e)$ = 1 if node $v$ has the head of an edge $e$ "
+            "connected to it"
+        )
+        st.markdown("- $d_+(u)$ = the sum of all possible contributions to $u$")
+        st.markdown(
+            "- $\delta_- (e)$ = the number of nodes connected to the edge "
+            "$e$ via the edges head (this will always be 1)"
+        )
+        st.markdown(
+            r"""- $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$ is the row normaliser"""
+        )
+
+    with tab2.expander("Example - calculate of the Predecessor transition probability"):
+        st.markdown(
+            "First, we need to calculate the non-normalised "
+            "probability of transitioning from one node to another."
+        )
+        st.markdown(
+            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""
+        )
+
+        nn_pred_trans_df = pd.DataFrame(columns=dis_list)
+        nn_pred_trans_df["Node"] = dis_list
+        nn_pred_trans_df.set_index("Node", inplace=True)
+        nn_pred_trans_df = nn_pred_trans_df.fillna(0)
+
+        for pair in all_dis_pairs:
+            for i, row in hyperarc_weights_df.iterrows():
+                tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
+                head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
+                u = pair[1]
+                v = pair[0]
+                if u in tail and v in head:
+                    nn_pred_trans_df.loc[v, u] += hyperarc_weights_df.iloc[i, 1]
+
+        st.markdown("__Example__")
+        st.markdown(
+            f"As an example let's calculate the probability of transitioning from node {all_dis_pairs[1][1]} to {all_dis_pairs[1][0]}."
+        )
+
+        st.markdown(
+            f"First we find all the hyperarcs that have {all_dis_pairs[1][0]}"
+            f" in their tail and {all_dis_pairs[1][1]} in their head component"
+            f" and their corresponding weights:"
+        )
+
+        examp_succ_hyps = list()
+        examp_succ_hyp_weights = list()
+        for i, row in hyperarc_weights_df.iterrows():
+            tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
+            head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
+            if all_dis_pairs[1][0] in tail and all_dis_pairs[1][1] in head:
+                examp_succ_hyps.append(hyperarc_weights_df.iloc[i, 0])
+                examp_succ_hyp_weights.append(hyperarc_weights_df.iloc[i, 1])
+
+        examp_succ_df = pd.DataFrame(
+            {"Hyperarc": examp_succ_hyps, "Weight": examp_succ_hyp_weights}
+        )
+        st.dataframe(examp_succ_df)
+
+        st.markdown(
+            f"The probability of transitioning from {all_dis_pairs[1][1]} to "
+            f"{all_dis_pairs[1][0]} is the sum of the weights of these "
+            f"hyperarcs: {round(examp_succ_df['Weight'].sum(), 2)}."
+        )
+
+        st.markdown("__All node pairs__")
+        st.markdown(
+            "If we do this for all possible node combinations we get "
+            "the non-normalised predeccessor transition matrix:"
+        )
+        st.dataframe(nn_pred_trans_df.round(2))
+
+        pred_trans_df = nn_pred_trans_df.div(nn_pred_trans_df.sum(axis=1), axis=0)
+        pred_trans_df = pred_trans_df.round(2)
+        st.markdown(
+            "We can then use the following equation to get the "
+            "normalised transition matrix:"
+        )
+        st.markdown(r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$""")
+
+    tab2.markdown(
+        "Following the steps above we get the normalised predecessor "
+        "transition matrix, where each row sums to 1:"
+    )
+    tab2.dataframe(pred_trans_df)
 
     tab2.subheader("PageRank:")
 
