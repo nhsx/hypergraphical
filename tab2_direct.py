@@ -338,7 +338,6 @@ def tab2_directed(
         st.write(hyperarc_weights_df)
         for pair in all_dis_pairs:
             for i, row in hyperarc_weights_df.iterrows():
-                st.write(hyperarc_weights_df.iloc[i, 0])
                 tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
                 head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
                 if pair[0] in tail and pair[1] in head:
@@ -380,10 +379,13 @@ def tab2_directed(
             "If we do this for all possible node combinations we get "
             "the non-normalised successor transition matrix:"
         )
+
+        # Make irreducible by changing 0's to 0.0001
+        nn_succ_trans_df = nn_succ_trans_df.replace(0, 0.0001)
         st.dataframe(nn_succ_trans_df.round(2))
 
         succ_trans_df = nn_succ_trans_df.div(nn_succ_trans_df.sum(axis=1), axis=0)
-        succ_trans_df = succ_trans_df.round(2)
+        # succ_trans_df = succ_trans_df.round(2)
         st.markdown(
             "We can then use the following equation to get the "
             "normalised transition matrix:"
@@ -394,7 +396,7 @@ def tab2_directed(
         "Following the steps above we get the normalised successor "
         "transition matrix, where each row sums to 1:"
     )
-    tab2.dataframe(succ_trans_df)  # .style.highlight_max(axis=0))
+    tab2.dataframe(succ_trans_df.round(2))  # .style.highlight_max(axis=0))
 
     st.markdown(
         "We can show the probability of a condition being observed "
@@ -402,7 +404,7 @@ def tab2_directed(
     )
 
     succ_trans_ar = succ_trans_df.to_numpy()
-    tab2.write(succ_trans_ar)
+
     col1, col2 = tab2.columns(2)  # to centre image
     with col1:
         node_labels = [*auc][:num_dis]
@@ -579,10 +581,14 @@ def tab2_directed(
             "If we do this for all possible node combinations we get "
             "the non-normalised predeccessor transition matrix:"
         )
+
+        # Make irreducible by changing 0's to 0.0001
+        nn_pred_trans_df = nn_pred_trans_df.replace(0, 0.0001)
+
         st.dataframe(nn_pred_trans_df.round(2))
 
         pred_trans_df = nn_pred_trans_df.div(nn_pred_trans_df.sum(axis=1), axis=0)
-        pred_trans_df = pred_trans_df.round(2)
+        # pred_trans_df = pred_trans_df.round(2)
         st.markdown(
             "We can then use the following equation to get the "
             "normalised transition matrix:"
@@ -593,7 +599,7 @@ def tab2_directed(
         "Following the steps above we get the normalised predecessor "
         "transition matrix, where each row sums to 1:"
     )
-    tab2.dataframe(pred_trans_df)
+    tab2.dataframe(pred_trans_df.round(2))
 
     tab2.subheader("PageRank:")
 
@@ -630,8 +636,6 @@ def tab2_directed(
             "(same shape as the transition matrix)."
         )
 
-        st.markdown("")
-
         st.markdown("Where the Eigen values are denoted as:")
 
         st.latex(f"\lambda_1, ..., \lambda_{len(succ_trans_df)}")
@@ -653,14 +657,14 @@ def tab2_directed(
         X = [*auc][:num_dis]
         st.write(pd.DataFrame(X))
 
-        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0])
+        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0][0])
 
         st.markdown("From this we get the Eigenvector:")
         left_eigvec = linalg.eig(succ_trans_ar, left=True, right=False)[1][
             :, int(maxvalue_idx)
         ]
 
-        left_eigvec = np.round(left_eigvec, 3)
+        left_eigvec = np.real(np.round(left_eigvec, 3))
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
         succ_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
@@ -716,14 +720,14 @@ def tab2_directed(
         X = [*auc][:num_dis]
         st.write(pd.DataFrame(X))
 
-        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0])
+        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0][0])
 
         st.markdown("From this we get the Eigenvector:")
         left_eigvec = linalg.eig(pred_trans_ar, left=True, right=False)[1][
             :, int(maxvalue_idx)
         ]
 
-        left_eigvec = np.round(left_eigvec, 3)
+        left_eigvec = np.real(np.round(left_eigvec, 3))
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
         pred_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
