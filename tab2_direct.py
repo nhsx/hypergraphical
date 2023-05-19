@@ -11,7 +11,7 @@ from string import ascii_uppercase as auc
 
 # local
 from src import build_model, centrality, centrality_utils, weight_functions
-from src import numpy_utils
+from src import numpy_utils, create_figs
 
 ##############################################################################
 
@@ -530,7 +530,6 @@ def tab2_directed(
     )
 
     tab2.write("#### Successor PageRank")
-    tab2.text("Disease most likely to be successor diseases...")
 
     with tab2.expander("How to calculate Successor PageRank?"):
         st.markdown(
@@ -578,23 +577,24 @@ def tab2_directed(
         left_eigvec = np.round(left_eigvec, 3)
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
-        norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
-        norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
-        st.write(norm_eigenvec_vec)
+        succ_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        succ_norm_eigenvec_vec = pd.DataFrame(succ_norm_eigenvec)
+        st.write(succ_norm_eigenvec_vec)
 
     tab2.write("The PageRanks for these diseases are:")
-    norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
-    tab2.dataframe(norm_eig_df.style.highlight_max(axis=0, color="pink"))
-    max_idx = max(norm_eig_df.idxmax())
-    min_idx = min(norm_eig_df.idxmin())
+    succ_norm_eig_df = pd.DataFrame(
+        {"Successor PageRank": succ_norm_eigenvec}
+    ).set_index(pd.Index(dis_list))
+    tab2.dataframe(succ_norm_eig_df.style.highlight_max(axis=0, color="pink"))
+    # max_idx = max(norm_eig_df.idxmax())
+    # min_idx = min(norm_eig_df.idxmin())
 
-    tab2.markdown(
-        f":red[{max_idx}] is the most likely to be a successor disease"
-        f" and {min_idx} is the least likely."
-    )
+    # tab2.markdown(
+    #     f":red[{max_idx}] is the most likely to be a successor disease"
+    #     f" and {min_idx} is the least likely."
+    # )
 
     tab2.write("#### Predecessor PageRank")
-    tab2.text("Disease most likely to be predecessor diseases...")
 
     with tab2.expander("How to calculate Predecessor PageRank?"):
         st.markdown(
@@ -640,17 +640,35 @@ def tab2_directed(
         left_eigvec = np.round(left_eigvec, 3)
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
-        norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
-        norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
-        st.write(norm_eigenvec_vec)
+        pred_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        pred_norm_eigenvec_vec = pd.DataFrame(pred_norm_eigenvec)
+        st.write(pred_norm_eigenvec_vec)
 
     tab2.write("The Predecessor PageRanks for these diseases are:")
-    norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
-    tab2.dataframe(norm_eig_df.style.highlight_max(axis=0, color="pink"))
-    max_idx = max(norm_eig_df.idxmax())
-    min_idx = min(norm_eig_df.idxmin())
+    pred_norm_eig_df = pd.DataFrame(
+        {"Predecessor PageRank": pred_norm_eigenvec}
+    ).set_index(pd.Index(dis_list))
+    tab2.dataframe(pred_norm_eig_df.style.highlight_max(axis=0, color="pink"))
+    # max_idx = max(norm_eig_df.idxmax())
+    # min_idx = min(norm_eig_df.idxmin())
 
+    # tab2.markdown(
+    #     f":red[{max_idx}] is the most likely to be a predecessor disease"
+    #     f" and {min_idx} is the least likely."
+    # )
+
+    tab2.subheader("Successor vs Predecessor Condition")
     tab2.markdown(
-        f":red[{max_idx}] is the most likely to be a predecessor disease"
-        f" and {min_idx} is the least likely."
+        "We can compare successor and predecessor PageRank to find "
+        "out which conditions are more likely to be observed before "
+        "or after another condition or whether they are transitive conditions."
     )
+
+    col1, col2 = tab2.columns(2)  # to centre image
+    with col1:
+        create_figs.pagerank_scatter(
+            succ_norm_eig_df["Successor PageRank"],
+            pred_norm_eig_df["Predecessor PageRank"],
+            pred_norm_eig_df.index,
+            col1,
+        )
