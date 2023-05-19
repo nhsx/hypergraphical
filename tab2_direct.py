@@ -1,15 +1,13 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-import os
 import streamlit as st
 import pandas as pd
 import numpy as np
 from scipy import linalg
 import itertools
-
-# from sklearn import preprocessing
 from string import ascii_uppercase as auc
+
 
 # local
 from src import build_model, centrality, centrality_utils, weight_functions
@@ -19,7 +17,7 @@ from src import numpy_utils
 
 
 def tab2_directed(
-    tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs
+    tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs, num_dis
 ):
     tab2.header("Directed Hypergraph")
     tab2.subheader("_Page is Work in Progress_ 👷")
@@ -513,8 +511,87 @@ def tab2_directed(
 
     tab2.subheader("PageRank:")
 
+    tab2.markdown(
+        "We can calculate the PageRank of the directed hypergraph for "
+        "both the predecessor and successor transitions. Similarly to "
+        "Eigenvector Centrality calculation in the undirected "
+        "hypergraph we use the Eigenvector Centrality again but this "
+        "time ensuring we use the left Eigenvector calculation as the "
+        "transition matrix is not symmetrical due to the directed "
+        "nature of the hypergraph. "
+    )
+
+    tab2.markdown(
+        "None of the elements in the transition probability matrix "
+        "should equal zero as the matrix must be irreducible, but "
+        "to resolve this we can set 0 elements to a small value. "
+        "Finally, we normalise the Eigenvector to so that the "
+        "columns are equal to one."
+    )
+
     tab2.write("#### Successor PageRank")
     tab2.text("Disease most likely to be successor diseases...")
+
+    with tab2.expander("How to calculate Successor PageRank?"):
+        st.markdown(
+            "To calculate the Eigen values of the Successor Transiton matrix"
+            " we need to use the equation:"
+        )
+        st.latex("det(A - \lambda I) = 0")
+        st.markdown("Where")
+        st.markdown("- $A$ is the successor transition matrix.")
+        st.markdown(
+            "- $I$ is the equivalent order identity matrix "
+            "(same shape as the transition matrix)."
+        )
+
+        st.markdown("")
+
+        st.markdown("Where the Eigen values are denoted as:")
+
+        st.latex(f"\lambda_1, ..., \lambda_{len(succ_trans_df)}")
+        st.markdown("From the transition matrix we get Eigen values:")
+        succ_trans_ar = succ_trans_df.to_numpy()
+        eigen_vals = linalg.eigvals(a=succ_trans_ar)
+        eigen_vals = np.real(np.round(eigen_vals, 3))
+        for i, value in enumerate(eigen_vals):
+            st.latex(f"\lambda_{i} = {value}")
+
+        maxvalue = max(eigen_vals)
+        st.markdown(
+            f"Then you take the maximum Eigen value {maxvalue}"
+            " and use this to calculate the left Eigenvector. This is"
+            " done by substituting $\lambda$ into the equation below:"
+        )
+        st.latex("X^T A = X^T \lambda")
+        st.markdown("Where $X$ is the vector:")
+        X = [*auc][:num_dis]
+        st.write(pd.DataFrame(X))
+
+        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0])
+
+        st.markdown("From this we get the Eigenvector:")
+        left_eigvec = linalg.eig(succ_trans_ar, left=True, right=False)[1][
+            :, int(maxvalue_idx)
+        ]
+
+        left_eigvec = np.round(left_eigvec, 3)
+        st.write(left_eigvec)
+        st.markdown("And the normalised Eigenvector:")
+        norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
+        st.write(norm_eigenvec_vec)
+
+    tab2.write("The PageRanks for these diseases are:")
+    norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
+    tab2.dataframe(norm_eig_df.style.highlight_max(axis=0, color="pink"))
+    max_idx = max(norm_eig_df.idxmax())
+    min_idx = min(norm_eig_df.idxmin())
+
+    tab2.markdown(
+        f":red[{max_idx}] is the most central successor disease"
+        f" with the most connections and {min_idx} is the least central."
+    )
 
     tab2.write("#### Predecessor PageRank")
     tab2.text("Disease most likely to be predecessor diseases...")

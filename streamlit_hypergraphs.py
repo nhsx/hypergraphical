@@ -186,7 +186,14 @@ if view_choice == "Population hypergraph calculations":
     ###########################################################################
 
     tab2_direct.tab2_directed(
-        tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs
+        tab2,
+        final_prog_df,
+        dis_list,
+        edge_list,
+        binmat,
+        conds_worklist,
+        all_progs,
+        num_dis,
     )
 
     ###########################################################################
@@ -210,4 +217,4 @@ elif view_choice == "Most likely cause(s) of disease":
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 
 st.markdown("-" * 50)
-st.text("Last Updated 18th May 2023 \t\t\t\t\t Version 0.1.0")
+st.text("Last Updated 19th May 2023 \t\t\t\t\t Version 0.1.0")
