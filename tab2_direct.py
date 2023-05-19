@@ -408,73 +408,9 @@ def tab2_directed(
     col1, col2 = tab2.columns(2)  # to centre image
     with col1:
         node_labels = [*auc][:num_dis]
-        numpy_utils.draw_trans_mat_graph(node_labels, all_dis_pairs, col1)
-        # # Create graph
-        # succ_trans_G = nx.MultiDiGraph()
-
-        # for i, label in enumerate(node_labels):
-        #     succ_trans_G.add_node(i, label=label)
-
-        # # Add nodes from the graph
-        # num_nodes = succ_trans_ar.shape[0]
-        # # succ_trans_G.add_nodes_from(range(num_nodes))
-
-        # # Add weighted edges to the graph
-        # for i in range(num_nodes):
-        #     for j in range(num_nodes):
-        #         weight = succ_trans_ar[i, j]
-        #         if weight > 0:
-        #             if i == j:
-        #                 succ_trans_G.add_edge(i, j, weight=weight, selfloop=True)
-        #             else:
-        #                 succ_trans_G.add_edge(i, j, weight=weight)
-
-        # # Draw the graph
-        # pos = nx.circular_layout(succ_trans_G)
-
-        # # Draw nodes
-        # nx.draw_networkx_nodes(
-        #     succ_trans_G,
-        #     pos,
-        #     node_color="lightblue",
-        #     node_size=200,
-        # )
-
-        # # Draw edges
-        # nx.draw_networkx_edges(succ_trans_G, pos, edge_color="red", arrowstyle="->")
-
-        # # Draw labels for nodes
-        # labels = {node: data["label"] for node, data in succ_trans_G.nodes(data=True)}
-        # nx.draw_networkx_labels(
-        #     succ_trans_G, pos, labels=labels, font_size=12, font_color="black"
-        # )
-
-        # # Draw labels for edges
-        # edge_labels = {
-        #     (source, target, key): data["weight"]
-        #     for source, target, key, data in succ_trans_G.edges(keys=True, data=True)
-        #     if not data.get("self_loop")
-        # }
-        # nx.draw_networkx_edge_labels(
-        #     succ_trans_G, pos, edge_labels=edge_labels, font_size=10
-        # )
-
-        # # Draw labels for self-loop edge labels
-        # self_loop_edge_labels = {
-        #     (node, node): data["weight"]
-        #     for node, _, data in succ_trans_G.edges(data=True)
-        #     if data.get("self_loop")
-        # }
-        # nx.draw_networkx_edge_labels(
-        #     succ_trans_G,
-        #     pos,
-        #     edge_labels=self_loop_edge_labels,
-        #     font_size=10,
-        #     label_pos=0.3,
-        # )
-
-        # plt.axis("off")
-        # col1.pyplot()
+        numpy_utils.draw_trans_mat_graph(
+            node_labels, all_dis_pairs, col1, succ_trans_df
+        )
 
     ##############################################################################
     # PREDECCESOR TRANSITION MATRIX

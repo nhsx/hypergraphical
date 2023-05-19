@@ -454,7 +454,7 @@ def remove_dup_tuples(lst):
     return unique_lst
 
 
-def draw_trans_mat_graph(nodes, all_dis_pairs, tab):
+def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
     """Draw transition matrix graph using NetworkX.
 
     Args:
@@ -462,29 +462,53 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab):
         all_dis_pairs (list): All possible edge to include in the graph,
             where the last node is the head node.
         tab (variable): Variable name of tab the graph should be produced in.
+        transition_df (dataframe): Transition transition matrix df.
     Returns:
         pyplot: Undirected hypergraph showing the transition probability.
     """
     g = nx.DiGraph()
     g.add_nodes_from(nodes)
 
-    for i in range(0, len(all_dis_pairs)):
-        g.add_edges_from([all_dis_pairs[i]])
-
     pos = nx.circular_layout(g)
 
-    # Plot true nodes
-    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
+    # Plot nodes
+    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes, alpha=0.5)
 
-    # Draw pairwise hyperarcs
-    nx.draw_networkx_edges(
-        g,
-        pos,
-        edge_color="red",
-        connectionstyle="arc3,rad=0.1",
-        arrowstyle="-|>",
-        width=1,
-    )
+    # tab.write(all_dis_pairs)
+    for i in range(0, len(all_dis_pairs)):
+        tail_node = all_dis_pairs[i][0]
+        head_node = all_dis_pairs[i][1]
+        # tab.write(head_node)
+        weight = transition_df.loc[tail_node, head_node]
+        # g.add_edges_from([all_dis_pairs[i]])
+        g.add_edge(tail_node, head_node, weight=round(weight, 2))
+
+        # Draw pairwise hyperarcs
+        nx.draw_networkx_edges(
+            g,
+            pos,
+            edge_color="red",
+            connectionstyle="arc3,rad=0.1",
+            arrowstyle="-|>",
+            width=1,
+        )
+
+        edge_labels = nx.get_edge_attributes(g, "weight")
+        nx.draw_networkx_edge_labels(
+            g,
+            pos,
+            edge_labels=edge_labels,
+            font_size=7,
+            label_pos=0.7,
+            # verticalalignment="top",
+        )
+
+    # edges_list = list(g.edges(data=True))
+    # for e in edges_list:
+    #     s = e[0]
+    #     t = e[1]
+    #     w = e[2]["weight"]
+    #     tab.markdown(f"Edge source: {s}, Edge target {t}, Weight {w}")
 
     # Draw labels only for true nodes
     labels = {node: str(node) for node in nodes}
