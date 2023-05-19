@@ -589,9 +589,68 @@ def tab2_directed(
     min_idx = min(norm_eig_df.idxmin())
 
     tab2.markdown(
-        f":red[{max_idx}] is the most central successor disease"
-        f" with the most connections and {min_idx} is the least central."
+        f":red[{max_idx}] is the most likely to be a successor disease"
+        f" and {min_idx} is the least likely."
     )
 
     tab2.write("#### Predecessor PageRank")
     tab2.text("Disease most likely to be predecessor diseases...")
+
+    with tab2.expander("How to calculate Predecessor PageRank?"):
+        st.markdown(
+            "To calculate the Eigen values of the Predecessor Transiton matrix"
+            " we need to use the equation:"
+        )
+        st.latex("det(A - \lambda I) = 0")
+        st.markdown("Where")
+        st.markdown("- $A$ is the predecessor transition matrix.")
+        st.markdown(
+            "- $I$ is the equivalent order identity matrix "
+            "(same shape as the transition matrix)."
+        )
+
+        st.markdown("Where the Eigen values are denoted as:")
+
+        st.latex(f"\lambda_1, ..., \lambda_{len(pred_trans_df)}")
+        st.markdown("From the transition matrix we get Eigen values:")
+        pred_trans_ar = pred_trans_df.to_numpy()
+        eigen_vals = linalg.eigvals(a=pred_trans_ar)
+        eigen_vals = np.real(np.round(eigen_vals, 3))
+        for i, value in enumerate(eigen_vals):
+            st.latex(f"\lambda_{i} = {value}")
+
+        maxvalue = max(eigen_vals)
+        st.markdown(
+            f"Then you take the maximum Eigen value {maxvalue}"
+            " and use this to calculate the left Eigenvector. This is"
+            " done by substituting $\lambda$ into the equation below:"
+        )
+        st.latex("X^T A = X^T \lambda")
+        st.markdown("Where $X$ is the vector:")
+        X = [*auc][:num_dis]
+        st.write(pd.DataFrame(X))
+
+        maxvalue_idx = int(np.where(eigen_vals == maxvalue)[0])
+
+        st.markdown("From this we get the Eigenvector:")
+        left_eigvec = linalg.eig(pred_trans_ar, left=True, right=False)[1][
+            :, int(maxvalue_idx)
+        ]
+
+        left_eigvec = np.round(left_eigvec, 3)
+        st.write(left_eigvec)
+        st.markdown("And the normalised Eigenvector:")
+        norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        norm_eigenvec_vec = pd.DataFrame(norm_eigenvec)
+        st.write(norm_eigenvec_vec)
+
+    tab2.write("The Predecessor PageRanks for these diseases are:")
+    norm_eig_df = pd.DataFrame(norm_eigenvec).set_index(pd.Index(dis_list))
+    tab2.dataframe(norm_eig_df.style.highlight_max(axis=0, color="pink"))
+    max_idx = max(norm_eig_df.idxmax())
+    min_idx = min(norm_eig_df.idxmin())
+
+    tab2.markdown(
+        f":red[{max_idx}] is the most likely to be a predecessor disease"
+        f" and {min_idx} is the least likely."
+    )
