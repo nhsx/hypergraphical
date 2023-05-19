@@ -27,8 +27,8 @@ def pagerank_scatter(suc_col, pred_col, dis_col, tab):
     fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
     # Triangles
-    x = [-0.01, 0.99, -0.01]
-    y = [-0.01, 0.99, 0.99]
+    x = [-0.01, 1.2, -0.01]
+    y = [-0.01, 1.2, 1.2]
 
     ax.fill(x, y, color="orange", alpha=0.1)
     pred_loc_y = pred_col.max() + 0.04
