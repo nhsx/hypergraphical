@@ -7,6 +7,8 @@ import numpy as np
 from scipy import linalg
 import itertools
 from string import ascii_uppercase as auc
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 # local
@@ -143,16 +145,21 @@ def tab2_directed(
                 hyperarc_comma
             )
 
-        # st.dataframe(hyperarc_count_df)
-
         # Find the number of times the example hyperarc occurs
         hyperarc_count_row = hyperarc_count_df[
             hyperarc_count_df["Hyperarc"] == examp_hyperarc
         ]
-        examp_hyperarc_count = hyperarc_count_row.iloc[0, 1]
+        st.dataframe(hyperarc_count_df)
+        if hyperarc_count_row.empty:
+            examp_hyperarc_count = 0
+            new_row = {"Hyperarc": examp_hyperarc, "Count": examp_hyperarc_count}
+            hyperarc_count_df = hyperarc_count_df.append(new_row, ignore_index=True)
+        else:
+            examp_hyperarc_count = hyperarc_count_row.iloc[0, 1]
 
         st.markdown(
-            f"The raw prevalence of hyperarc {{{examp_hyperarc}}} is {examp_hyperarc_count}."
+            f"The raw prevalence of hyperarc {{{examp_hyperarc}}} is "
+            f"{examp_hyperarc_count}."
         )
 
         st.markdown(f"$C({{{examp_hyperarc}}})$ = {examp_hyperarc_count}.")
@@ -388,6 +395,51 @@ def tab2_directed(
         "transition matrix, where each row sums to 1:"
     )
     tab2.dataframe(succ_trans_df)  # .style.highlight_max(axis=0))
+
+    st.markdown(
+        "We can show the probability of a condition being observed "
+        "before another using a standard weighted graph:"
+    )
+
+    succ_trans_ar = succ_trans_df.to_numpy()
+    tab2.write(succ_trans_ar)
+    col1, col2 = tab2.columns(2)  # to centre image
+    with col1:
+        # Create graph
+        succ_trans_G = nx.MultiDiGraph()
+
+        # Add nodes from the graph
+        num_nodes = succ_trans_ar.shape[0]
+        succ_trans_G.add_nodes_from(range(num_nodes))
+
+        node_labels = [*auc][:num_dis]
+
+        # Add weighted edges to the graph
+        for i in range(num_nodes):
+            for j in range(i + 1, num_nodes):
+                weight = succ_trans_ar[i][j]
+                if weight > 0:
+                    if i == j:
+                        succ_trans_G.add_edge(i, j, weight=weight, selfloop=True)
+                    else:
+                        succ_trans_G.add_edge(i, j, weight=weight)
+
+        # Draw the graph
+        pos = nx.circular_layout(succ_trans_G)
+        edge_labels = nx.get_edge_attributes(succ_trans_G, "weight")
+        nx.draw_networkx_nodes(
+            succ_trans_G,
+            pos,
+            node_color="lightblue",
+            node_size=200,
+        )
+        nx.draw_networkx_labels(succ_trans_G, pos)
+        nx.draw_networkx_edges(succ_trans_G, pos, edge_color="red", arrows="True")
+
+        nx.draw_networkx_edge_labels(succ_trans_G, pos, edge_labels=edge_labels)
+        plt.axis("off")
+        col1.pyplot()
+
     ##############################################################################
     # PREDECCESOR TRANSITION MATRIX
     ##############################################################################
