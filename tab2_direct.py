@@ -21,6 +21,7 @@ from src import numpy_utils, create_figs
 def tab2_directed(
     tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs, num_dis
 ):
+    node_labels = [*auc][:num_dis]
     tab2.header("Directed Hypergraph")
     tab2.subheader("_Page is Work in Progress_ 👷")
     if tab2.checkbox("Show the list of each patient's final hyperarc"):
@@ -28,6 +29,7 @@ def tab2_directed(
     tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
+
     numpy_utils.draw_b_hypergraph(dis_list, edge_list, tab2)
     tab2.subheader("Predecessor and Successor Disease Importance")
     tab2.markdown(
@@ -260,6 +262,8 @@ def tab2_directed(
 
     top_n_hyparcs = hyperarc_weights_df.iloc[:n_hyperarcs, :]
     tab2.dataframe(top_n_hyparcs)
+    # tab2.write(edge_list)
+    numpy_utils.draw_weighted_b_hypergraph(node_labels, top_n_hyparcs, tab2)
 
     #######################################################################
     # RandomWalk Probability Transition Matrix
@@ -430,14 +434,13 @@ def tab2_directed(
 
     col1, col2 = tab2.columns(2)  # to centre image
     with col1:
-        node_labels = [*auc][:num_dis]
         numpy_utils.draw_trans_mat_graph(
             node_labels, all_dis_pairs, col1, succ_trans_df
         )
 
-    ##############################################################################
+    ###########################################################################
     # PREDECCESOR TRANSITION MATRIX
-    ##############################################################################
+    ###########################################################################
     tab2.write("#### Predecessor Transition Matrix")
 
     tab2.markdown(

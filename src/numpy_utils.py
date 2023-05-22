@@ -331,7 +331,7 @@ def draw_b_hypergraph(nodes, edges, tab):
             is the head node.
         tab (variable): Variable name of tab the graph should be produced in.
     Returns:
-        pyplot: Undirected hypergraph showing the fictious patients graph.
+        pyplot: Directed hypergraph showing the fictious patients graph.
     """
     g = nx.DiGraph()
     g.add_nodes_from(nodes)
@@ -341,6 +341,134 @@ def draw_b_hypergraph(nodes, edges, tab):
 
     # Calculate the edge degree for each edge
     node_degree_dict = {value: len(value) for value in edges}
+
+    tail_edge_list = list()
+    head_edge_list = list()
+
+    for i, edge_degree in enumerate(node_degree_dict.values()):
+        if edge_degree == 2:
+            print(edges[i])
+            g.add_edges_from([edges[i]])
+
+        else:
+            # B-hypergraphs only - so from infinite tails to one head only
+            head_node = edges[i][-1]
+            tail_nodes = edges[i][:-1]
+            g.add_node(i)  # create a new fake node named with number i
+            for tail_node in tail_nodes:
+                tail_edge_list.append((tail_node, i))
+
+            head_edge_list.append((i, head_node))
+
+    extra_nodes = set(g.nodes) - set(nodes)
+
+    # Get coordinates to place real nodes in a circle with a large radius
+    # Extra nodes are centred around a smaller radius
+    node_radius = 6
+    real_node_coords = get_coords(len(nodes), node_radius)
+    extra_node_coords = get_coords(len(extra_nodes), node_radius / 3)
+
+    real_node_coords_dict = dict(zip(nodes, real_node_coords))
+    extra_node_coords_dict = dict(zip(extra_nodes, extra_node_coords))
+
+    pos_dict = {**real_node_coords_dict, **extra_node_coords_dict}
+
+    pos = pos_dict
+
+    # Plot true nodes
+    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
+
+    # Draw pairwise hyperarcs
+    nx.draw_networkx_edges(
+        g,
+        pos,
+        edge_color="red",
+        connectionstyle="arc3,rad=0.1",
+        arrowstyle="-|>",
+        width=1,
+    )
+
+    # Generate random colours based on number of hyperarcs
+    random.seed(1)
+    colors = [
+        "#" + "".join([random.choice("0123456789ABCDEF") for j in range(6)])
+        for i in range(len(edges))
+    ]
+
+    for edge_num in range(0, len(edges)):
+        for head_edge in head_edge_list:
+            if edge_num in head_edge:
+                # Draw hyperarc heads
+                nx.draw_networkx_edges(
+                    g,
+                    pos,
+                    edge_color=colors[edge_num],
+                    edgelist=[head_edge],
+                    arrowstyle="-|>",
+                    width=1.5,
+                )
+        for tail_edge in tail_edge_list:
+            if edge_num in tail_edge:
+                # Draw hyperarc tails
+                nx.draw_networkx_edges(
+                    g,
+                    pos,
+                    edge_color=colors[edge_num],
+                    edgelist=[tail_edge],
+                    connectionstyle="arc3,rad=0.4",
+                    arrowstyle="-",
+                    style="dashdot",
+                    alpha=0.4,
+                    width=2,
+                )
+        for extra_node in extra_nodes:
+            if edge_num == extra_node:
+                # Draw extra nodes with same colour
+                nx.draw_networkx_nodes(
+                    g,
+                    pos,
+                    node_size=20,
+                    nodelist=[extra_node],
+                    node_color=colors[edge_num],
+                    node_shape="h",
+                )
+
+    # Draw labels only for true nodes
+    labels = {node: str(node) for node in nodes}
+    nx.draw_networkx_labels(g, pos, labels, font_size=10)
+    plt.axis("off")
+    tab.pyplot()
+
+
+# B-Hypergraphs drawing with weights function
+def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
+    """Draw B-Hypergraphs using NetworkX.
+       B-Hypergraphs meaning there can be only one head node, but an unlimited
+       number of tail nodes.
+       NOTE: This doesn't currently consider duplicates.
+
+    Args:
+        nodes (list): Nodes to include in the graph.
+        top_n_hyparcs (DataFrame): Two column pandas DataFrame with a hyperarc
+            column and weights column.
+        tab (variable): Variable name of tab the graph should be produced in.
+    Returns:
+        pyplot: Directed hypergraph showing the fictious patients graph.
+    """
+    g = nx.DiGraph()
+    g.add_nodes_from(nodes)
+    top_n_hyparcs["Hyperarc"] = top_n_hyparcs["Hyperarc"].str.replace(" ", "")
+    top_n_hyparcs["Hyperarc"] = top_n_hyparcs["Hyperarc"].str.replace("->", ",")
+    # tab.dataframe(top_n_hyparcs)
+
+    # Turn the hyperarc column into a list of edges
+    edges = list()
+    for i, row in top_n_hyparcs.iterrows():
+        e = top_n_hyparcs.iloc[i, 0].split(",")
+        edges.append(e)
+
+    # Calculate the edge degree for each edge
+    node_degree_dict = {idx: len(sublist) for idx, sublist in enumerate(edges)}
 
     tail_edge_list = list()
     head_edge_list = list()
