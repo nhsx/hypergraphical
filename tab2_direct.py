@@ -398,9 +398,9 @@ def tab2_directed(
     )
     tab2.dataframe(succ_trans_df.round(2))  # .style.highlight_max(axis=0))
 
-    st.markdown(
+    tab2.markdown(
         "We can show the probability of a condition being observed "
-        "before another using a standard weighted graph:"
+        "before another using a standard directed weighted graph:"
     )
 
     succ_trans_ar = succ_trans_df.to_numpy()
@@ -536,6 +536,18 @@ def tab2_directed(
         "transition matrix, where each row sums to 1:"
     )
     tab2.dataframe(pred_trans_df.round(2))
+
+    tab2.markdown(
+        "We can show the probability of a condition being observed "
+        "before another using a standard directed weighted graph:"
+    )
+
+    col1, col2 = tab2.columns(2)  # to centre image
+    with col1:
+        node_labels = [*auc][:num_dis]
+        numpy_utils.draw_trans_mat_graph(
+            node_labels, all_dis_pairs, col1, pred_trans_df
+        )
 
     tab2.subheader("PageRank:")
 
