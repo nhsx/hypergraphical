@@ -439,7 +439,7 @@ def draw_b_hypergraph(nodes, edges, tab):
 
 
 # B-Hypergraphs drawing with weights function
-def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
+def draw_weight_b_hypergraph(nodes, top_n_hyparcs, tab):
     """Draw B-Hypergraphs using NetworkX.
        B-Hypergraphs meaning there can be only one head node, but an unlimited
        number of tail nodes.

@@ -83,20 +83,20 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
             " as follows:"
         )
         node_deg_mat = numpy_utils.node_deg_mat(edge_list, dis_list)
-        st.write(
-            pd.DataFrame(node_deg_mat, columns=dis_list).set_index(pd.Index(dis_list))
-        )
+        node_deg_df = pd.DataFrame(node_deg_mat, columns=dis_list)
+        st.write(node_deg_df.set_index(pd.Index(dis_list)))
 
     tab1.markdown("* Calculate the adjacency matrix $A$")
     with tab1.expander("How to calculate the adjacency matrix?"):
         st.write("$A = MM^{T} - D_n$")
         col1, col2, col3, col4, col5 = st.columns([1.5, 6, 6, 1, 6])
         col1.write("$A$ = ")
-        col2.write(inc_mat.to_numpy())
-        col3.write(inc_mat.to_numpy().transpose())
-        col4.write("\-")
+        np_inc_mat = inc_mat.to_numpy()
+        col2.write(np_inc_mat)
+        col3.write(np_inc_mat.transpose())
+        col4.write("$-$")
         col5.write(node_deg_mat)
-        inc_matT = np.matmul(inc_mat.to_numpy(), (inc_mat.to_numpy().transpose()))
+        inc_matT = np.matmul(np_inc_mat, (np_inc_mat.transpose()))
         adj_mat = inc_matT - node_deg_mat
 
     tab1.write("$A$:")
@@ -126,23 +126,23 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         st.markdown(
             r"""
             $$W(e_i) = \frac{C(e_i)}{C(e_i) + \sum_{e_j \in \mathcal{P}(e_i)}w_j C(e_j) + \sum_{e_k \in \mathcal{S}(e_i)}w_k C(e_k)},$$
-            """
+            """  # noqa: E501
         )
         st.markdown(
             "where\n"
-            r"""$\mathcal{S}(e_i) = \{e_k \hspace{2pt} : \hspace{2pt} e_i \subset e_k\}.$"""
+            r"""$\mathcal{S}(e_i) = \{e_k \hspace{2pt} : \hspace{2pt} e_i \subset e_k\}.$"""  # noqa: E501
         )
         st.markdown(
             "For this example when we want to calculate the weight"
             " of a specific hyperedge $e_i$:\n"
         )
         st.markdown(
-            "* $\mathcal{P}(e_i)$ is"
+            "* $\mathcal{P}(e_i)$ is"  # noqa: W605
             " the power set of hyperedges for multimorbidity set"
             " $e_i$ (all subsets} disease sets)."
         )
         st.markdown(
-            "* $\mathcal{S}(e_i)$ is the super set of hyperedges for"
+            "* $\mathcal{S}(e_i)$ is the super set of hyperedges for"  # noqa: W605, E501
             " multimorbidity set $e_i$ (all disease sets containing"
             " $e_i$)."
         )
@@ -152,11 +152,11 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
             " in the population\n"
         )
         st.markdown(
-            "* :red[$\sum_{e_j \in \mathcal{P}(e_i)} C(e_j)$] is the"
+            "* :red[$\sum_{e_j \in \mathcal{P}(e_i)} C(e_j)$] is the"  # noqa: W605, E501
             " sum of the power set prevalence"
         )
         st.markdown(
-            "* :red[$\sum_{e_k \in \mathcal{S}(e_i)} C(e_k)$] is the"
+            "* :red[$\sum_{e_k \in \mathcal{S}(e_i)} C(e_k)$] is the"  # noqa: W605, E501
             " sum of the super set prevalence"
         )
         st.markdown(
@@ -209,8 +209,8 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         " matrix $A = MW_{e}M^{T} - D_n$:"
     )
 
-    MWe = np.matmul(inc_mat.to_numpy(), we_df.to_numpy())
-    MWeMT = np.matmul(MWe, (inc_mat.to_numpy().transpose()))
+    MWe = np.matmul(np_inc_mat, we_df.to_numpy())
+    MWeMT = np.matmul(MWe, (np_inc_mat.transpose()))
     weighted_adj_mat = MWeMT - node_deg_mat
     np.fill_diagonal(weighted_adj_mat, 0.0001)
     tab1.write(weighted_adj_mat)
@@ -228,26 +228,26 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
             "To calculate the Eigen values of the adjacency matrix"
             " we need to use the equation:"
         )
-        st.latex("det(A - \lambda I) = 0")
+        st.latex("det(A - \lambda I) = 0")  # noqa: W605
         st.markdown(
             "Where $I$ is the equivalent order identity matrix"
             " (same shape as the adjacency matrix). Where the Eigen"
             " values are denoted as:"
         )
-        st.latex(f"\lambda_1, ..., \lambda_{len(weighted_adj_mat)}")
+        st.latex(f"\lambda_1, ..., \lambda_{len(weighted_adj_mat)}")  # noqa: W605, E501
         st.markdown("From the adjacency matrix above we get Eigen values:")
         eigen_vals = linalg.eigvals(a=weighted_adj_mat)
         eigen_vals = np.real(np.round(eigen_vals, 3))
         for i, value in enumerate(eigen_vals):
-            st.latex(f"\lambda_{i} = {value}")
+            st.latex(f"\lambda_{i} = {value}")  # noqa: W605
 
         maxvalue = max(eigen_vals)
         st.markdown(
             f"Then you take the maximum Eigen value {maxvalue}"
             " and use this to calculate the left Eigenvector. This is"
-            " done by substituting $\lambda$ into the equation below:"
+            " done by substituting $\lambda$ into the equation below:"  # noqa: W605, E501
         )
-        st.latex("X^T A = X^T \lambda")
+        st.latex("X^T A = X^T \lambda")  # noqa: W605
         st.markdown("Where $X$ is the vector:")
         X = [*auc][:num_dis]
         st.write(pd.DataFrame(X))

@@ -16,7 +16,12 @@ from src import numpy_utils, create_figs
 
 
 def tab2_directed(
-    tab2, final_prog_df, dis_list, edge_list, binmat, conds_worklist, all_progs, num_dis
+    tab2,
+    final_prog_df,
+    dis_list,
+    edge_list,
+    all_progs,
+    num_dis,
 ):
     node_labels = [*auc][:num_dis]
     tab2.header("Directed Hypergraph")
@@ -77,25 +82,24 @@ def tab2_directed(
         st.markdown(
             r"""
                 $$\mathcal{K}(h_i) = \{h_j \hspace{2pt} : \hspace{2pt} p(h_j)=p(h_i)\}$$
-                """
+                """  # noqa: E501
         )
 
         st.markdown(
             "is the set of all the hyperarc children of the parent "
-            "hyperedge $p(h_{i})$. Where $\mathcal{K}(h_i)$ is the set of "
+            "hyperedge $p(h_{i})$. Where $\mathcal{K}(h_i)$ is the set of "  # noqa: W605, E501
             "siblings for hyperarc $h_{i}$. And $W(p(h_i))$ is the hyperedge "
-            "weight of the parent $e_i$. Then we define the weight for hyperarc "
-            "$h_i$ as"
+            "weight of the parent $e_i$. Then we define the weight for "
+            "hyperarc $h_i$ as"
         )
 
         st.markdown(
-            r"""$$w(h_i) = W(p(h_i)) \frac{C(h_i)}{\sum_{h_j \in \mathcal{K}(h_i)}C(h_j)}$$"""
+            r"""$$w(h_i) = W(p(h_i)) \frac{C(h_i)}{\sum_{h_j \in \mathcal{K}(h_i)}C(h_j)}$$"""  # noqa: E501
         )
 
         st.markdown(
-            "Note that $W(\cdot)$ represents a _hyperedge_ "
-            "weight while $w(\cdot)$ represents a "
-            "_hyperarc_ weight."
+            "Note that $W(\cdot)$ represents a _hyperedge_ "  # noqa: W605
+            "weight while $w(\cdot)$ represents a _hyperarc_ weight."  # noqa: W605, E501
         )
         examp_hyperedge = soren_dice_df.iloc[0, 0]
 
@@ -105,14 +109,18 @@ def tab2_directed(
         examp_hyperedge = ", ".join(map(str, examp_hyperedge))
 
         st.markdown(
-            f"As an example let's calculate the hyperarc weight of hyperarc {{{examp_hyperarc}}}:"
+            f"As an example let's calculate the hyperarc weight "
+            f"of hyperarc {{{examp_hyperarc}}}:"
         )
 
         st.markdown(
-            f"The weight of the parent hyperedge {{{examp_hyperedge}}} of hyperarc {{{examp_hyperarc}}} is {round(examp_hyperedge_we, 2)}."
+            f"The weight of the parent hyperedge {{{examp_hyperedge}}} of "
+            f"hyperarc {{{examp_hyperarc}}} is {round(examp_hyperedge_we, 2)}."
         )
 
-        st.markdown(f"$W(p({{{examp_hyperarc}}}))$ = {round(examp_hyperedge_we,2)}.")
+        st.markdown(
+            f"$W(p({{{examp_hyperarc}}}))$ = {round(examp_hyperedge_we,2)}."
+        )  # Hyperarc weight from example
         st.markdown(
             "Then we need to count the number of times the hyperarc "
             "occurs (the raw prevalence)."
@@ -155,7 +163,10 @@ def tab2_directed(
                 "Hyperarc": examp_hyperarc,
                 "Count": examp_hyperarc_count,
             }
-            hyperarc_count_df = hyperarc_count_df.append(new_row, ignore_index=True)
+            hyperarc_count_df = hyperarc_count_df.append(
+                new_row,
+                ignore_index=True,
+            )
         else:
             examp_hyperarc_count = hyperarc_count_row.iloc[0, 1]
 
@@ -195,9 +206,9 @@ def tab2_directed(
             hyperedge_par_list.append(par_edge_set)
 
         hyperarc_count_df["Parent Hyperedge"] = hyperedge_par_list
-        hyperarc_count_df["Siblings Count"] = [None] * len(hyperarc_count_df)
-        hyperarc_count_df["Parent Hyperedge Weight"] = [None] * len(hyperarc_count_df)
-        hyperarc_count_df["w(h_i)"] = [None] * len(hyperarc_count_df)
+        hyperarc_count_df["Siblings Count"] = None
+        hyperarc_count_df["Parent Hyperedge Weight"] = None
+        hyperarc_count_df["w(h_i)"] = None
 
         for i, row in hyperarc_count_df.iterrows():
             # Count the sum of the parent edges
@@ -216,20 +227,22 @@ def tab2_directed(
                 hyperarc_count_df.iloc[i, 4] = soren_row.iloc[0, 4]
 
         # This is the sibling count of the examp hyperarc
-        examp_sib_count = hyperarc_count_df[
+        eg_sib_count = hyperarc_count_df[
             hyperarc_count_df["Hyperarc"] == examp_hyperarc
         ].iloc[0, 3]
 
-        st.markdown(f"These siblings occur {examp_sib_count} times.")
+        st.markdown(f"These siblings occur {eg_sib_count} times.")
 
-        st.markdown(r"""$$\sum_{h_j \in \mathcal{K}(h_i)}C(h_j)$$ is equal to:""")
-        st.markdown(f"{examp_sib_count}")
+        st.markdown(
+            r"""$$\sum_{h_j \in \mathcal{K}(h_i)}C(h_j)$$ is equal to:"""
+        )  # noqa: E501
+        st.markdown(f"{eg_sib_count}")
 
-        st.markdown("We can then calculate this hyperarc weight $w(h_{i})$ as:")
-        eg_arc_we = examp_hyperedge_we * (examp_hyperarc_count / examp_sib_count)
+        st.markdown("We can calculate this hyperarc weight $w(h_{i})$ as:")
+        eg_arc_we = examp_hyperedge_we * (examp_hyperarc_count / eg_sib_count)
         st.markdown(
             f"{round(examp_hyperedge_we,2)}({examp_hyperarc_count}/"
-            f"{examp_sib_count})={round(eg_arc_we,2)}"
+            f"{eg_sib_count})={round(eg_arc_we,2)}"
         )
 
         st.markdown(
@@ -237,7 +250,9 @@ def tab2_directed(
             "values for all of the hyperarcs:"
         )
 
-        hyperarc_count_df["w(h_i)"] = hyperarc_count_df["Parent Hyperedge Weight"] * (
+        hyperarc_count_df["w(h_i)"] = hyperarc_count_df[
+            "Parent Hyperedge Weight"
+        ] * (  # noqa: E501
             hyperarc_count_df["Count"] / hyperarc_count_df["Siblings Count"]
         )
 
@@ -256,7 +271,8 @@ def tab2_directed(
     ).reset_index(drop=True)
 
     tab2.markdown(
-        "Visualise the top $n$ largest weighted hyperarcs with their corresponding weights"
+        "Visualisation of the top $n$ largest weighted hyperarcs "
+        "with their corresponding weights"
     )
     col1, col2 = tab2.columns(2)  # to centre image
     with col1:
@@ -270,7 +286,7 @@ def tab2_directed(
     with col2:
         col2.dataframe(top_n_hyparcs)
     with col1:
-        numpy_utils.draw_weighted_b_hypergraph(node_labels, top_n_hyparcs, col1)
+        numpy_utils.draw_weight_b_hypergraph(node_labels, top_n_hyparcs, col1)
 
     #######################################################################
     # RandomWalk Probability Transition Matrix
@@ -284,7 +300,7 @@ def tab2_directed(
         "taken from one node to another, where each step is "
         "completely independent for the last step. The behaviour "
         "is determined by a transition probability matrix "
-        "$\mathcal{P}$, where the column defines the start node "
+        "$\mathcal{P}$, where the column defines the start node "  # noqa: W605
         "and the row defines the end node. Here we can use random "
         "walks to find the probability of transitioning to another "
         "disease state based on a transition matrix e.g. "
@@ -296,13 +312,15 @@ def tab2_directed(
         "from one node to another"
     ):
         st.markdown(
-            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{h(u,e)}{d(u)} \frac{h(v,e)}{\delta(e)}$$"""
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{h(u,e)}{d(u)} \frac{h(v,e)}{\delta(e)}$$"""  # noqa: E501
         )
 
         st.markdown("Where")
-        st.markdown("- $h(u,e) = 1$ if hyperedge $e \in E$ connects the nodes")
+        st.markdown(
+            "- $h(u,e) = 1$ if hyperedge $e \in E$ connects the nodes"  # noqa: E501, W605
+        )
         st.markdown("- $d$ is the node degree function")
-        st.markdown("- $\delta$ the edge degree function")
+        st.markdown("- $\delta$ the edge degree function")  # noqa: W605
 
     tab2.write("#### Successor Transition Matrix")
 
@@ -323,7 +341,7 @@ def tab2_directed(
         )
 
         st.markdown(
-            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}.$$"""
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}.$$"""  # noqa: E501
         )
         st.markdown("Where")
         st.markdown("- $u$ is the current node position (tail)")
@@ -336,27 +354,27 @@ def tab2_directed(
             "- $m_+(v,e)$ = 1 if node $v$ has the head of an edge $e$ "
             "connected to it"
         )
-        st.markdown("- $d_-(u)$ = the sum of all possible contributions to $u$")
+        st.markdown("- $d_-(u)$ = the sum of all contributions to $u$")
         st.markdown(
-            "- $\delta_+ (e)$ = the number of nodes connected to the edge "
+            "- $\delta_+ (e)$ = the number of nodes connected to the edge "  # noqa: E501, W605
             "$e$ via the edges head (this will always be 1 in b-hypergraphs)"
         )
         st.markdown(
-            r"""- $\frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}$ is the row normaliser"""
+            r"""- $\frac{m_-(u,e)}{d_-(u)} \frac{m_+(v,e)}{\delta_+(e)}$ is the row normaliser"""  # noqa: E501
         )
 
-    with tab2.expander("Example - calculate of the successor transition probability"):
+    with tab2.expander("Example: calculate successor transition probability"):
         st.markdown(
             "First, we need to calculate the non-normalised "
             "probability of transitioning from one node to another."
         )
         st.markdown(
-            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""
+            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""  # noqa: E501
         )
 
-        # If a hyperarc has u in the tail and v in the head then get the sum of those hyperarc weights
+        # If a hyperarc has u in the tail and v in the head then get the sum of
+        # those hyperarc weights
         # hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
-        # st.dataframe(hyperarc_weights_df)
 
         nn_succ_trans_df = pd.DataFrame(columns=dis_list)
         nn_succ_trans_df["Node"] = dis_list
@@ -375,17 +393,22 @@ def tab2_directed(
                 tail = hyperarc_weights_df.iloc[i, 0].split("->")[0]
                 head = hyperarc_weights_df.iloc[i, 0].split("->")[1]
                 if pair[0] in tail and pair[1] in head:
-                    nn_succ_trans_df.loc[pair[0], pair[1]] += hyperarc_weights_df.iloc[
+                    nn_succ_trans_df.loc[
+                        pair[0], pair[1]
+                    ] += hyperarc_weights_df.iloc[  # noqa: E501
                         i, 1
                     ]
 
         st.markdown("__Example__")
         st.markdown(
-            f"As an example let's calculate the probability of transitioning from node {all_dis_pairs[1][0]} to {all_dis_pairs[1][1]}."
+            f"As an example let's calculate the probability of transitioning "
+            f"from node {all_dis_pairs[1][0]} to {all_dis_pairs[1][1]}."
         )
 
         st.markdown(
-            f"First we find all the hyperarcs that have {all_dis_pairs[1][0]} in their tail and {all_dis_pairs[1][1]} in their head component and their corresponding weights:"
+            f"First we find all the hyperarcs that have {all_dis_pairs[1][0]} "
+            f"in their tail and {all_dis_pairs[1][1]} in their head component "
+            f"and their corresponding weights:"
         )
 
         examp_succ_hyps = list()
@@ -418,13 +441,18 @@ def tab2_directed(
         nn_succ_trans_df = nn_succ_trans_df.replace(0, 0.0001)
         st.dataframe(nn_succ_trans_df.round(2))
 
-        succ_trans_df = nn_succ_trans_df.div(nn_succ_trans_df.sum(axis=1), axis=0)
+        succ_trans_df = nn_succ_trans_df.div(
+            nn_succ_trans_df.sum(axis=1),
+            axis=0,
+        )
         # succ_trans_df = succ_trans_df.round(2)
         st.markdown(
             "We can then use the following equation to get the "
             "normalised transition matrix:"
         )
-        st.markdown(r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$""")
+        st.markdown(
+            r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$"""
+        )  # noqa: E501
 
     tab2.markdown(
         "Following the steps above we get the normalised successor "
@@ -469,7 +497,7 @@ def tab2_directed(
         )
 
         st.markdown(
-            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}.$$"""
+            r"""$$p(u,v) = \sum_{e \in \mathcal{E}} w(e) \frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}.$$"""  # noqa: E501
         )
         st.markdown("Where")
         st.markdown("- $u$ is the current node position (head)")
@@ -482,22 +510,22 @@ def tab2_directed(
             "- $m_-(v,e)$ = 1 if node $v$ has the head of an edge $e$ "
             "connected to it"
         )
-        st.markdown("- $d_+(u)$ = the sum of all possible contributions to $u$")
+        st.markdown("- $d_+(u)$ = the sum of all contributions to $u$")
         st.markdown(
-            "- $\delta_- (e)$ = the number of nodes connected to the edge "
+            "- $\delta_- (e)$ = the number of nodes connected to the edge "  # noqa: E501, W605
             "$e$ via the edges head (this will always be 1)"
         )
         st.markdown(
-            r"""- $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$ is the row normaliser"""
+            r"""- $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$ is the row normaliser"""  # noqa: E501
         )
 
-    with tab2.expander("Example - calculate of the Predecessor transition probability"):
+    with tab2.expander("Example: calculate Predecessor transition"):
         st.markdown(
             "First, we need to calculate the non-normalised "
             "probability of transitioning from one node to another."
         )
         st.markdown(
-            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""
+            r"""This is done by taking the sum of the hyperarc weights $w(e)$ for all possible node pairs $$\sum_{e \in \mathcal{E}} w(e).$$"""  # noqa: E501
         )
 
         nn_pred_trans_df = pd.DataFrame(columns=dis_list)
@@ -512,11 +540,14 @@ def tab2_directed(
                 u = pair[1]
                 v = pair[0]
                 if u in tail and v in head:
-                    nn_pred_trans_df.loc[v, u] += hyperarc_weights_df.iloc[i, 1]
+                    nn_pred_trans_df.loc[v, u] += hyperarc_weights_df.iloc[
+                        i, 1
+                    ]  # Add weights to pred trans df
 
         st.markdown("__Example__")
         st.markdown(
-            f"As an example let's calculate the probability of transitioning from node {all_dis_pairs[1][1]} to {all_dis_pairs[1][0]}."
+            f"As an example let's calculate the probability of transitioning "
+            f"from node {all_dis_pairs[1][1]} to {all_dis_pairs[1][0]}."
         )
 
         st.markdown(
@@ -556,13 +587,18 @@ def tab2_directed(
 
         st.dataframe(nn_pred_trans_df.round(2))
 
-        pred_trans_df = nn_pred_trans_df.div(nn_pred_trans_df.sum(axis=1), axis=0)
+        pred_trans_df = nn_pred_trans_df.div(
+            nn_pred_trans_df.sum(axis=1),
+            axis=0,
+        )
         # pred_trans_df = pred_trans_df.round(2)
         st.markdown(
             "We can then use the following equation to get the "
             "normalised transition matrix:"
         )
-        st.markdown(r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$""")
+        st.markdown(
+            r""" $\frac{m_+(u,e)}{d_+(u)} \frac{m_-(v,e)}{\delta_-(e)}$"""
+        )  # noqa: E501
 
     tab2.markdown(
         "Following the steps above we get the normalised predecessor "
@@ -609,7 +645,7 @@ def tab2_directed(
             "To calculate the Eigen values of the Successor Transiton matrix"
             " we need to use the equation:"
         )
-        st.latex("det(A - \lambda I) = 0")
+        st.latex("det(A - \lambda I) = 0")  # noqa: W605
         st.markdown("Where")
         st.markdown("- $A$ is the successor transition matrix.")
         st.markdown(
@@ -619,21 +655,21 @@ def tab2_directed(
 
         st.markdown("Where the Eigen values are denoted as:")
 
-        st.latex(f"\lambda_1, ..., \lambda_{len(succ_trans_df)}")
+        st.latex(f"\lambda_1, ..., \lambda_{len(succ_trans_df)}")  # noqa: W605
         st.markdown("From the transition matrix we get Eigen values:")
         succ_trans_ar = succ_trans_df.to_numpy()
         eigen_vals = linalg.eigvals(a=succ_trans_ar)
         eigen_vals = np.real(np.round(eigen_vals, 3))
         for i, value in enumerate(eigen_vals):
-            st.latex(f"\lambda_{i} = {value}")
+            st.latex(f"\lambda_{i} = {value}")  # noqa: W605
 
         maxvalue = max(eigen_vals)
         st.markdown(
             f"Then you take the maximum Eigen value {maxvalue}"
             " and use this to calculate the left Eigenvector. This is"
-            " done by substituting $\lambda$ into the equation below:"
+            " done by substituting $\lambda$ into the equation below:"  # noqa: W605, E501
         )
-        st.latex("X^T A = X^T \lambda")
+        st.latex("X^T A = X^T \lambda")  # noqa: W605
         st.markdown("Where $X$ is the vector:")
         X = [*auc][:num_dis]
         st.write(pd.DataFrame(X))
@@ -648,7 +684,9 @@ def tab2_directed(
         left_eigvec = np.real(np.round(left_eigvec, 3))
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
-        succ_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        succ_norm_eigenvec = [
+            (v / sum(n)) for n in [list(left_eigvec)] for v in n
+        ]  # noqa: E501
         succ_norm_eigenvec_vec = pd.DataFrame(succ_norm_eigenvec)
         st.write(succ_norm_eigenvec_vec)
 
@@ -672,7 +710,7 @@ def tab2_directed(
             "To calculate the Eigen values of the Predecessor Transiton matrix"
             " we need to use the equation:"
         )
-        st.latex("det(A - \lambda I) = 0")
+        st.latex("det(A - \lambda I) = 0")  # noqa: W605
         st.markdown("Where")
         st.markdown("- $A$ is the predecessor transition matrix.")
         st.markdown(
@@ -682,21 +720,21 @@ def tab2_directed(
 
         st.markdown("Where the Eigen values are denoted as:")
 
-        st.latex(f"\lambda_1, ..., \lambda_{len(pred_trans_df)}")
+        st.latex(f"\lambda_1, ..., \lambda_{len(pred_trans_df)}")  # noqa: W605
         st.markdown("From the transition matrix we get Eigen values:")
         pred_trans_ar = pred_trans_df.to_numpy()
         eigen_vals = linalg.eigvals(a=pred_trans_ar)
         eigen_vals = np.real(np.round(eigen_vals, 3))
         for i, value in enumerate(eigen_vals):
-            st.latex(f"\lambda_{i} = {value}")
+            st.latex(f"\lambda_{i} = {value}")  # noqa: W605
 
         maxvalue = max(eigen_vals)
         st.markdown(
             f"Then you take the maximum Eigen value {maxvalue}"
             " and use this to calculate the left Eigenvector. This is"
-            " done by substituting $\lambda$ into the equation below:"
+            " done by substituting $\lambda$ into the equation below:"  # noqa: W605, E501
         )
-        st.latex("X^T A = X^T \lambda")
+        st.latex("X^T A = X^T \lambda")  # noqa: W605
         st.markdown("Where $X$ is the vector:")
         X = [*auc][:num_dis]
         st.write(pd.DataFrame(X))
@@ -711,7 +749,9 @@ def tab2_directed(
         left_eigvec = np.real(np.round(left_eigvec, 3))
         st.write(left_eigvec)
         st.markdown("And the normalised Eigenvector:")
-        pred_norm_eigenvec = [(v / sum(n)) for n in [list(left_eigvec)] for v in n]
+        pred_norm_eigenvec = [
+            (v / sum(n)) for n in [list(left_eigvec)] for v in n
+        ]  # noqa: E501
         pred_norm_eigenvec_vec = pd.DataFrame(pred_norm_eigenvec)
         st.write(pred_norm_eigenvec_vec)
 
