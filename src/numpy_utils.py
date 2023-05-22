@@ -464,34 +464,20 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
         tab (variable): Variable name of tab the graph should be produced in.
         transition_df (dataframe): Transition transition matrix df.
     Returns:
-        pyplot: Undirected hypergraph showing the transition probability.
+        pyplot: Directed hypergraph showing the transition probability.
     """
     g = nx.DiGraph()
     g.add_nodes_from(nodes)
 
     pos = nx.circular_layout(g)
 
-    # Plot nodes
-    # nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes, alpha=0.5)
-
     # tab.write(all_dis_pairs)
     for i in range(0, len(all_dis_pairs)):
         tail_node = all_dis_pairs[i][0]
         head_node = all_dis_pairs[i][1]
-        # tab.write(tail_node)
         weight = transition_df.loc[tail_node, head_node]
-        # g.add_edges_from([all_dis_pairs[i]])
         g.add_edge(tail_node, head_node, weight=round(weight, 2))
 
-        # Draw pairwise hyperarcs
-        # nx.draw_networkx_edges(
-        #     g,
-        #     pos,
-        #     edge_color="red",
-        #     connectionstyle="arc3,rad=0.1",
-        #     arrowstyle="-|>",
-        #     width=1,
-        # )
     nx.draw(
         g,
         pos,
@@ -502,20 +488,12 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
         alpha=0.9,
     )
 
-    # edge_labels = nx.get_edge_attributes(g, "weight")
-
     # Pairwise edges
     edge_labels = {}
     for u, v, d in g.edges(data=True):
         if pos[u][0] > pos[v][0]:
-            # tab.write(f'{d["weight"]}\n\n\n\n{g.edges[(v,u)]["weight"]}')
             label = f'{d["weight"]}\n\n\n\n{g.edges[(v,u)]["weight"]}'
             edge_labels[(u, v)] = label
-        # else:
-        #     # elif pos[u][0] == pos[v][0]:
-        #     label = f'\n\n\n\n{d["weight"]}'
-        #     # label = f'{g.edges[v,u]["weight"]}\n\n\n\n{d["weight"]}'
-        #     edge_labels[(u, v)] = label
 
     nx.draw_networkx_edge_labels(
         g,
@@ -542,16 +520,6 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
         bbox=dict(alpha=0),
     )
 
-    # edges_list = list(g.edges(data=True))
-    # for e in edges_list:
-    #     s = e[0]
-    #     t = e[1]
-    #     w = e[2]["weight"]
-    #     tab.markdown(f"Edge source: {s}, Edge target {t}, Weight {w}")
-
-    # Draw labels only for nodes
-    # labels = {node: str(node) for node in nodes}
-    # nx.draw_networkx_labels(g, pos, labels, font_size=10)
     plt.axis("off")
     tab.pyplot()
 
