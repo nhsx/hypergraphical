@@ -20,13 +20,17 @@ def tab2_directed(
 ):
     node_labels = [*auc][:num_dis]
     tab2.header("Directed Hypergraph")
-    if tab2.checkbox("Show the list of each patient's final hyperarc"):
-        tab2.write(final_prog_df)
+
     tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
+    col1, col2 = tab2.columns(2)  # to centre image
+    with col1:
+        numpy_utils.draw_b_hypergraph(dis_list, edge_list, col1)
 
-    numpy_utils.draw_b_hypergraph(dis_list, edge_list, tab2)
+    with col2:
+        if col2.checkbox("Show the list of each patient's final hyperarc"):
+            col2.write(final_prog_df)
     tab2.subheader("Predecessor and Successor Disease Importance")
     tab2.markdown(
         "In this section we will go through how to calculate "

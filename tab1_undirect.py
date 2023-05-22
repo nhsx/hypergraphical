@@ -1,9 +1,7 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-import os
 import streamlit as st
-import base64
 import pandas as pd
 import numpy as np
 from scipy import linalg
@@ -12,14 +10,10 @@ from scipy import linalg
 from string import ascii_uppercase as auc
 
 # local
-from src import build_model, centrality, centrality_utils, weight_functions
 from src import numpy_utils
 
 
 def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
-    if tab1.checkbox("Show patients individual trajectories"):
-        tab1.write(final_prog_df)
-
     tab1.header("Undirected Hypergraph")
 
     tab1.subheader("Visual population representation:")
@@ -34,9 +28,12 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
             " one node/disease present. Try changing the `Number of diseases"
             " to generate` slider on the sidebar.]**"
         )
-
-    if num_dis > 1:
-        numpy_utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=False)
+    col1, col2 = tab1.columns(2)  # to centre image
+    with col1:
+        numpy_utils.hnx_visual(edge_list, dis_list, col1, weight_labels=False)
+    with col2:
+        if col2.checkbox("Show patients individual trajectories"):
+            col2.write(final_prog_df)
 
     tab1.subheader("Individual Disease Importance")
     tab1.markdown(
@@ -197,13 +194,15 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         " the incidence matrix) with"
         " the diagonal numbers supplying the edge weights."
     )
+    col1, col2 = tab1.columns(2)  # to centre image
+    with col1:
+        numpy_utils.hnx_visual(edge_list, dis_list, col1, weight_labels=True)
+    with col2:
+        col2.markdown("$W_e:$")
 
-    numpy_utils.hnx_visual(edge_list, dis_list, tab1, weight_labels=True)
-
-    tab1.markdown("$W_e:$")
-
-    we_df = numpy_utils.create_hyperedge_weight_df(edge_list, dis_list)
-    tab1.dataframe(we_df.style.highlight_max(axis=0, color="grey"))
+        we_df = numpy_utils.create_hyperedge_weight_df(edge_list, dis_list)
+        we_df = we_df.round(3)
+        col2.dataframe(we_df)  # .style.highlight_max(axis=0, color="grey"))
 
     tab1.markdown(
         "With $W_e$ we can calculate the weighted adjacency"
