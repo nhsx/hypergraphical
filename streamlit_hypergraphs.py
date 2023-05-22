@@ -1,18 +1,8 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-import os
 import streamlit as st
 import base64
-import pandas as pd
-import numpy as np
-from scipy import linalg
-
-# from sklearn import preprocessing
-from string import ascii_uppercase as auc
-
-# local
-from src import build_model, centrality, centrality_utils, weight_functions
 from src import numpy_utils
 import tab0_mot_tab
 import tab1_undirect
@@ -25,7 +15,7 @@ import tab2_direct
 
 st.set_page_config(
     page_title="Multimorbidity Calculations",
-    page_icon="https://www.england.nhs.uk/wp-content/themes/nhsengland/static/img/favicon.ico",
+    page_icon="https://www.england.nhs.uk/wp-content/themes/nhsengland/static/img/favicon.ico",  # noqa: E501
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
@@ -61,7 +51,7 @@ svg = """
             <path d="M0 0h40v16H0z" fill="#005EB8"></path>
             <path d="M3.9 1.5h4.4l2.6 9h.1l1.8-9h3.3l-2.8 13H9l-2.7-9h-.1l-1.8 9H1.1M17.3 1.5h3.6l-1 4.9h4L25 1.5h3.5l-2.7 13h-3.5l1.1-5.6h-4.1l-1.2 5.6h-3.4M37.7 4.4c-.7-.3-1.6-.6-2.9-.6-1.4 0-2.5.2-2.5 1.3 0 1.8 5.1 1.2 5.1 5.1 0 3.6-3.3 4.5-6.4 4.5-1.3 0-2.9-.3-4-.7l.8-2.7c.7.4 2.1.7 3.2.7s2.8-.2 2.8-1.5c0-2.1-5.1-1.3-5.1-5 0-3.4 2.9-4.4 5.8-4.4 1.6 0 3.1.2 4 .6" fill="white"></path>
           </svg>
-"""
+"""  # noqa: E501
 render_svg(svg)
 
 
@@ -84,7 +74,7 @@ view_choice = st.sidebar.selectbox(
 num_patients = st.sidebar.slider(
     "Number of patients to generate", min_value=5, max_value=20
 )
-num_dis = st.sidebar.slider("Number of diseases to generate", min_value=2, max_value=5)
+num_dis = st.sidebar.slider("Number of diseases", min_value=2, max_value=5)
 
 if st.sidebar.checkbox("Show Maximum Number of Edges"):
     st.sidebar.write(
@@ -137,9 +127,9 @@ if st.sidebar.checkbox("Show Maximum Number of Edges"):
 
     # Calculate the number of possible bf-hyperarcs
     st.sidebar.subheader("BF-Hyperarcs (Directed Hypergraph)")
-    max_bf_hyperarcs = numpy_utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=False)
+    max_bf_arcs = numpy_utils.N_max_hyperarcs(n_diseases=num_dis, b_hyp=False)
     st.sidebar.write(
-        max_bf_hyperarcs,
+        max_bf_arcs,
         "BF-hyperarcs in a hypergraph (with self-loops)",
     )
 
@@ -179,7 +169,13 @@ if view_choice == "Population hypergraph calculations":
     # TAB1 = UNDIRECTED HYPERGRAPH
     ###########################################################################
 
-    tab1_undirect.tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list)
+    tab1_undirect.tab1_undirected(
+        tab1,
+        final_prog_df,
+        num_dis,
+        edge_list,
+        dis_list,
+    )
 
     ###########################################################################
     # TAB2 = DIRECTED HYPERGRAPH
@@ -190,8 +186,6 @@ if view_choice == "Population hypergraph calculations":
         final_prog_df,
         dis_list,
         edge_list,
-        binmat,
-        conds_worklist,
         all_progs,
         num_dis,
     )
@@ -215,6 +209,7 @@ elif view_choice == "Most likely cause(s) of disease":
     # TODO: Implement
 
 # TODO: NUMBA explained (why we need it and the 3 worklists)
+# Link to Github repository
 
 st.markdown("-" * 50)
 st.text("Last Updated 22nd May 2023 \t\t\t\t\t Version 0.1.0")
