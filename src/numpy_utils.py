@@ -160,12 +160,10 @@ def print_hyperarc_str(dis_tup):
     """
     if len(dis_tup) > 1:
         string = ", ".join(map(str, dis_tup))
-        last_comma_idx = string.rfind(",")
-        if last_comma_idx != -1:
-            string = string[:last_comma_idx] + " ->" + string[last_comma_idx + 1 :]
-            # string = (
-            #     string[:last_comma_idx] + r" \rightarrow " + string[last_comma_idx + 1 :]
-            # )
+        comma_idx = string.rfind(",")
+        if comma_idx != -1:
+            string = f"{string[:comma_idx]} ->{string[comma_idx + 1 :]}"
+
     else:
         string = ", ".join(map(str, dis_tup))
         string = string + " -> " + string
@@ -457,12 +455,12 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
     """
     g = nx.DiGraph()
     g.add_nodes_from(nodes)
-    top_n_hyparcs["Hyperarc"] = top_n_hyparcs["Hyperarc"].str.replace(" ", "")
-    top_n_hyparcs["Hyperarc"] = top_n_hyparcs["Hyperarc"].str.replace("->", ",")
-    # tab.dataframe(top_n_hyparcs)
+    arcs_df = top_n_hyparcs.copy()
+    arcs_df["Hyperarc"] = arcs_df["Hyperarc"].str.replace(" ", "")
+    arcs_df["Hyperarc"] = arcs_df["Hyperarc"].str.replace("->", ",")
 
     # Turn the hyperarc column into a list of edges
-    edges = [top_n_hyparcs.iloc[i, 0].split(",") for i, _ in top_n_hyparcs.iterrows()]
+    edges = [arcs_df.iloc[i, 0].split(",") for i, _ in arcs_df.iterrows()]
 
     # Calculate the edge degree for each edge
     node_degree_dict = {idx: len(sublist) for idx, sublist in enumerate(edges)}
@@ -471,14 +469,14 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
     head_edge_list = list()
     # Create new columns in the df which store the tail (possibly fake nodes) #
     # and head nodes
-    top_n_hyparcs["Tail"] = 0
-    top_n_hyparcs["Head"] = 0
+    arcs_df["Tail"] = 0
+    arcs_df["Head"] = 0
     for i, edge_degree in enumerate(node_degree_dict.values()):
         if edge_degree == 2:
             print(edges[i])
             g.add_edges_from([edges[i]])
-            top_n_hyparcs.loc[i, "Tail"] = edges[i][0]
-            top_n_hyparcs.loc[i, "Head"] = edges[i][1]
+            arcs_df.loc[i, "Tail"] = edges[i][0]
+            arcs_df.loc[i, "Head"] = edges[i][1]
 
         else:
             # B-hypergraphs only - so from infinite tails to one head only
@@ -487,10 +485,10 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
             g.add_node(i)  # create a new fake node named with number i
             for tail_node in tail_nodes:
                 tail_edge_list.append((tail_node, i))
-                top_n_hyparcs.loc[i, "Tail"] = i
+                arcs_df.loc[i, "Tail"] = i
 
             head_edge_list.append((i, head_node))
-            top_n_hyparcs.loc[i, "Head"] = edges[i][-1]
+            arcs_df.loc[i, "Head"] = edges[i][-1]
 
     extra_nodes = set(g.nodes) - set(nodes)
 
@@ -521,12 +519,12 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
     )
 
     # Adding weight labels to the graph
-    for j in range(0, len(top_n_hyparcs)):
-        t = top_n_hyparcs.loc[j, "Tail"]
-        h = top_n_hyparcs.loc[j, "Head"]
-        w = top_n_hyparcs.loc[j, "w(h_i)"]
+    for j in range(0, len(arcs_df)):
+        t = arcs_df.loc[j, "Tail"]
+        h = arcs_df.loc[j, "Head"]
+        w = arcs_df.loc[j, "w(h_i)"]
         g.add_edge(t, h, weight=round(w, 2))
-    # tab.dataframe(top_n_hyparcs)
+    # tab.dataframe(arcs_df)
 
     # Pairwise edges
     edge_labels = {}
@@ -537,11 +535,11 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
             edge_labels[(u, v)] = label
 
         elif u in nodes and pos[u][0] > pos[v][0]:
-            label = f'{d["weight"]}\n\n\n'  # \n\n\n\n{g.edges[(v,u)]["weight"]}'
+            label = f'{d["weight"]}\n\n\n'
             edge_labels[(u, v)] = label
 
         elif u in nodes and pos[u][0] < pos[v][0]:
-            label = f'\n\n{d["weight"]}'  # \n\n\n\n{g.edges[(v,u)]["weight"]}'
+            label = f'\n\n{d["weight"]}'
             edge_labels[(u, v)] = label
 
         # Arcs from pseudo to real nodes

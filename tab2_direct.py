@@ -7,12 +7,9 @@ import numpy as np
 from scipy import linalg
 import itertools
 from string import ascii_uppercase as auc
-import networkx as nx
-import matplotlib.pyplot as plt
 
 
 # local
-from src import build_model, centrality, centrality_utils, weight_functions
 from src import numpy_utils, create_figs
 
 ##############################################################################
@@ -23,7 +20,6 @@ def tab2_directed(
 ):
     node_labels = [*auc][:num_dis]
     tab2.header("Directed Hypergraph")
-    tab2.subheader("_Page is Work in Progress_ 👷")
     if tab2.checkbox("Show the list of each patient's final hyperarc"):
         tab2.write(final_prog_df)
     tab2.subheader("Visual population representation:")
