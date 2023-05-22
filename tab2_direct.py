@@ -254,16 +254,23 @@ def tab2_directed(
     hyperarc_weights_df = hyperarc_weights_df.sort_values(
         by=["w(h_i)"], ascending=False
     ).reset_index(drop=True)
-    n_hyperarcs = tab2.slider(
-        "Number of hyperarcs and their corresponding weights to visualise",
-        min_value=1,
-        max_value=20,
-    )
 
-    top_n_hyparcs = hyperarc_weights_df.iloc[:n_hyperarcs, :]
-    tab2.dataframe(top_n_hyparcs)
-    # tab2.write(edge_list)
-    numpy_utils.draw_weighted_b_hypergraph(node_labels, top_n_hyparcs, tab2)
+    tab2.markdown(
+        "Visualise the top $n$ largest weighted hyperarcs with their corresponding weights"
+    )
+    col1, col2 = tab2.columns(2)  # to centre image
+    with col1:
+        n_hyperarcs = col1.slider(
+            "Number of hyperarcs",
+            min_value=1,
+            max_value=len(hyperarc_weights_df),
+        )
+
+        top_n_hyparcs = hyperarc_weights_df.iloc[:n_hyperarcs, :]
+    with col2:
+        col2.dataframe(top_n_hyparcs)
+    with col1:
+        numpy_utils.draw_weighted_b_hypergraph(node_labels, top_n_hyparcs, col1)
 
     #######################################################################
     # RandomWalk Probability Transition Matrix

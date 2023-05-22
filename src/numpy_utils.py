@@ -462,21 +462,23 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
     # tab.dataframe(top_n_hyparcs)
 
     # Turn the hyperarc column into a list of edges
-    edges = list()
-    for i, row in top_n_hyparcs.iterrows():
-        e = top_n_hyparcs.iloc[i, 0].split(",")
-        edges.append(e)
+    edges = [top_n_hyparcs.iloc[i, 0].split(",") for i, _ in top_n_hyparcs.iterrows()]
 
     # Calculate the edge degree for each edge
     node_degree_dict = {idx: len(sublist) for idx, sublist in enumerate(edges)}
 
     tail_edge_list = list()
     head_edge_list = list()
-
+    # Create new columns in the df which store the tail (possibly fake nodes) #
+    # and head nodes
+    top_n_hyparcs["Tail"] = 0
+    top_n_hyparcs["Head"] = 0
     for i, edge_degree in enumerate(node_degree_dict.values()):
         if edge_degree == 2:
             print(edges[i])
             g.add_edges_from([edges[i]])
+            top_n_hyparcs.loc[i, "Tail"] = edges[i][0]
+            top_n_hyparcs.loc[i, "Head"] = edges[i][1]
 
         else:
             # B-hypergraphs only - so from infinite tails to one head only
@@ -485,8 +487,10 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
             g.add_node(i)  # create a new fake node named with number i
             for tail_node in tail_nodes:
                 tail_edge_list.append((tail_node, i))
+                top_n_hyparcs.loc[i, "Tail"] = i
 
             head_edge_list.append((i, head_node))
+            top_n_hyparcs.loc[i, "Head"] = edges[i][-1]
 
     extra_nodes = set(g.nodes) - set(nodes)
 
@@ -515,6 +519,42 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
         arrowstyle="-|>",
         width=1,
     )
+
+    # Adding weight labels to the graph
+    for j in range(0, len(top_n_hyparcs)):
+        t = top_n_hyparcs.loc[j, "Tail"]
+        h = top_n_hyparcs.loc[j, "Head"]
+        w = top_n_hyparcs.loc[j, "w(h_i)"]
+        g.add_edge(t, h, weight=round(w, 2))
+    # tab.dataframe(top_n_hyparcs)
+
+    # Pairwise edges
+    edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        # If bi-directional 2 degree edges exist (otherwise get blank overlap)
+        if u != v and tuple(reversed((u, v))) in g.edges:
+            label = f'{d["weight"]}\n\n{g.edges[(v,u)]["weight"]}'
+            edge_labels[(u, v)] = label
+
+        elif u in nodes and pos[u][0] > pos[v][0]:
+            label = f'{d["weight"]}\n\n\n'  # \n\n\n\n{g.edges[(v,u)]["weight"]}'
+            edge_labels[(u, v)] = label
+
+        elif u in nodes and pos[u][0] < pos[v][0]:
+            label = f'\n\n{d["weight"]}'  # \n\n\n\n{g.edges[(v,u)]["weight"]}'
+            edge_labels[(u, v)] = label
+
+        # Arcs from pseudo to real nodes
+        elif u != v:
+            label = f'{d["weight"]}'
+            edge_labels[(u, v)] = label
+
+    # Self edges (need to be seperate to get a blank background)
+    self_edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        if u == v:
+            label = f'{d["weight"]}\n\n\n'
+            self_edge_labels[(u, v)] = label
 
     # Generate random colours based on number of hyperarcs
     random.seed(1)
@@ -560,6 +600,17 @@ def draw_weighted_b_hypergraph(nodes, top_n_hyparcs, tab):
                     node_color=colors[edge_num],
                     node_shape="h",
                 )
+
+    # Draw the edge labels as the weights
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+    nx.draw_networkx_edge_labels(
+        g,
+        pos,
+        edge_labels=self_edge_labels,
+        font_size=8,
+        font_color="blue",
+        bbox=dict(alpha=0),
+    )
 
     # Draw labels only for true nodes
     labels = {node: str(node) for node in nodes}
