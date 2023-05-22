@@ -55,9 +55,6 @@ def tab2_directed(
         "following hyperedge weights (undirected):"
     )
 
-    # NOTE: the undirected hypergraph hyperedge calcs don't include
-    # single/selfedges however the directed hypergraph hyperedge calcs do
-    # but this we'll use the build_model etc files for these instead?
     soren_dice_df = numpy_utils.soren_dice_create_df(
         edge_list, dis_list, undirected=False
     )
@@ -227,8 +224,10 @@ def tab2_directed(
         st.markdown(f"{examp_sib_count}")
 
         st.markdown("We can then calculate this hyperarc weight $w(h_{i})$ as:")
+        eg_arc_we = examp_hyperedge_we * (examp_hyperarc_count / examp_sib_count)
         st.markdown(
-            f"{round(examp_hyperedge_we,2)}({examp_hyperarc_count}/{examp_sib_count})={round(examp_hyperedge_we*(examp_hyperarc_count/examp_sib_count),2)}"
+            f"{round(examp_hyperedge_we,2)}({examp_hyperarc_count}/"
+            f"{examp_sib_count})={round(eg_arc_we,2)}"
         )
 
         st.markdown(
@@ -241,6 +240,22 @@ def tab2_directed(
         )
 
         st.dataframe(hyperarc_count_df)
+
+    #######################################################################
+    # Weighted Directed Hypergraph
+    #######################################################################
+
+    # Take the top n highest hyperarc weights
+    # If there are less than n hyperarc, take them all
+    hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
+
+    hyperarc_weights_df = hyperarc_weights_df.sort_values(
+        by=["w(h_i)"], ascending=False
+    )
+
+    n_hyperarcs = 5
+    top_n_hyparcs = hyperarc_weights_df.iloc[:n_hyperarcs, :]
+    tab2.dataframe(top_n_hyparcs)
 
     tab2.subheader("RandomWalk Probability Transition Matrix:")
 
@@ -321,7 +336,7 @@ def tab2_directed(
         )
 
         # If a hyperarc has u in the tail and v in the head then get the sum of those hyperarc weights
-        hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
+        # hyperarc_weights_df = hyperarc_count_df[["Hyperarc", "w(h_i)"]]
         # st.dataframe(hyperarc_weights_df)
 
         nn_succ_trans_df = pd.DataFrame(columns=dis_list)
