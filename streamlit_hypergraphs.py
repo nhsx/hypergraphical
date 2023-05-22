@@ -3,10 +3,11 @@
 ###############################################################################
 import streamlit as st
 import base64
-from src import numpy_utils
+from src import numpy_utils, progressions
 import tab0_mot_tab
 import tab1_undirect
 import tab2_direct
+from string import ascii_uppercase as auc
 
 
 ###############################################################################
@@ -65,8 +66,8 @@ view_choice = st.sidebar.selectbox(
     "What would you like to view?",
     (
         "Population hypergraph calculations",
-        "Most likely next disease",
-        "Most likely cause(s) of disease",
+        "Most likely disease successors",
+        "Most likely disease predecessors",
     ),
 )
 
@@ -199,12 +200,68 @@ if view_choice == "Population hypergraph calculations":
     # tab3.text("Most important sets of diseases...")
 
 
-elif view_choice == "Most likely next disease":
+elif view_choice == "Most likely disease successors":
+    node_labels = [*auc][:num_dis]
     st.markdown("_Page under construction_ 👷")
+    st.subheader("Most likely successor diseases")
+    st.markdown(
+        "On this page we demonstrate how the directed hypergraphs "
+        "created by the population data could be used to show which "
+        "diseases are likely to succeed a current disease or set of "
+        "diseases. This could provide health utility to clinical "
+        "practioners be providing them with a next possible observed "
+        "disease to help inform treatment plans."
+    )
     # TODO: Implement
 
+    st.markdown(
+        "Given the fictitious population generated with this applet, "
+        "you may input a single disease or disease set to find out "
+        "which diseases are likely to be observed next. "
+        "This input should be in the format _$dis_1$_, _$dis_2$_, ...,"
+        "_$dis_{n-1}$_ where $dis_n$ is from the list:"
+    )
+    st.markdown(f"{node_labels}")
+    st.markdown("For example, you could input `A,C`.")
+    dis_input = st.text_input("Enter your disease/disease set here 👇")
+    n_progressions = st.slider(
+        "Number of progressions to return:",
+        min_value=1,
+        max_value=5,
+    )
+    max_degree = st.slider(
+        "Maximum number degree of diseases to generate:",
+        min_value=1,
+        max_value=5,
+    )
+    st.write(dis_input)
 
-elif view_choice == "Most likely cause(s) of disease":
+    # Need hyperarc dataframe with cols:
+    # Hyperarc e.g. 'A -> B' | Degree | Centrality
+    # Where the centrality is the dual eigenvector centrality
+
+    # hyperarc_centrality = centrality.eigenvector_centrality(incidence_matrix,
+    #                                                       mort1_hyperarc_weights,
+    #                                                       mort1_node_weights,
+    #                                                       rep="dual",
+    #                                                       tolerance=1e-6,
+    #                                                       max_iterations=1000,
+    #                                                       weight_resultant=True,
+    #                                                       random_seed=None)
+
+    # n_conds = n_diseases*[2] + [len(d.split(",")) + 1 for d in mort1_hyperarc_titles[n_diseases:]]
+
+    # hyperarc_evc = pd.DataFrame({
+    #     "Disease": mort1_hyperarc_titles,
+    #     "Degree":n_conds,
+    #     "Eigenvector Centrality": np.round(hyperarc_centrality,3)},)
+    # hyperarc_evc.sort_values(by="Degree", ascending=True).reset_index(drop=True)
+
+    progressions.generate_forward_prog(
+        str(dis_input), hyperarc_evc, n_progressions, max_degree
+    )
+
+elif view_choice == "Most likely disease predecessors":
     st.markdown("_Page under construction_ 👷")
     # TODO: Implement
 
