@@ -251,11 +251,19 @@ def tab2_directed(
 
     hyperarc_weights_df = hyperarc_weights_df.sort_values(
         by=["w(h_i)"], ascending=False
+    ).reset_index(drop=True)
+    n_hyperarcs = tab2.slider(
+        "Number of hyperarcs and their corresponding weights to visualise",
+        min_value=1,
+        max_value=20,
     )
 
-    n_hyperarcs = 5
     top_n_hyparcs = hyperarc_weights_df.iloc[:n_hyperarcs, :]
     tab2.dataframe(top_n_hyparcs)
+
+    #######################################################################
+    # RandomWalk Probability Transition Matrix
+    #######################################################################
 
     tab2.subheader("RandomWalk Probability Transition Matrix:")
 
