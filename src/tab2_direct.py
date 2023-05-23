@@ -456,7 +456,8 @@ def tab2_directed(
 
     tab2.markdown(
         "Following the steps above we get the normalised successor "
-        "transition matrix, where each row sums to 1:"
+        "transition matrix, where each row sums to 1. Where the row gives the "
+        "start node and the column gives the end nodes:"
     )
     tab2.dataframe(succ_trans_df.round(2))  # .style.highlight_max(axis=0))
 
@@ -602,7 +603,8 @@ def tab2_directed(
 
     tab2.markdown(
         "Following the steps above we get the normalised predecessor "
-        "transition matrix, where each row sums to 1:"
+        "transition matrix, where each row sums to 1. Where the column gives "
+        "the start node and the row gives the end nodes"
     )
     tab2.dataframe(pred_trans_df.round(2))
 

@@ -676,7 +676,7 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
         g,
         pos,
         edge_labels=edge_labels,
-        font_size=6,
+        font_size=9,
         font_color="blue",
         # bbox=dict(alpha=0),
     )
@@ -692,7 +692,7 @@ def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
         g,
         pos,
         edge_labels=self_edge_labels,
-        font_size=6,
+        font_size=9,
         font_color="red",
         bbox=dict(alpha=0),
     )
