@@ -3,8 +3,7 @@
 ###############################################################################
 import streamlit as st
 import base64
-from src import numpy_utils, progressions
-import tab0_mot_tab
+from src import numpy_utils, progressions, tab0_mot_tab
 import tab1_undirect
 import tab2_direct
 from string import ascii_uppercase as auc

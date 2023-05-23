@@ -6,12 +6,18 @@ from src import numpy_utils
 
 
 def tab0_motiv(mot_tab):
-    numpy_utils.display_markdown_from_file("markdown_text/overview.txt", mot_tab)
+    numpy_utils.display_markdown_from_file(
+        "markdown_text/overview.txt",
+        mot_tab,
+    )
 
     with mot_tab.expander("What Can You Use This Applet For?"):
         numpy_utils.display_markdown_from_file("markdown_text/purpose.txt", st)
 
-    numpy_utils.display_markdown_from_file("markdown_text/project_aims.txt", mot_tab)
+    numpy_utils.display_markdown_from_file(
+        "markdown_text/project_aims.txt",
+        mot_tab,
+    )
     summary = numpy_utils.add_image(
         image_path="images/summary.png", width=700, height=260
     )
@@ -23,7 +29,10 @@ def tab0_motiv(mot_tab):
     )
 
     with mot_tab.expander("What is Multimorbidity?"):
-        numpy_utils.display_markdown_from_file("markdown_text/mm_description.txt", st)
+        numpy_utils.display_markdown_from_file(
+            "markdown_text/mm_description.txt",
+            st,
+        )
 
     with mot_tab.expander("Graphs Explained"):
         numpy_utils.display_markdown_from_file("markdown_text/graphs.txt", st)
@@ -52,7 +61,9 @@ def tab0_motiv(mot_tab):
 
         col1, col2 = st.columns(2)  # to centre image
         elastic = numpy_utils.add_image(
-            image_path="images/undirected_hyper_elastic.png", width=400, height=400
+            image_path="images/undirected_hyper_elastic.png",
+            width=400,
+            height=400,
         )
         col1.image(
             elastic,
@@ -60,14 +71,19 @@ def tab0_motiv(mot_tab):
         )
 
         non_elastic = numpy_utils.add_image(
-            image_path="images/undirected_hyper_nonelastic.png", width=400, height=400
+            image_path="images/undirected_hyper_nonelastic.png",
+            width=400,
+            height=400,
         )
         col2.image(
             non_elastic,
             caption="Undirected hypergraph with hyperedges.",
         )
 
-        numpy_utils.display_markdown_from_file("markdown_text/dir_hypergraphs.txt", st)
+        numpy_utils.display_markdown_from_file(
+            "markdown_text/dir_hypergraphs.txt",
+            st,
+        )
 
         col1, col2 = st.columns(2)  # to centre image
         hyperarc = numpy_utils.add_image(
@@ -87,4 +103,7 @@ def tab0_motiv(mot_tab):
             " and parent hyperedge.",
         )
 
-    numpy_utils.display_markdown_from_file("markdown_text/ref_list.txt", mot_tab)
+    numpy_utils.display_markdown_from_file(
+        "markdown_text/ref_list.txt",
+        mot_tab,
+    )
