@@ -10,7 +10,7 @@ import tab2_direct
 from string import ascii_uppercase as auc
 import numpy as np
 import pandas as pd
-from src import centrality
+from src import hyperarc_centrality
 
 
 ###############################################################################
@@ -261,7 +261,7 @@ with tab3.expander("How to calculate Hyperarc centrality?"):
     hyperarc_weights_list = hyperarc_weights_df["w(h_i)"].tolist()
     hyperarc_weights = np.array(hyperarc_weights_list, dtype=np.float64)
 
-    hyperarc_centrality = centrality.eigenvector_centrality(
+    hyperarc_centrality = hyperarc_centrality.eigenvector_centrality(
         inc_mat_arr,
         hyperarc_weights,
         node_weights,
