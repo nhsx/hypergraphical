@@ -9,7 +9,6 @@ networkx
 hypernetx
 matplotlib
 numpy
-numba
 pandas
 seaborn
 streamlit
