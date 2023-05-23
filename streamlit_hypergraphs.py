@@ -272,7 +272,9 @@ with tab3.expander("How to calculate Hyperarc centrality?"):
         random_seed=None,
     )
 
-    n_conds = num_dis * [2] + [len(d.split(",")) + 1 for d in hyperarc_titles[num_dis:]]
+    n_conds = num_dis * [2] + [
+        len(d.split(",")) + 1 for d in hyperarc_titles[num_dis:]
+    ]  # Number of conditions in each hyperarc/degree
 
     hyperarc_evc = pd.DataFrame(
         {
@@ -281,8 +283,10 @@ with tab3.expander("How to calculate Hyperarc centrality?"):
             "Eigenvector Centrality": np.round(hyperarc_centrality, 3),
         },
     )
-    hyperarc_evc.sort_values(by="Degree", ascending=True).reset_index(drop=True)
-    st.markdown("Finally we can obtain the centrality scores for the hyperarcs.")
+    hyperarc_evc.sort_values(by="Degree", ascending=True).reset_index(
+        drop=True
+    )  # Sort the hyperarcs by largest centrality at the top
+    st.markdown("We can then obtain the centrality scores for the hyperarcs.")
     st.dataframe(hyperarc_evc)
 
     st.markdown(

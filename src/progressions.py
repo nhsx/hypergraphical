@@ -1,14 +1,8 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-
-import matplotlib.pyplot as plt
-from string import ascii_uppercase as auc
-
-# import streamlit as st
 import numpy as np
 import pandas as pd
-from src import numpy_utils
 
 ##############################################################################
 # Successor Diseases
@@ -36,7 +30,9 @@ def generate_forward_prog(disease_set, hyperarc_evc, n, max_degree):
     deg = len(disease_set.split(", ")) + 1
     if deg < max_degree:
         deg_hyperarc_evc = hyperarc_evc[hyperarc_evc.Degree == deg]
-        deg_dis = np.array([dis.split(" -> ")[0] for dis in deg_hyperarc_evc.Disease])
+        deg_dis = np.array(
+            [dis.split(" -> ")[0] for dis in deg_hyperarc_evc.Disease]
+        )  # noqa: E501
         deg_dis_hyperarc_evc = deg_hyperarc_evc.iloc[
             np.where(deg_dis == disease_set)
         ].sort_values(by="Eigenvector Centrality", ascending=False, axis=0)
@@ -151,8 +147,8 @@ def get_node_prev(final_prog_df, dis_list, tab):
     tail_nodes_list = [dis + "-" for dis in dis_list]
     nodes_list = head_nodes_list + tail_nodes_list
 
-    dir_nodes_string = "".join(all_dir_nodes_list)
+    nodes_string = "".join(all_dir_nodes_list)
 
-    prev_count = {string: dir_nodes_string.count(string) for string in nodes_list}
+    prev_count = {string: nodes_string.count(string) for string in nodes_list}
 
     return prev_count
