@@ -4,10 +4,8 @@
 
 import matplotlib.pyplot as plt
 from string import ascii_uppercase as auc
-from itertools import chain, combinations
 
 # import streamlit as st
-import math
 import numpy as np
 import pandas as pd
 from src import numpy_utils
@@ -19,14 +17,16 @@ from src import numpy_utils
 
 def generate_forward_prog(disease_set, hyperarc_evc, n, max_degree):
     """
-    Given a disease set, generate a tree of likely disease progressions given the hyperarc eigenvector
-    centrality values. n decides on the number of disease progessions to generate.
+    Given a disease set, generate a tree of likely disease progressions given
+    the hyperarc eigenvector centrality values. n decides on the number of
+    disease progessions to generate.
 
     Args:
         disease_set (str) : Observed disease progression. Must be of format
         "DIS1, DIS2, ..., DISn-1"
 
-        hyperarc_evc (pd.DataFrame) : Dataframe of hyperarc eigenvector centrality values.
+        hyperarc_evc (pd.DataFrame) : Dataframe of hyperarc eigenvector
+            centrality values.
 
         n (int) : Number of progressions to return.
 

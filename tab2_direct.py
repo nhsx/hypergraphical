@@ -783,3 +783,5 @@ def tab2_directed(
             pred_norm_eig_df.index,
             col1,
         )
+
+    return hyperarc_weights_df

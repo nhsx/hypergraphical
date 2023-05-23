@@ -152,11 +152,12 @@ if view_choice == "Population hypergraph calculations":
 
     numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
 
-    mot_tab, tab1, tab2 = st.tabs(
+    mot_tab, tab1, tab2, tab3 = st.tabs(
         [
             "Why Hypergraphs for Multimorbidity",
             "Undirected Hypergraph",
             "Directed Hypergraph",
+            "Successors",
         ]
     )
 
@@ -182,7 +183,7 @@ if view_choice == "Population hypergraph calculations":
     # TAB2 = DIRECTED HYPERGRAPH
     ###########################################################################
 
-    tab2_direct.tab2_directed(
+    hyperarc_weights_df = tab2_direct.tab2_directed(
         tab2,
         final_prog_df,
         dis_list,
@@ -192,19 +193,17 @@ if view_choice == "Population hypergraph calculations":
     )
 
     ###########################################################################
-    # TODO: TAB3 = DUAL HYPERGRAPH
+    # TODO: TAB3 = DUAL HYPERGRAPH AND PROGRESSIONS
     ###########################################################################
 
     # tab3.subheader("Hyperedge weight calculation:")
     # tab3.subheader("Eigenvector Centrality:")
     # tab3.text("Most important sets of diseases...")
 
-
-elif view_choice == "Most likely disease successors":
     node_labels = [*auc][:num_dis]
-    st.markdown("_Page under construction_ 👷")
-    st.subheader("Most likely successor diseases")
-    st.markdown(
+    tab3.markdown("_Page under construction_ 👷")
+    tab3.subheader("Most likely successor diseases")
+    tab3.markdown(
         "On this page we demonstrate how the directed hypergraphs "
         "created by the population data could be used to show which "
         "diseases are likely to succeed a current disease or set of "
@@ -212,9 +211,8 @@ elif view_choice == "Most likely disease successors":
         "practioners be providing them with a next possible observed "
         "disease to help inform treatment plans."
     )
-    # TODO: Implement
 
-    st.markdown(
+    tab3.markdown(
         "We first need to find the dual of the hypergraph $H$. The dual "
         "hypergraph $H^{*}$ can be formed by taking the original hypergraph's "
         "incidence matrix and transposing. This swaps the nodes and edges "
@@ -224,32 +222,37 @@ elif view_choice == "Most likely disease successors":
         "in $H$ become the nodes of $H^{*}$."
     )
 
-    st.markdown(
+    tab3.markdown(
         "Given the fictitious population generated with this applet, "
         "you may input a single disease or disease set to find out "
         "which diseases are likely to be observed next. "
         "This input should be in the format _$dis_1$_, _$dis_2$_, ...,"
         "_$dis_{n-1}$_ where $dis_n$ is from the list:"
     )
-    st.markdown(f"{node_labels}")
-    st.markdown("For example, you could input `A,C`.")
-    dis_input = st.text_input("Enter your disease/disease set here 👇")
-    n_progressions = st.slider(
+    tab3.markdown(f"{node_labels}")
+    tab3.markdown("For example, you could input `A,C`.")
+    dis_input = tab3.text_input("Enter your disease/disease set here 👇")
+    n_progressions = tab3.slider(
         "Number of progressions to return:",
         min_value=1,
         max_value=5,
     )
-    max_degree = st.slider(
+    max_degree = tab3.slider(
         "Maximum number degree of diseases to generate:",
         min_value=1,
         max_value=5,
     )
-    st.write(dis_input)
+    tab3.write(dis_input)
 
-    dir_inc_mat_df = progressions.np_inc_mat(edge_list, dis_list, st)
-    st.dataframe(dir_inc_mat_df)
+    dir_inc_mat_df = progressions.np_inc_mat(edge_list, dis_list, tab3)
+    tab3.dataframe(dir_inc_mat_df)
     inc_mat_arr = dir_inc_mat_df.values
-    st.write(inc_mat_arr)
+    tab3.write(inc_mat_arr)
+    tab3.dataframe(hyperarc_weights_df)
+
+    ## Calculate node prevalence to then calculate node weights:
+
+    # node_weights = [prev / node_prev[i%num_dis::num_dis].sum() for i, prev in enumerate(node_prev)]
 
     # Need hyperarc dataframe with cols:
     # Hyperarc e.g. 'A -> B' | Degree | Centrality
