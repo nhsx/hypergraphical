@@ -10,6 +10,7 @@ from itertools import chain, combinations
 import math
 import numpy as np
 import pandas as pd
+from src import numpy_utils
 
 ##############################################################################
 # Successor Diseases
@@ -53,3 +54,65 @@ def generate_forward_prog(disease_set, hyperarc_evc, n, max_degree):
         pathways = None
 
     return pathways
+
+
+def np_inc_mat(edge_list, dis_list, tab):
+    """Create an incidence matrix for an directed hypergraph.
+
+    Args:
+        edge_list (list of tuples): List of edges from the population.
+        dis_list (list of strings): List of nodes includes.
+        tab (Streamlit tab): Where to print on Streamlit applet.
+
+    Returns:
+        dataframe: Index is the node (tail (-) or head(+)),
+            the column names are the edges.
+    """
+    dups_removed = numpy_utils.remove_dup_tuples(edge_list)
+
+    num_edges = len(dups_removed)
+
+    # Take the last comma and turn it into an arrow
+    # Create a tail list and a head list
+    arc_list = []
+    tail_list = []
+    head_list = []
+    for arc in dups_removed:
+        string = ", ".join(map(str, arc))
+        comma_idx = string.rfind(",")
+        if comma_idx != -1:
+            tail = string[:comma_idx].replace(" ", "")
+            head = string[comma_idx + 1 :].replace(" ", "")
+            tail_list.append(tail)
+            head_list.append(head)
+            string = f"{string[:comma_idx]} ->{string[comma_idx + 1 :]}"
+        else:
+            tail = string.replace(" ", "")
+            head = string.replace(" ", "")
+            tail_list.append(tail)
+            head_list.append(head)
+            string = f"{string} -> {string}"
+        arc_list.append(string)
+
+    inc_mat_shape = np.full((len(dis_list), num_edges), 0)
+    head_df = pd.DataFrame(inc_mat_shape, columns=arc_list)
+    head_df = head_df.set_index(pd.Index(dis_list))
+    tail_df = head_df.copy()
+
+    for row_num, row_name in enumerate(head_df.index):
+        for i in range(0, len(head_list)):
+            if row_name in head_list[i]:
+                head_df.iloc[row_num, i] = 1
+
+    head_df.index = [name + "+" for name in head_df.index]
+
+    for row_num, row_name in enumerate(tail_df.index):
+        for i in range(0, len(tail_list)):
+            if row_name in tail_list[i]:
+                tail_df.iloc[row_num, i] = 1
+
+    tail_df.index = [name + "-" for name in tail_df.index]
+
+    dir_inc_mat_df = pd.concat([tail_df, head_df], axis=0)
+
+    return dir_inc_mat_df

@@ -215,6 +215,16 @@ elif view_choice == "Most likely disease successors":
     # TODO: Implement
 
     st.markdown(
+        "We first need to find the dual of the hypergraph $H$. The dual "
+        "hypergraph $H^{*}$ can be formed by taking the original hypergraph's "
+        "incidence matrix and transposing. This swaps the nodes and edges "
+        "such that $H^{*}$ has $m$ nodes and $n$ edges, so the single "
+        "disease sets (originally nodes in $H$) become edges linking the "
+        "different sets of diseases (originally edges in $H$) and the edges "
+        "in $H$ become the nodes of $H^{*}$."
+    )
+
+    st.markdown(
         "Given the fictitious population generated with this applet, "
         "you may input a single disease or disease set to find out "
         "which diseases are likely to be observed next. "
@@ -235,6 +245,11 @@ elif view_choice == "Most likely disease successors":
         max_value=5,
     )
     st.write(dis_input)
+
+    dir_inc_mat_df = progressions.np_inc_mat(edge_list, dis_list, st)
+    st.dataframe(dir_inc_mat_df)
+    inc_mat_arr = dir_inc_mat_df.values
+    st.write(inc_mat_arr)
 
     # Need hyperarc dataframe with cols:
     # Hyperarc e.g. 'A -> B' | Degree | Centrality
