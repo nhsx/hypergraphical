@@ -56,7 +56,9 @@ def iterate_eigencentrality_vector(incidence_matrix, weight, vector):
     subt = np.zeros_like(vector)
     for i in range(len(vector)):
         for k in range(weighted_incidence.shape[1]):
-            subt[i] += incidence_matrix[i, k] * weighted_incidence[i, k] * vector[i]
+            subt[i] += (
+                incidence_matrix[i, k] * weighted_incidence[i, k] * vector[i]
+            )  # noqa: E501
 
     # 5) subtract one from the other.
     result = np.zeros_like(vector)
@@ -192,7 +194,9 @@ def eigenvector_centrality(
         # To estimate eigenvalue and error, take ratio of new to old
         # eigenvector ignoring zeros, whose mean and standard deviation
         # represent new estimate and error
-        mask = (new_eigenvector_estimate != 0) & (old_eigenvector_estimate != 0)
+        mask = (new_eigenvector_estimate != 0) & (
+            old_eigenvector_estimate != 0
+        )  # noqa: E501
         iter_eigenvalue_estimates = (
             new_eigenvector_estimate[mask] / old_eigenvector_estimate[mask]
         )
@@ -217,7 +221,9 @@ def eigenvector_centrality(
 
         # Normalise to maintain probability space and prevent overflows
         norm_factor = np.linalg.norm(new_eigenvector_estimate)
-        old_eigenvector_estimate = np.array(new_eigenvector_estimate / norm_factor)
+        old_eigenvector_estimate = np.array(
+            new_eigenvector_estimate / norm_factor
+        )  # noqa: E501
 
     # Break out of algorithm if maximum iterations were reached
     else:
