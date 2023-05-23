@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from scipy import linalg
 
+
 # from sklearn import preprocessing
 from string import ascii_uppercase as auc
 
@@ -31,6 +32,7 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
     col1, col2 = tab1.columns(2)  # to centre image
     with col1:
         numpy_utils.hnx_visual(edge_list, dis_list, col1, weight_labels=False)
+
     with col2:
         if col2.checkbox("Show patients individual trajectories"):
             col2.write(final_prog_df)

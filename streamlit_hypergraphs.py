@@ -63,12 +63,7 @@ render_svg(svg)
 # SIDEBAR
 ###############################################################################
 
-# st.sidebar.subheader("Random Patient Generator")
-
-view_choice = st.sidebar.selectbox(
-    "What would you like to view?",
-    ("Population hypergraph calculations",),
-)
+st.sidebar.subheader("Random Patient Generator")
 
 
 num_patients = st.sidebar.slider(
@@ -146,190 +141,219 @@ binmat, conds_worklist, idx_worklist = numpy_utils.create_worklists(
 # POPULATION HYPERGRAPH CALCULATIONS
 ###############################################################################
 
-if view_choice == "Population hypergraph calculations":
-    st.title("Hypergraphs for Multimorbidity")
 
-    numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
+st.title("Hypergraphs for Multimorbidity")
 
-    mot_tab, tab1, tab2, tab3 = st.tabs(
-        [
-            "Why Hypergraphs for Multimorbidity",
-            "Undirected Hypergraph",
-            "Directed Hypergraph",
-            "Successors",
-        ]
+numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
+
+mot_tab, tab1, tab2, tab3 = st.tabs(
+    [
+        "Why Hypergraphs for Multimorbidity",
+        "Undirected Hypergraph",
+        "Directed Hypergraph",
+        "Successors",
+    ]
+)
+
+###########################################################################
+# MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
+###########################################################################
+
+tab0_mot_tab.tab0_motiv(mot_tab)
+
+###########################################################################
+# TAB1 = UNDIRECTED HYPERGRAPH
+###########################################################################
+
+tab1_undirect.tab1_undirected(
+    tab1,
+    final_prog_df,
+    num_dis,
+    edge_list,
+    dis_list,
+)
+
+###########################################################################
+# TAB2 = DIRECTED HYPERGRAPH
+###########################################################################
+
+hyperarc_weights_df = tab2_direct.tab2_directed(
+    tab2,
+    final_prog_df,
+    dis_list,
+    edge_list,
+    all_progs,
+    num_dis,
+)
+
+###########################################################################
+# TODO: TAB3 = DUAL HYPERGRAPH AND PROGRESSIONS
+###########################################################################
+
+# tab3.subheader("Hyperedge weight calculation:")
+# tab3.subheader("Eigenvector Centrality:")
+# tab3.text("Most important sets of diseases...")
+
+node_labels = [*auc][:num_dis]
+tab3.subheader("Most likely successor diseases")
+tab3.markdown(
+    "On this page we demonstrate how the directed hypergraphs "
+    "created by the population data could be used to show which "
+    "diseases are likely to succeed a current disease or set of "
+    "diseases. An application such as this could provide health utility to "
+    "clinical practioners by providing them with a next possible observed "
+    "disease to help inform treatment plans."
+)
+
+tab3.markdown(
+    "We first need to find the dual of the hypergraph $H$. The dual "
+    "hypergraph $H^{*}$ can be formed by taking the original hypergraph's "
+    "incidence matrix and transposing. This swaps the nodes and edges "
+    "such that $H^{*}$ has $m$ nodes and $n$ edges, so the single "
+    "disease sets (originally nodes in $H$) become edges linking the "
+    "different sets of diseases (originally edges in $H$) and the edges "
+    "in $H$ become the nodes of $H^{*}$. With this we can find the "
+    "centrality of the hyperarcs rather than the node centrality/PageRank."
+)
+
+with tab3.expander("How to calculate Hyperarc centrality?"):
+    dir_inc_mat_df = progressions.np_inc_mat(edge_list, dis_list, tab3)
+    st.markdown(
+        "First we need to obtain the incidence matrix for the "
+        "original directed hypergraph. Where a $+$ denotes a "
+        "head node and a $-$ denotes a tail node. The columns "
+        "show the hyperarc and the rows inform which components "
+        "are tails and which are heads:"
+    )
+    st.subheader("Incidence matrix")
+    st.dataframe(dir_inc_mat_df)
+    inc_mat_arr = dir_inc_mat_df.values
+
+    st.markdown(
+        "We then calculate the adjacency matrix using the "
+        "equation $A = M^{T}W_{V}M - D_e$."
+    )
+    st.markdown("Where")
+    st.markdown("- $M$ is the incidence matrix.")
+    st.markdown("- $W_{V}$ are the node weights.")
+    st.markdown("- $D_e$ is the diagonal matrix of the edge degree.")
+
+    st.markdown(
+        "Then we can follow the same steps as those carried out "
+        "on the `Undirected Hypergraph` tab to calculate the "
+        "Eigen values and corresponding Eigenvector "
+        "to obtain centrality."
     )
 
-    ###########################################################################
-    # MOTIVATION TAB = WHY HYPERGRAPHS FOR MULTIMORBIDITY
-    ###########################################################################
+    # Calculate node prevalence to then calculate node weights:
+    node_prev_dict = progressions.get_node_prev(final_prog_df, dis_list, tab3)
 
-    tab0_mot_tab.tab0_motiv(mot_tab)
+    # Retrieve the values from a dictionary as a list in Python
+    node_prev = np.array(list(node_prev_dict.values()))
 
-    ###########################################################################
-    # TAB1 = UNDIRECTED HYPERGRAPH
-    ###########################################################################
+    node_weights = [
+        prev / node_prev[i % num_dis :: num_dis].sum()
+        for i, prev in enumerate(node_prev)
+    ]
+    node_weights = np.array(node_weights, dtype=np.float64)
 
-    tab1_undirect.tab1_undirected(
-        tab1,
-        final_prog_df,
-        num_dis,
-        edge_list,
-        dis_list,
+    hyperarc_titles = hyperarc_weights_df["Hyperarc"].tolist()
+    hyperarc_weights_list = hyperarc_weights_df["w(h_i)"].tolist()
+    hyperarc_weights = np.array(hyperarc_weights_list, dtype=np.float64)
+
+    hyperarc_centrality = centrality.eigenvector_centrality(
+        inc_mat_arr,
+        hyperarc_weights,
+        node_weights,
+        rep="dual",
+        tolerance=1e-6,
+        max_iterations=1000,
+        weight_resultant=True,
+        random_seed=None,
     )
 
-    ###########################################################################
-    # TAB2 = DIRECTED HYPERGRAPH
-    ###########################################################################
+    n_conds = num_dis * [2] + [len(d.split(",")) + 1 for d in hyperarc_titles[num_dis:]]
 
-    hyperarc_weights_df = tab2_direct.tab2_directed(
-        tab2,
-        final_prog_df,
-        dis_list,
-        edge_list,
-        all_progs,
-        num_dis,
+    hyperarc_evc = pd.DataFrame(
+        {
+            "Disease": hyperarc_titles,
+            "Degree": n_conds,
+            "Eigenvector Centrality": np.round(hyperarc_centrality, 3),
+        },
+    )
+    hyperarc_evc.sort_values(by="Degree", ascending=True).reset_index(drop=True)
+    st.markdown("Finally we can obtain the centrality scores for the hyperarcs.")
+    st.dataframe(hyperarc_evc)
+
+    st.markdown(
+        "We can use the centrality scores to then find the "
+        "potential successor progressions."
     )
 
-    ###########################################################################
-    # TODO: TAB3 = DUAL HYPERGRAPH AND PROGRESSIONS
-    ###########################################################################
+tab3.markdown(
+    "Given the fictitious population generated with this applet, "
+    "you may input a single disease or disease set to find out "
+    "which diseases are likely to be observed next. "
+    "This input should be in the format _$dis_1$_, _$dis_2$_, ...,"
+    "_$dis_{n-1}$_ where $dis_n$ is from the list:"
+)
+tab3.markdown(f"{node_labels}")
+tab3.markdown("For example, you could input `A, C`.")
+dis_input = tab3.text_input(
+    "Enter your disease/disease set here 👇",
+    placeholder="A, C",
+    value="A, C",
+)
+n_progressions = tab3.slider(
+    "Number of progressions to return:",
+    min_value=1,
+    max_value=5,
+)
 
-    # tab3.subheader("Hyperedge weight calculation:")
-    # tab3.subheader("Eigenvector Centrality:")
-    # tab3.text("Most important sets of diseases...")
+input_len = sum(1 for char in dis_input if char.isalpha())
 
-    node_labels = [*auc][:num_dis]
-    tab3.markdown("_Page under construction_ 👷")
-    tab3.subheader("Most likely successor diseases")
-    tab3.markdown(
-        "On this page we demonstrate how the directed hypergraphs "
-        "created by the population data could be used to show which "
-        "diseases are likely to succeed a current disease or set of "
-        "diseases. This could provide health utility to clinical "
-        "practioners be providing them with a next possible observed "
-        "disease to help inform treatment plans."
-    )
+if input_len == num_dis:
+    max_degree_val = num_dis + 1
+else:
+    max_degree_val = num_dis
 
-    tab3.markdown(
-        "We first need to find the dual of the hypergraph $H$. The dual "
-        "hypergraph $H^{*}$ can be formed by taking the original hypergraph's "
-        "incidence matrix and transposing. This swaps the nodes and edges "
-        "such that $H^{*}$ has $m$ nodes and $n$ edges, so the single "
-        "disease sets (originally nodes in $H$) become edges linking the "
-        "different sets of diseases (originally edges in $H$) and the edges "
-        "in $H$ become the nodes of $H^{*}$. With this we can find the "
-        "centrality of the hyperarcs rather than the node centrality/PageRank."
-    )
+max_degree = tab3.slider(
+    "Maximum number degree of diseases to generate:",
+    min_value=input_len,
+    max_value=max_degree_val,
+    value=max_degree_val,
+)
+max_degree = max_degree + 1
 
-    with tab3.expander("How to calculate Hyperarc centrality?"):
-        dir_inc_mat_df = progressions.np_inc_mat(edge_list, dis_list, tab3)
-        st.markdown(
-            "First we need to obtain the incidence matrix for the "
-            "original directed hypergraph. Where a $+$ denotes a "
-            "head node and a $-$ denotes a tail node. The columns "
-            "show the hyperarc and the rows inform which components "
-            "are tails and which are heads:"
+pathways = progressions.generate_forward_prog(
+    str(dis_input), hyperarc_evc, n_progressions, max_degree
+)
+
+
+string_pathways = list()
+for i in range(0, n_progressions):
+    path_x = str(pathways[i])
+    path_x = path_x.replace("[],", "").replace("[", "\n").replace("]", "")
+    string_pathways.append(path_x)
+
+tab3.markdown("__Potential Disease Pathways__")
+for i in range(0, n_progressions):
+    if i == 0:
+        tab3.markdown(
+            f"__{i+1})__ The most likely disease pathway after "
+            f"disease set {{{dis_input}}} is:"
         )
-        st.subheader("Incidence matrix")
-        st.dataframe(dir_inc_mat_df)
-        inc_mat_arr = dir_inc_mat_df.values
-
-        st.markdown(
-            "We then calculate the adjacency matrix using the "
-            "equation $A = M^{T}W_{V}M - D_e$."
-        )
-        st.markdown("Where")
-        st.markdown("- $M$ is the incidence matrix.")
-        st.markdown("- $W_{V}$ are the node weights.")
-        st.markdown("- $D_e$ is the diagonal matrix of the edge degree.")
-
-        st.markdown(
-            "Then we can follow the same steps as those carried out "
-            "on the `Undirected Hypergraph` tab to calculate the "
-            "Eigen values and corresponding Eigenvector "
-            "to obtain centrality."
-        )
-
-        # Calculate node prevalence to then calculate node weights:
-        node_prev_dict = progressions.get_node_prev(final_prog_df, dis_list, tab3)
-
-        # Retrieve the values from a dictionary as a list in Python
-        node_prev = np.array(list(node_prev_dict.values()))
-
-        node_weights = [
-            prev / node_prev[i % num_dis :: num_dis].sum()
-            for i, prev in enumerate(node_prev)
-        ]
-        node_weights = np.array(node_weights, dtype=np.float64)
-
-        hyperarc_titles = hyperarc_weights_df["Hyperarc"].tolist()
-        hyperarc_weights_list = hyperarc_weights_df["w(h_i)"].tolist()
-        hyperarc_weights = np.array(hyperarc_weights_list, dtype=np.float64)
-
-        hyperarc_centrality = centrality.eigenvector_centrality(
-            inc_mat_arr,
-            hyperarc_weights,
-            node_weights,
-            rep="dual",
-            tolerance=1e-6,
-            max_iterations=1000,
-            weight_resultant=True,
-            random_seed=None,
-        )
-
-        n_conds = num_dis * [2] + [
-            len(d.split(",")) + 1 for d in hyperarc_titles[num_dis:]
-        ]
-
-        hyperarc_evc = pd.DataFrame(
-            {
-                "Disease": hyperarc_titles,
-                "Degree": n_conds,
-                "Eigenvector Centrality": np.round(hyperarc_centrality, 3),
-            },
-        )
-        hyperarc_evc.sort_values(by="Degree", ascending=True).reset_index(drop=True)
-        st.markdown("Finally we can obtain the centrality scores for the hyperarcs.")
-        st.dataframe(hyperarc_evc)
-
-        st.markdown(
-            "We can use the centrality scores to then find the "
-            "potential successor progressions."
-        )
-
-    tab3.markdown(
-        "Given the fictitious population generated with this applet, "
-        "you may input a single disease or disease set to find out "
-        "which diseases are likely to be observed next. "
-        "This input should be in the format _$dis_1$_, _$dis_2$_, ...,"
-        "_$dis_{n-1}$_ where $dis_n$ is from the list:"
-    )
-    tab3.markdown(f"{node_labels}")
-    tab3.markdown("For example, you could input `A,C`.")
-    dis_input = tab3.text_input("Enter your disease/disease set here 👇")
-    n_progressions = tab3.slider(
-        "Number of progressions to return:",
-        min_value=1,
-        max_value=5,
-        value=5,
-    )
-    max_degree = tab3.slider(
-        "Maximum number degree of diseases to generate:",
-        min_value=1,
-        max_value=num_dis,
-        value=num_dis,
-    )
-
-    pathways = progressions.generate_forward_prog(
-        str(dis_input), hyperarc_evc, n_progressions, max_degree
-    )
-
-    tab3.write(pathways)
+        tab3.markdown(f"{string_pathways[i]}")
+    else:
+        if "->" not in string_pathways[i]:
+            tab3.markdown("No other disease pathways exist.")
+        else:
+            tab3.markdown(f"__{i+1})__ The next likely disease pathway is:")
+            tab3.markdown(f"{string_pathways[i]}")
 
 
 # TODO: NUMBA explained (why we need it and the 3 worklists)
 # Link to Github repository
 
 st.markdown("-" * 50)
-st.text("Last Updated 23rd May 2023 \t\t\t\t\t Version 0.1.0")
+st.text("Last Updated 23rd May 2023 \t\t\t\t\t Version 0.2.0")
