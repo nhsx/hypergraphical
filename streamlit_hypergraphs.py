@@ -3,9 +3,8 @@
 ###############################################################################
 import streamlit as st
 import base64
-from src import numpy_utils, progressions, tab0_mot_tab
-import tab1_undirect
-import tab2_direct
+from src import numpy_utils, progressions, tab0_mot_tab, tab1_undirect
+from src import tab2_direct
 from string import ascii_uppercase as auc
 import numpy as np
 import pandas as pd
