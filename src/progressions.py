@@ -68,7 +68,7 @@ def np_inc_mat(edge_list, dis_list, tab):
         dataframe: Index is the node (tail (-) or head(+)),
             the column names are the edges.
     """
-    dups_removed = numpy_utils.remove_dup_tuples(edge_list)
+    dups_removed = list(set(edge_list))
 
     num_edges = len(dups_removed)
 
@@ -116,3 +116,43 @@ def np_inc_mat(edge_list, dis_list, tab):
     dir_inc_mat_df = pd.concat([tail_df, head_df], axis=0)
 
     return dir_inc_mat_df
+
+
+def get_node_prev(final_prog_df, dis_list, tab):
+    """Given all final progressions count how many times each node appears.
+    NOTE: Self-loop nodes are only counted once and here we set them as head
+    nodes for simplicity.
+
+
+    Args:
+        final_prog_df (dataframe): Dataframe containing the final progression
+            hyperarc for each fictitious patient.
+
+    Returns:
+        dict: Dictionary containing the prevalence count for each node.
+    """
+
+    all_dir_nodes_list = []
+    for string in final_prog_df["Final Pathway"].tolist():
+        string = string.replace(", ", "")
+        split_string = string.split("->")
+        if len(string) > 1:
+            tail_nodes = split_string[0]
+            tail_mod = "-".join(tail_nodes)
+
+            head_node = split_string[1]
+            mod_string = f"{tail_mod},{head_node}+"
+        else:
+            mod_string = f"{string}+"
+        all_dir_nodes_list.append(mod_string)
+
+    # Create a list of tail and head nodes
+    head_nodes_list = [dis + "+" for dis in dis_list]
+    tail_nodes_list = [dis + "-" for dis in dis_list]
+    nodes_list = head_nodes_list + tail_nodes_list
+
+    dir_nodes_string = "".join(all_dir_nodes_list)
+
+    prev_count = {string: dir_nodes_string.count(string) for string in nodes_list}
+
+    return prev_count
