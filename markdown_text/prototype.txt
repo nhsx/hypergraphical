@@ -5,9 +5,4 @@ and any content here should __not__ be regarded as official output in any form.
 For more information about NHS England please visit our official 
 [website](https://www.england.nhs.uk/)._
 
-This applet randomly generates a set of fictious 'patients' and their disease 
-pathways to demonstrate the use of hypergraphs in understanding multimorbidity. The 
-sidebar on the left of this page can be used to change the number of 'patients' to 
-generate and the maximum number of diseases to include in their pathways.
-In changing the number of patients and diseases, the outputs will change 
-and this is purposeful to enable you to observe how population alterations result in different outcomes.
+

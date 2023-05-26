@@ -28,6 +28,13 @@ def display_markdown_from_file(file_path, tab):
         tab.markdown(text)
 
 
+def display_prototype_warning(file_path, tab):
+    with open(file_path, "r") as f:
+        text = f.read()
+
+        tab.warning(text, icon="⚠️")
+
+
 def add_image(image_path, width, height):
     """Read and return a resized image"""
     image = Image.open(image_path)

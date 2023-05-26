@@ -142,7 +142,8 @@ binmat, conds_worklist, idx_worklist = numpy_utils.create_worklists(
 
 st.title("Hypergraphs for Multimorbidity")
 
-numpy_utils.display_markdown_from_file("markdown_text/prototype.txt", st)
+numpy_utils.display_prototype_warning("markdown_text/prototype.txt", st)
+numpy_utils.display_markdown_from_file("markdown_text/summary.txt", st)
 
 mot_tab, tab1, tab2, tab3 = st.tabs(
     [
@@ -341,11 +342,14 @@ for i in range(0, n_progressions):
 tab3.markdown("__Potential Disease Pathways__")
 for i in range(0, n_progressions):
     if i == 0:
-        tab3.markdown(
-            f"__{i+1})__ The most likely disease pathway after "
-            f"disease set {{{dis_input}}} is:"
-        )
-        tab3.markdown(f"{string_pathways[i]}")
+        if "->" not in string_pathways[i]:
+            tab3.markdown("No disease pathways exist.")
+        else:
+            tab3.markdown(
+                f"__{i+1})__ The most likely disease pathway after "
+                f"disease set {{{dis_input}}} is:"
+            )
+            tab3.markdown(f"{string_pathways[i]}")
     else:
         if "->" not in string_pathways[i]:
             tab3.markdown("No other disease pathways exist.")
@@ -358,4 +362,4 @@ for i in range(0, n_progressions):
 # Link to Github repository
 
 st.markdown("-" * 50)
-st.text("Last Updated 23rd May 2023 \t\t\t\t\t Version 0.2.0")
+st.text("Last Updated 26th May 2023 \t\t\t\t\t Version 0.3.0")
