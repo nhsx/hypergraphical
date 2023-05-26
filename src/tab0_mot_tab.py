@@ -28,12 +28,14 @@ def tab0_motiv(mot_tab):
         " us about the population.",
     )
 
+    mot_tab.subheader("Multimorbidity")
     with mot_tab.expander("What is Multimorbidity?"):
         numpy_utils.display_markdown_from_file(
             "markdown_text/mm_description.txt",
             st,
         )
 
+    mot_tab.subheader("Graphs")
     with mot_tab.expander("Graphs Explained"):
         numpy_utils.display_markdown_from_file("markdown_text/graphs.txt", st)
         col1, col2, col3 = st.columns(3)  # to centre image
