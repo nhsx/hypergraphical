@@ -17,6 +17,25 @@ from src import numpy_utils
 def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
     tab1.header("Undirected Hypergraph")
 
+    tab1.markdown(
+        "This page provides a walkthrough of how to construct undirected "
+        "hypergraphs and how to calculate node centrality/ importance"
+        "using the fictitious patients generated using the sliders "
+        "on the left sidebar as the population."
+    )
+
+    tab1.markdown(
+        "You can [visualise the undirected hypergraph]"
+        "(#undirected-hypergraph) of this generated population. View a "
+        "graphical [overview of how Eigenvector centrality]"
+        "(#individual-disease-importance) is calculated on undirected graphs. "
+        "Explore how to calculate the [unweighted adjacency matrix]"
+        "(#hypergraph-unweighted-adjacency-matrix) or the "
+        "[weighted adjacency matrix](#weighted-adjacency-matrix) for the "
+        "undirected hypergraph. And you can learn how we calculated the node "
+        "importance using [Eigenvector centrality](#eigenvector-centrality)."
+    )
+
     tab1.subheader("Visual population representation:")
     tab1.markdown(
         "_Note: Self-edges are not considered with undirected"
