@@ -335,13 +335,16 @@ pathways = progressions.generate_forward_prog(
 
 string_pathways = list()
 for i in range(0, n_progressions):
-    path_x = str(pathways[i])
-    path_x = path_x.replace("[],", "").replace("[", "\n").replace("]", "")
-    string_pathways.append(path_x)
+    if pathways is not None:
+        path_x = str(pathways[i])
+        path_x = path_x.replace("[],", "").replace("[", "\n").replace("]", "")
+        string_pathways.append(path_x)
 
 tab3.markdown("__Potential Disease Pathways__")
 for i in range(0, n_progressions):
-    if i == 0:
+    if len(string_pathways) == 0:
+        tab3.markdown("No disease pathways exist.")
+    elif i == 0:
         if "->" not in string_pathways[i]:
             tab3.markdown("No disease pathways exist.")
         else:
