@@ -338,6 +338,7 @@ for i in range(0, n_progressions):
     if pathways is not None:
         path_x = str(pathways[i])
         path_x = path_x.replace("[],", "").replace("[", "\n").replace("]", "")
+        path_x = path_x.replace(",", "").replace("'", "")
         string_pathways.append(path_x)
 
 tab3.markdown("__Potential Disease Pathways__")
