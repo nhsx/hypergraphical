@@ -26,6 +26,35 @@ def tab2_directed(
     node_labels = [*auc][:num_dis]
     tab2.header("Directed Hypergraph")
 
+    tab2.markdown(
+        "This page provides a walkthrough of how to construct directed "
+        "hypergraphs, how to calculate the probability of transitioning "
+        "from one disease to another and how to calculate successor and "
+        "predecessor PageRank (using the fictitious patients generated using "
+        "the sliders on the left sidebar as the population)."
+    )
+
+    tab2.markdown(
+        "You can [visualise the directed hypergraph]"
+        "(#visual-population-representation) of this generated population. "
+        "View a graphical "
+        "[overview on how to calculate transition probability and PageRank]"
+        "(#predecessor-and-successor-disease-importance) from a "
+        "directed hypergraph. Explore how to calculate the [hyperarc weights]"
+        "(#hyperarc-weight-calculations:). "
+        "Find out how to calculate the [transition matrix]"
+        "(#randomwalk-probability-transition-matrix) for [successor]"
+        "(#successor-transition-matrix) and [predecessor]"
+        "(#predecessor-transition-matrix) conditions. "
+        "You can learn how we calculated the node "
+        "importance using left Eigenvector centrality/ PageRank for "
+        "[successor](#successor-pagerank) conditions and "
+        "[predecessor](#predecessor-pagerank) conditions."
+        "Visualise the conditions on a [scatterplot]"
+        "(#successor-vs-predecessor-condition) to see which conditions "
+        "are more likely to be predecessors, successors or transitive."
+    )
+
     tab2.subheader("Visual population representation:")
 
     # Draw b hypergraph from randomly generated patients
@@ -55,7 +84,7 @@ def tab2_directed(
         caption="PageRank overview for hypergraphs.",
     )
 
-    tab2.subheader("Hyperarc weight calcuations:")
+    tab2.subheader("Hyperarc weight calculations:")
     tab2.markdown(
         "Hyperarcs are calculated using the hyperedge calculations from the "
         "`Undirected Hypergraph` tab. From those calculations we get the "
