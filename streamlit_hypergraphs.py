@@ -63,13 +63,18 @@ render_svg(svg)
 
 st.sidebar.subheader("Random Patient Generator")
 
+st.sidebar.markdown(
+    "Change these parameters and watch how the number maximum "
+    "number of edges change and how to hypergraphs evolve:"
+)
+
 
 num_patients = st.sidebar.slider(
-    "Number of patients to generate", min_value=5, max_value=20
+    "Number of _patients_ to generate", min_value=5, max_value=20
 )
-num_dis = st.sidebar.slider("Number of diseases", min_value=2, max_value=5)
+num_dis = st.sidebar.slider("Number of _diseases_", min_value=2, max_value=5)
 
-if st.sidebar.checkbox("Show Maximum Number of Edges"):
+if st.sidebar.checkbox("Show Maximum Number of Edges", value=True):
     st.sidebar.write(
         # "With ",
         # num_patients,
