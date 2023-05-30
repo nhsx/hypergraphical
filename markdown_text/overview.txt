@@ -1,5 +1,10 @@
 ### Overview
 
+This work is a continuation of the hypergraphs work carried out by Rafferty et al. 2021:
+
+[Multimorbidity Hypergraphs GitHub](https://github.com/SwanseaUniversityMedical/multimorbidity_hypergraphs), 
+[Original Paper](https://www.sciencedirect.com/science/article/pii/S1532046421002458).
+
 We wish to demonstrate how hypergraphs can be used to capture relationships between multiple diseases 
 rather than relationships between pairs of diseases. For example, looking at multimorbidity 
 patterns instead of just comorbidities, which standard graphs tend to do. More people are suffering 
@@ -7,4 +12,6 @@ from multiple chronic diseases at the same time, so it's important to think abou
 patterns in the uptake of multimoribidities, to see if prevention techniques or treatments could 
 be put in place sooner to improve the quality of life in patients. 
 
-
+On this page you can find out the [aims of this project](#project-aims), find out a bit more about 
+what [multimorbidity](#multimorbidity) is and what types of [graphs](#graphs) we talk about within this project  
+(including standard graphs, undirected hypergraphs and directed hypergraphs).

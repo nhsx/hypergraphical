@@ -3,8 +3,6 @@ Using hypergraphs enables more complexities and relationships from the data to b
 _Why?_ Let's start by describing __undirected graphs__, __directed graphs__, __undirected hypergraphs__ and __directed 
 hypergraphs__. 
 
-### Graphs
-
 Graphs are very good at structuring interactivity and networks, which makes them particularly useful in healthcare where healthcare 
 data can be sparse.
 

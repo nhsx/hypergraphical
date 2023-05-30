@@ -28,6 +28,13 @@ def display_markdown_from_file(file_path, tab):
         tab.markdown(text)
 
 
+def display_prototype_warning(file_path, tab):
+    with open(file_path, "r") as f:
+        text = f.read()
+
+        tab.warning(text, icon="⚠️")
+
+
 def add_image(image_path, width, height):
     """Read and return a resized image"""
     image = Image.open(image_path)
@@ -148,6 +155,28 @@ def agg_prog(final_prog):
     return aggregate_prog_list
 
 
+def print_hyperarc_str(dis_tup):
+    """Convert a tuple of diseases and convert them to a string where the
+    last comma is a right arrow.
+
+    Args:
+        dis_tup (tuple): Tuple containing diseases.
+
+    Returns:
+        str: Hyperarc string.
+    """
+    if len(dis_tup) > 1:
+        string = ", ".join(map(str, dis_tup))
+        comma_idx = string.rfind(",")
+        if comma_idx != -1:
+            string = f"{string[:comma_idx]} ->{string[comma_idx + 1 :]}"
+
+    else:
+        string = ", ".join(map(str, dis_tup))
+        string = string + " -> " + string
+    return string
+
+
 def patient_maker(num_dis, num_patients, max_deg):
     """Create random fake patients directed disease trajectories for NetworkX
         visual directed hypergraph.
@@ -199,7 +228,7 @@ def patient_maker(num_dis, num_patients, max_deg):
     # format required for NetworkX
     edge_list = [ii for i in all_progs for ii in i]
 
-    return edge_list, dis_list, final_prog_df
+    return edge_list, dis_list, final_prog_df, all_progs
 
 
 def create_worklists(num_dis, edge_list):
@@ -307,7 +336,7 @@ def draw_b_hypergraph(nodes, edges, tab):
             is the head node.
         tab (variable): Variable name of tab the graph should be produced in.
     Returns:
-        pyplot: Undirected hypergraph showing the fictious patients graph.
+        pyplot: Directed hypergraph showing the fictious patients graph.
     """
     g = nx.DiGraph()
     g.add_nodes_from(nodes)
@@ -354,7 +383,7 @@ def draw_b_hypergraph(nodes, edges, tab):
     # Plot true nodes
     nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
 
-    # Draw pariwise hyperarcs
+    # Draw pairwise hyperarcs
     nx.draw_networkx_edges(
         g,
         pos,
@@ -416,6 +445,185 @@ def draw_b_hypergraph(nodes, edges, tab):
     tab.pyplot()
 
 
+# B-Hypergraphs drawing with weights function
+def draw_weight_b_hypergraph(nodes, top_n_hyparcs, tab):
+    """Draw B-Hypergraphs using NetworkX.
+       B-Hypergraphs meaning there can be only one head node, but an unlimited
+       number of tail nodes.
+       NOTE: This doesn't currently consider duplicates.
+
+    Args:
+        nodes (list): Nodes to include in the graph.
+        top_n_hyparcs (DataFrame): Two column pandas DataFrame with a hyperarc
+            column and weights column.
+        tab (variable): Variable name of tab the graph should be produced in.
+    Returns:
+        pyplot: Directed hypergraph showing the fictious patients graph.
+    """
+    g = nx.DiGraph()
+    g.add_nodes_from(nodes)
+    arcs_df = top_n_hyparcs.copy()
+    arcs_df["Hyperarc"] = arcs_df["Hyperarc"].str.replace(" ", "")
+    arcs_df["Hyperarc"] = arcs_df["Hyperarc"].str.replace("->", ",")
+
+    # Turn the hyperarc column into a list of edges
+    edges = [arcs_df.iloc[i, 0].split(",") for i, _ in arcs_df.iterrows()]
+
+    # Calculate the edge degree for each edge
+    node_degree_dict = {idx: len(sublist) for idx, sublist in enumerate(edges)}
+
+    tail_edge_list = list()
+    head_edge_list = list()
+    # Create new columns in the df which store the tail (possibly fake nodes) #
+    # and head nodes
+    arcs_df["Tail"] = 0
+    arcs_df["Head"] = 0
+    for i, edge_degree in enumerate(node_degree_dict.values()):
+        if edge_degree == 2:
+            print(edges[i])
+            g.add_edges_from([edges[i]])
+            arcs_df.loc[i, "Tail"] = edges[i][0]
+            arcs_df.loc[i, "Head"] = edges[i][1]
+
+        else:
+            # B-hypergraphs only - so from infinite tails to one head only
+            head_node = edges[i][-1]
+            tail_nodes = edges[i][:-1]
+            g.add_node(i)  # create a new fake node named with number i
+            for tail_node in tail_nodes:
+                tail_edge_list.append((tail_node, i))
+                arcs_df.loc[i, "Tail"] = i
+
+            head_edge_list.append((i, head_node))
+            arcs_df.loc[i, "Head"] = edges[i][-1]
+
+    extra_nodes = set(g.nodes) - set(nodes)
+
+    # Get coordinates to place real nodes in a circle with a large radius
+    # Extra nodes are centred around a smaller radius
+    node_radius = 6
+    real_node_coords = get_coords(len(nodes), node_radius)
+    extra_node_coords = get_coords(len(extra_nodes), node_radius / 3)
+
+    real_node_coords_dict = dict(zip(nodes, real_node_coords))
+    extra_node_coords_dict = dict(zip(extra_nodes, extra_node_coords))
+
+    pos_dict = {**real_node_coords_dict, **extra_node_coords_dict}
+
+    pos = pos_dict
+
+    # Plot true nodes
+    nx.draw_networkx_nodes(g, pos, node_size=150, nodelist=nodes)
+
+    # Draw pairwise hyperarcs
+    nx.draw_networkx_edges(
+        g,
+        pos,
+        edge_color="red",
+        connectionstyle="arc3,rad=0.1",
+        arrowstyle="-|>",
+        width=1,
+    )
+
+    # Adding weight labels to the graph
+    for j in range(0, len(arcs_df)):
+        t = arcs_df.loc[j, "Tail"]
+        h = arcs_df.loc[j, "Head"]
+        w = arcs_df.loc[j, "w(h_i)"]
+        g.add_edge(t, h, weight=round(w, 2))
+    # tab.dataframe(arcs_df)
+
+    # Pairwise edges
+    edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        # If bi-directional 2 degree edges exist (otherwise get blank overlap)
+        if u != v and tuple(reversed((u, v))) in g.edges:
+            label = f'{d["weight"]}\n\n{g.edges[(v,u)]["weight"]}'
+            edge_labels[(u, v)] = label
+
+        elif u in nodes and pos[u][0] > pos[v][0]:
+            label = f'{d["weight"]}\n\n\n'
+            edge_labels[(u, v)] = label
+
+        elif u in nodes and pos[u][0] < pos[v][0]:
+            label = f'\n\n{d["weight"]}'
+            edge_labels[(u, v)] = label
+
+        # Arcs from pseudo to real nodes
+        elif u != v:
+            label = f'{d["weight"]}'
+            edge_labels[(u, v)] = label
+
+    # Self edges (need to be seperate to get a blank background)
+    self_edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        if u == v:
+            label = f'{d["weight"]}\n\n\n'
+            self_edge_labels[(u, v)] = label
+
+    # Generate random colours based on number of hyperarcs
+    random.seed(1)
+    colors = [
+        "#" + "".join([random.choice("0123456789ABCDEF") for j in range(6)])
+        for i in range(len(edges))
+    ]
+
+    for edge_num in range(0, len(edges)):
+        for head_edge in head_edge_list:
+            if edge_num in head_edge:
+                # Draw hyperarc heads
+                nx.draw_networkx_edges(
+                    g,
+                    pos,
+                    edge_color=colors[edge_num],
+                    edgelist=[head_edge],
+                    arrowstyle="-|>",
+                    width=1.5,
+                )
+        for tail_edge in tail_edge_list:
+            if edge_num in tail_edge:
+                # Draw hyperarc tails
+                nx.draw_networkx_edges(
+                    g,
+                    pos,
+                    edge_color=colors[edge_num],
+                    edgelist=[tail_edge],
+                    connectionstyle="arc3,rad=0.4",
+                    arrowstyle="-",
+                    style="dashdot",
+                    alpha=0.4,
+                    width=2,
+                )
+        for extra_node in extra_nodes:
+            if edge_num == extra_node:
+                # Draw extra nodes with same colour
+                nx.draw_networkx_nodes(
+                    g,
+                    pos,
+                    node_size=20,
+                    nodelist=[extra_node],
+                    node_color=colors[edge_num],
+                    node_shape="h",
+                )
+
+    # Draw the edge labels as the weights
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+    nx.draw_networkx_edge_labels(
+        g,
+        pos,
+        edge_labels=self_edge_labels,
+        font_size=8,
+        font_color="blue",
+        bbox=dict(alpha=0),
+    )
+
+    # Draw labels only for true nodes
+    labels = {node: str(node) for node in nodes}
+    nx.draw_networkx_labels(g, pos, labels, font_size=10)
+    plt.axis("off")
+    tab.pyplot()
+
+
 # Remove duplicate Hyperedges
 def remove_dup_tuples(lst):
     """
@@ -428,6 +636,76 @@ def remove_dup_tuples(lst):
     unique_sets = set(frozenset(t) for t in lst)
     unique_lst = [tuple(sorted(s)) for s in unique_sets]
     return unique_lst
+
+
+def draw_trans_mat_graph(nodes, all_dis_pairs, tab, transition_df):
+    """Draw transition matrix graph using NetworkX.
+
+    Args:
+        nodes (list): Nodes to include in the graph.
+        all_dis_pairs (list): All possible edge to include in the graph,
+            where the last node is the head node.
+        tab (variable): Variable name of tab the graph should be produced in.
+        transition_df (dataframe): Transition transition matrix df.
+    Returns:
+        pyplot: Directed hypergraph showing the transition probability.
+    """
+    g = nx.DiGraph()
+    g.add_nodes_from(nodes)
+
+    pos = nx.circular_layout(g)
+
+    # tab.write(all_dis_pairs)
+    for i in range(0, len(all_dis_pairs)):
+        tail_node = all_dis_pairs[i][0]
+        head_node = all_dis_pairs[i][1]
+        weight = transition_df.loc[tail_node, head_node]
+        g.add_edge(tail_node, head_node, weight=round(weight, 2))
+
+    nx.draw(
+        g,
+        pos,
+        with_labels=True,
+        connectionstyle="arc3, rad = 0.15",
+        edge_color="grey",
+        node_color="yellow",
+        alpha=0.9,
+    )
+
+    # Pairwise edges
+    edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        if pos[u][0] > pos[v][0]:
+            label = f'{d["weight"]}\n\n\n\n{g.edges[(v,u)]["weight"]}'
+            edge_labels[(u, v)] = label
+
+    nx.draw_networkx_edge_labels(
+        g,
+        pos,
+        edge_labels=edge_labels,
+        font_size=9,
+        font_color="blue",
+        # bbox=dict(alpha=0),
+    )
+
+    # self edges
+    self_edge_labels = {}
+    for u, v, d in g.edges(data=True):
+        if pos[u][0] == pos[v][0]:
+            label = f'\n\n\n\n\n{d["weight"]}'
+            # label = f'{g.edges[v,u]["weight"]}\n\n\n\n{d["weight"]}'
+            self_edge_labels[(u, v)] = label
+    nx.draw_networkx_edge_labels(
+        g,
+        pos,
+        edge_labels=self_edge_labels,
+        font_size=9,
+        font_color="red",
+        bbox=dict(alpha=0),
+    )
+
+    plt.axis("off")
+    tab.pyplot()
 
 
 ###############################################################################
@@ -527,11 +805,20 @@ def superset(dis_list, dis_set):
     return super_set
 
 
-def create_powsupset_tab(edge_list, dis_list):
+def create_powsupset_tab(edge_list, dis_list, undirected=True):
     # Create hyperedge, power set and super set table.
     # All the hyperedges:
     dups_removed = remove_dup_tuples(edge_list)
-    all_hyperedges = [t for t in dups_removed if len(t) != 1]
+    if undirected:
+        all_hyperedges = [t for t in dups_removed if len(t) != 1]
+    else:
+        all_hyperedges = [t for t in dups_removed]
+        # for t in dups_removed:
+        #     if len(t) == 0:
+        #         t = t * 2
+        #         all_hyperedges.append(tuple(t))
+        #     else:
+        #         all_hyperedges.append(tuple(t))
 
     # column one of the df should be all_hyperedges
     pow_sup_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
@@ -558,7 +845,7 @@ def create_powsupset_tab(edge_list, dis_list):
     return pow_sup_df
 
 
-def soren_dice_create_df(edge_list, dis_list):
+def soren_dice_create_df(edge_list, dis_list, undirected=True):
     # Weight calculation UNDIRECTED hypergraph
     # list of all patients progressive trajectories (INCLUDING SELFEDGES)
     edge_list_with_self_edge = list()
@@ -567,8 +854,12 @@ def soren_dice_create_df(edge_list, dis_list):
         edge_list_with_self_edge.append(tuple(sorted(tup)))
 
     dups_removed = remove_dup_tuples(edge_list)
-    # ignoring selfloop hyperedges
-    all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
+
+    if undirected:
+        # ignoring selfloop hyperedges
+        all_hyperedges = [tuple(t) for t in dups_removed if len(t) != 1]
+    else:
+        all_hyperedges = [tuple(t) for t in dups_removed]
 
     # create dataframe for: hyperedge | C(e_i) | Sum C(e_j) | Sum C(e_k)
     edge_weight_df = pd.Series(all_hyperedges).to_frame("Hyperedge")
@@ -579,7 +870,7 @@ def soren_dice_create_df(edge_list, dis_list):
     edge_weight_df["W_e"] = ""
 
     # get the power set and super set table
-    pow_sup_df = create_powsupset_tab(edge_list, dis_list)
+    pow_sup_df = create_powsupset_tab(edge_list, dis_list, undirected)
 
     for row_num, row in enumerate(edge_weight_df.iterrows()):
         edge = edge_weight_df.iloc[row_num, 0]
@@ -607,6 +898,9 @@ def soren_dice_create_df(edge_list, dis_list):
         edge_denom = C_e + power_count + super_count
         soren_dice = edge_numer / edge_denom
         edge_weight_df.iloc[row_num, 4] = soren_dice
+
+    edge_weight_df = edge_weight_df.sort_values(by=["W_e"], ascending=False)
+    edge_weight_df = edge_weight_df.reset_index(drop=True)
 
     return edge_weight_df
 
