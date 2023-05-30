@@ -21,8 +21,9 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
-        # "Get Help": "https://www.england.nhs.uk/allocations/",
-        # "Report a bug": "<github url>",
+        "Get Help": "mailto:england.tdau@nhs.net",
+        "Report a bug": "mailto:england.tdau@nhs.net",
+        # Can change to hypergraphical repo once repo is public
         # "About": "[https://www.england.nhs.uk/]\
         # (https://www.england.nhs.uk/)",
     },
@@ -276,8 +277,8 @@ with tab3.expander("How to calculate Hyperarc centrality?"):
         random_seed=None,
     )
 
-    n_conds = num_dis * [2] + [
-        len(d.split(",")) + 1 for d in hyperarc_titles[num_dis:]
+    n_conds = [
+        len(d.split(",")) + 1 for d in hyperarc_titles
     ]  # Number of conditions in each hyperarc/degree
 
     hyperarc_evc = pd.DataFrame(
@@ -337,7 +338,6 @@ pathways = progressions.generate_forward_prog(
     str(dis_input), hyperarc_evc, n_progressions, max_degree
 )
 
-
 string_pathways = list()
 for i in range(0, n_progressions):
     if pathways is not None:
@@ -346,7 +346,9 @@ for i in range(0, n_progressions):
         path_x = path_x.replace(",", "").replace("'", "")
         string_pathways.append(path_x)
 
+
 tab3.markdown("__Potential Disease Pathways__")
+
 for i in range(0, n_progressions):
     if len(string_pathways) == 0:
         tab3.markdown("No disease pathways exist.")
