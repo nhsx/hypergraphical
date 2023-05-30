@@ -69,7 +69,7 @@ st.sidebar.subheader("Random Patient Generator")
 
 st.sidebar.markdown(
     "Change these parameters and watch how the number maximum "
-    "number of edges change and how to hypergraphs evolve:"
+    "number of edges change and how hypergraphs evolve:"
 )
 
 
