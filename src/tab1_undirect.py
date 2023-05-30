@@ -53,7 +53,10 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         numpy_utils.hnx_visual(edge_list, dis_list, col1, weight_labels=False)
 
     with col2:
-        if col2.checkbox("Show patients individual trajectories"):
+        if col2.checkbox(
+            "Show patients individual trajectories",
+            value=True,
+        ):
             col2.write(final_prog_df)
 
     tab1.subheader("Individual Disease Importance")
