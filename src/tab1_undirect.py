@@ -307,7 +307,8 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         "centrality. This is useful for multimorbidity applications "
         "such as finding the most central diseases in a population. "
         "Whilst it is useful to see disease connectivity and importance, "
-        "we may find more use in looking at which diseases progress to"
-        " other diseases. For more on this visit the tab"
-        " `Directed Hypergraph` at the top of this page."
+        "we may find more use in looking at which diseases progress to "
+        "other diseases. For more on this visit the tab "
+        "[Directed Hypergraph](#directed-hypergraph) "
+        "at the top of this page."
     )
