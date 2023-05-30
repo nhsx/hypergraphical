@@ -308,7 +308,7 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         "such as finding the most central diseases in a population. "
         "Whilst it is useful to see disease connectivity and importance, "
         "we may find more use in looking at which diseases progress to "
-        "other diseases. For more on this visit the tab "
-        "[Directed Hypergraph](#directed-hypergraph) "
+        "other diseases. For more information on this visit the tab "
+        "`Directed Hypergraph` and the other sections "
         "at the top of this page."
     )
