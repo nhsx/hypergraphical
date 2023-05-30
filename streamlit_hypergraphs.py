@@ -23,9 +23,12 @@ st.set_page_config(
     menu_items={
         "Get Help": "mailto:england.tdau@nhs.net",
         "Report a bug": "mailto:england.tdau@nhs.net",
-        # Can change to hypergraphical repo once repo is public
-        # "About": "[https://www.england.nhs.uk/]\
-        # (https://www.england.nhs.uk/)",
+        # Can change bug report link to hypergraphical repo once repo is public
+        "About": "To find out more about the [Analytics Unit]"
+        "(https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) "
+        "visit our [project website]"
+        "(https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch "
+        "at [england.tdau@nhs.net](mailto:england.tdau@nhs.net).",
     },
 )
 padding = 1
