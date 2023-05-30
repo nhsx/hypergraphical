@@ -19,7 +19,7 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
 
     tab1.markdown(
         "This page provides a walkthrough of how to construct undirected "
-        "hypergraphs and how to calculate node centrality/ importance"
+        "hypergraphs and how to calculate node centrality/ importance "
         "using the fictitious patients generated using the sliders "
         "on the left sidebar as the population."
     )
@@ -299,8 +299,12 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
     )
 
     tab1.markdown(
-        "Whilst it is useful to see disease connectivity, we may"
-        " find more use in looking at which diseases progress to"
+        "This page has shown how undirected hypergraphs can be "
+        "used to find the most central nodes using Eigenvector "
+        "centrality. This is useful for multimorbidity applications "
+        "such as finding the most central diseases in a population. "
+        "Whilst it is useful to see disease connectivity and importance, "
+        "we may find more use in looking at which diseases progress to"
         " other diseases. For more on this visit the tab"
         " `Directed Hypergraph` at the top of this page."
     )

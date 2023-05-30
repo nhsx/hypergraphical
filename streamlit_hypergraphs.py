@@ -366,4 +366,4 @@ for i in range(0, n_progressions):
 # Link to Github repository
 
 st.markdown("-" * 50)
-st.text("Last Updated 26th May 2023 \t\t\t\t\t Version 0.3.0")
+st.text("Last Updated 30th May 2023 \t\t\t\t\t Version 0.3.0")
