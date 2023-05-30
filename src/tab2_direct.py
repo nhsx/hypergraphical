@@ -49,7 +49,7 @@ def tab2_directed(
         "You can learn how we calculated the node "
         "importance using left Eigenvector centrality/ PageRank for "
         "[successor](#successor-pagerank) conditions and "
-        "[predecessor](#predecessor-pagerank) conditions."
+        "[predecessor](#predecessor-pagerank) conditions. "
         "Visualise the conditions on a [scatterplot]"
         "(#successor-vs-predecessor-condition) to see which conditions "
         "are more likely to be predecessors, successors or transitive."
@@ -63,7 +63,10 @@ def tab2_directed(
         numpy_utils.draw_b_hypergraph(dis_list, edge_list, col1)
 
     with col2:
-        if col2.checkbox("Show the list of each patient's final hyperarc"):
+        if col2.checkbox(
+            "Show the list of each patient's final hyperarc",
+            value=True,
+        ):
             col2.write(final_prog_df)
     tab2.subheader("Predecessor and Successor Disease Importance")
     tab2.markdown(
@@ -814,5 +817,18 @@ def tab2_directed(
             pred_norm_eig_df.index,
             col1,
         )
+
+    tab2.markdown(
+        "On this page we described how to construct directed "
+        "hypergraphs, how to build transition matrices for both "
+        "successor and predecessor nodes, and how to calculate "
+        "node centrality (PageRank) of successor and predecessor "
+        "nodes. We do this in the context of multimorbidity, "
+        "to observe populations to determine which diseases are "
+        "likely to proceed or succeed another. Providing clinical "
+        "utility in the form of next observed conditions possible "
+        "or previous observed. We also introduced an interactive "
+        "way to visualise directed B-hypergraphs."
+    )
 
     return hyperarc_weights_df
