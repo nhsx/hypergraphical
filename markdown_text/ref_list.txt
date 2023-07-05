@@ -13,4 +13,3 @@ the Population Ageing and Care Simulation (PACSim) model. Age and Ageing, 47(3):
 James Rafferty, Alan Watkins, Jane Lyons, Ronan A Lyons, Ashley Akbari, Niels Peek, Farideh Jalali-
 Najafabadi, Thamer Ba Dhafari, Alexander Pate, Glen P Martin, et al. Ranking sets of morbidities using
 hypergraph centrality. Journal of Biomedical Informatics, 122:103916, 2021.
-

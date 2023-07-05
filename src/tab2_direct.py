@@ -1,16 +1,16 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-import streamlit as st
-import pandas as pd
-import numpy as np
-from scipy import linalg
 import itertools
 from string import ascii_uppercase as auc
 
+import numpy as np
+import pandas as pd
+import streamlit as st
+from scipy import linalg
 
 # local
-from src import numpy_utils, create_figs
+from src import create_figs, numpy_utils
 
 ##############################################################################
 

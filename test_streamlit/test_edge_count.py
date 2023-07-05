@@ -1,6 +1,3 @@
-import os
-
-os.chdir("C:/Users/ZOEHANCOX/OneDrive - NHS England/hypergraphical")
 from src import numpy_utils
 
 # import pytest
