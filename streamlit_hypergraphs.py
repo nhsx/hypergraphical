@@ -1,15 +1,21 @@
 ###############################################################################
 # Libraries and Imports
 ###############################################################################
-import streamlit as st
 import base64
-from src import numpy_utils, progressions, tab0_mot_tab, tab1_undirect
-from src import tab2_direct
 from string import ascii_uppercase as auc
+
 import numpy as np
 import pandas as pd
-from src import hyperarc_centrality
+import streamlit as st
 
+from src import (
+    hyperarc_centrality,
+    numpy_utils,
+    progressions,
+    tab0_mot_tab,
+    tab1_undirect,
+    tab2_direct,
+)
 
 ###############################################################################
 # Configure Page and Format
