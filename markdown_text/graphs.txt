@@ -1,21 +1,19 @@
 _What are graphs and hypergraphs and why do we want to use them?_
-Using hypergraphs enables more complexities and relationships from the data to be included. 
-_Why?_ Let's start by describing __undirected graphs__, __directed graphs__, __undirected hypergraphs__ and __directed 
-hypergraphs__. 
+Using hypergraphs enables more complexities and relationships from the data to be included.
+_Why?_ Let's start by describing __undirected graphs__, __directed graphs__, __undirected hypergraphs__ and __directed
+hypergraphs__.
 
-Graphs are very good at structuring interactivity and networks, which makes them particularly useful in healthcare where healthcare 
+Graphs are very good at structuring interactivity and networks, which makes them particularly useful in healthcare where healthcare
 data can be sparse.
 
 A standard graph $\mathcal{G}(v,e)$ can connect only 2 objects/nodes ($v$) with one edge ($e$). Only pairwise connections can exist.
 
-Graphs can be directed or undirected. Directed graphs give directionality to node interactions. For a temporal example lets imagine 
-$node_1$ is diabetes which could happen prior to $node_2$ which is chronic kidney disease, directionality shows the temporal order 
+Graphs can be directed or undirected. Directed graphs give directionality to node interactions. For a temporal example lets imagine
+$node_1$ is diabetes which could happen prior to $node_2$ which is chronic kidney disease, directionality shows the temporal order
 or sequence of events.
 Alternatively, in an undirected graph edges connecting two nodes/diseases simply imply there is a relationship between the two.
 Here we should emphasize that standard graphs only enable __pairwise__ relationships to be represented.
 
-
-Graphs have the benefit of allowing extra information to be stored in the nodes or edges, these can be weights or attributes. For 
-example, you may wish to store more details about a condition within a node or the elapsed time between disease contraction within 
+Graphs have the benefit of allowing extra information to be stored in the nodes or edges, these can be weights or attributes. For
+example, you may wish to store more details about a condition within a node or the elapsed time between disease contraction within
 an edge.
-

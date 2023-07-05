@@ -2,7 +2,5 @@ __:blue[Prototype:]__ _This is not an official NHS England product or service bu
 This __prototype__ aims only to demonstrate work that may be of interest to others.
 Opinions expressed in this applet are not representative of the views of NHS England
 and any content here should __not__ be regarded as official output in any form.
-For more information about NHS England please visit our official 
+For more information about NHS England please visit our official
 [website](https://www.england.nhs.uk/)._
-
-
