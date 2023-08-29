@@ -148,24 +148,26 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         )
         st.markdown(
             r"""
-            $$W(e_i) = \frac{C(e_i)}{C(e_i) + \sum_{e_j \in \mathcal{P}(e_i)}w_j C(e_j) + \sum_{e_k \in \mathcal{S}(e_i)}w_k C(e_k)},$$
+            $$W(e_i) = \frac{C(e_i)}{C(e_i) + \sum_{e_j \in \mathcal{L}(e_i)}w_j C(e_j) + \sum_{e_k \in \mathcal{U}(e_i)}w_k C(e_k)},$$
             """  # noqa: E501
         )
         st.markdown(
             "where\n"
-            r"""$\mathcal{S}(e_i) = \{e_k \hspace{2pt} : \hspace{2pt} e_i \subset e_k\}.$"""  # noqa: E501
+            r"""$\mathcal{L}(e_i) = \{e_j \in E \hspace{2pt} : \hspace{2pt} e_j \subset e_i\}$"""  # noqa: E501
+            " and\n"
+            r"""$\mathcal{U}(e_i) = \{e_k \in E \hspace{2pt} : \hspace{2pt} e_i \subset e_k\}.$"""  # noqa: E501
         )
         st.markdown(
             "For this example when we want to calculate the weight"
             " of a specific hyperedge $e_i$:\n"
         )
         st.markdown(
-            "* $\mathcal{P}(e_i)$ is"  # noqa: W605
-            " the power set of hyperedges for multimorbidity set"
+            "* $\mathcal{L}(e_i)$ is"  # noqa: W605
+            " all proper subset of hyperedges for multimorbidity set"
             " $e_i$ (all subsets} disease sets)."
         )
         st.markdown(
-            "* $\mathcal{S}(e_i)$ is the super set of hyperedges for"  # noqa: W605, E501
+            "* $\mathcal{U}(e_i)$ is all proper supersets of hyperedges for"  # noqa: W605, E501
             " multimorbidity set $e_i$ (all disease sets containing"
             " $e_i$)."
         )
@@ -199,7 +201,7 @@ def tab1_undirected(tab1, final_prog_df, num_dis, edge_list, dis_list):
         st.dataframe(powsupset_tab)
 
         st.markdown(
-            "Once we have the power sets and super sets we can then"
+            "Once we have the $\mathcal{L}$ sets and $\mathcal{U}$ sets we can then"  # noqa: W605, E501
             " calculate the weight for each hyperedge. This is done by"
             " by counting the occurence of disease sets in the patient"
             " pathways, relative to the raw prevalences, the power sets and"

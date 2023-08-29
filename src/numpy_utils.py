@@ -825,8 +825,8 @@ def create_powsupset_tab(edge_list, dis_list, undirected=True):
 
     # column two powerset of the column to the left
     # column three = superset of the furthest left column
-    pow_sup_df["Power Set"] = ""
-    pow_sup_df["Super Set"] = ""
+    pow_sup_df["L Set"] = ""
+    pow_sup_df["U Set"] = ""
 
     for row_num, row_name in enumerate(pow_sup_df.index):
         for col_num, col_name in enumerate(pow_sup_df):
