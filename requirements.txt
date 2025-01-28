@@ -1,3 +1,4 @@
+altair<5.0
 black
 flake8
 hypernetx==1.2.5
