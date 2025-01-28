@@ -1,6 +1,6 @@
 black
 flake8
-hypernetx
+hypernetx==1.2.5
 ipykernel
 isort
 matplotlib

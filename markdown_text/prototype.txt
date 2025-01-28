@@ -1,4 +1,4 @@
-__:blue[Prototype:]__ _This is not an official NHS England product or service but instead is an interactive applet prototype containing ongoing work.
+_This is not an official NHS England product or service but instead is an interactive applet prototype containing ongoing work.
 This __prototype__ aims only to demonstrate work that may be of interest to others.
 Opinions expressed in this applet are not representative of the views of NHS England
 and any content here should __not__ be regarded as official output in any form.
