@@ -98,11 +98,11 @@ To deploy the streamlit app locally we advise following the instructions below:
 
 To clone the repository:
 
-`git clone https:github.com/nhsx/hypergraphical`
+`git clone https://github.com/nhsx/hypergraphical`
 
 To create a suitable environment, in the terminal run the following command:
 
-* Build conda environment via `conda create --name hg-streamlit python=3.8`
+* Build conda environment via `conda create --name hg-streamlit python=3.10`
 
 * Activate environment `conda activate hg-streamlit`
 
