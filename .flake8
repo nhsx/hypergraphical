@@ -8,7 +8,7 @@ exclude =
     node_modules,
     bower_components,
     migrations
-ignore = D203,W503
+ignore = D203,W503,E231,E222,E702,E241,E226,E202
 max-line-length = 115
 extend-ignore = E203
 per-file-ignores =
